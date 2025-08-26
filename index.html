@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en" data-theme="orchid">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Phasee · Plan ahead. Stay ahead.</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ===================== THEME SYSTEM ===================== */
+:root{
+  --font: 14px/1.55 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  --r-lg:16px; --r:12px; --r-sm:9px;
+  --shadow-1: 0 5px 14px rgba(15,23,42,.06);
+  --shadow-2: 0 12px 26px rgba(15,23,42,.10);
+}
+[data-theme="orchid"]{
+  --bg-grad: radial-gradient(1000px 520px at 20% -10%, #F1F3FF 0%, #ffffff 40%, #F7F8FF 100%);
+  --surface:#ffffff; --surface-2:#F4F6FF; --ring:#E2E7FF;
+  --ink:#0f172a; --muted:#6b7280;
+  --accent:#6F6AE6; --accent-2:#8B7CFF;
+  --chip:#EEF0FF; --chip-b:#DADFFF;
+}
+[data-theme="slate"]{
+  --bg-grad: linear-gradient(180deg,#f7f8fb,#ffffff);
+  --surface:#ffffff; --surface-2:#f3f4f6; --ring:#e5e7eb;
+  --ink:#0f172a; --muted:#6b7280;
+  --accent:#3B82F6; --accent-2:#6366F1;
+  --chip:#eef2ff; --chip-b:#c7d2fe;
+}
+[data-theme="dark"]{
+  --bg-grad: linear-gradient(180deg,#0b0d12,#0f1320);
+  --surface:#121623; --surface-2:#0f1422; --ring:#1f2434;
+  --ink:#e5e7eb; --muted:#9aa3b2;
+  --accent:#7C5CFF; --accent-2:#5EC8FF;
+  --chip:#172037; --chip-b:#283354;
+}
+
+/* ===================== BASE & LAYOUT ===================== */
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font:var(--font); color:var(--ink); background:var(--bg-grad)}
+a{color:inherit; text-decoration:none}
+
+.btn{
+  appearance:none; border:1px solid var(--ring); background:var(--surface); color:var(--ink);
+  padding:8px 10px; border-radius:10px; font-weight:800; cursor:pointer; white-space:nowrap;
+  transition:filter .15s, transform .04s, box-shadow .15s;
+}
+.btn:hover{filter:brightness(1.03)}
+.btn:active{transform:translateY(.4px)}
+.btn.primary{
+  border-color:transparent; color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 8px 20px color-mix(in oklab, var(--accent) 28%, transparent);
+}
+.btn.ghost{background:transparent}
+
+/* Shell */
+.app{display:grid; grid-template-columns: 220px 1fr; min-height:100dvh}
+
+/* Sidebar */
+.side{
+  position:sticky; top:0; height:100dvh;
+  background:linear-gradient(180deg, var(--surface), var(--surface-2));
+  border-right:1px solid var(--ring);
+  padding:16px 12px; display:flex; flex-direction:column; gap:10px; z-index:5;
+}
+.brand{display:flex; align-items:center; gap:10px; font-weight:900; padding:6px 8px}
+.logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 7px 16px color-mix(in oklab, var(--accent) 38%, transparent)}
+.brandname{font-size:22px}
+
+.nav{display:grid; gap:6px; margin-top:8px}
+.nav a{
+  display:flex; align-items:center; gap:10px;
+  padding:10px; border-radius:12px; font-weight:800; border:1px solid transparent;
+}
+.nav a[data-active="true"], .nav a:hover{background:var(--surface-2); border-color:var(--ring)}
+
+.side .foot{margin-top:auto; display:grid; gap:8px; padding:8px}
+.settings-link{font-weight:800; color:#3b3f77; cursor:pointer; width:max-content}
+[data-theme="dark"] .settings-link{color:#a7b4ff}
+.settings-link:hover{text-decoration:underline}
+.upgrade-link{font-weight:900; color:#6F6AE6}
+.upgrade-link:hover{text-decoration:underline}
+
+/* Main */
+.main{display:grid; grid-template-rows:56px 1fr}
+.top{
+  background:linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface-2) 60%, var(--surface) 40%));
+  border-bottom:1px solid var(--ring); padding:0 14px;
+  display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:4;
+}
+.title{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.month{font-weight:900; font-size:18px}
+.toolbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; position:relative}
+
+/* Account pill (top-right) */
+.acct{display:flex; align-items:center; gap:6px}
+.acct select{
+  appearance:none; border:1px solid var(--ring); background:var(--surface); color:var(--ink);
+  padding:8px 10px; border-radius:10px; font-weight:800;
+}
+
+/* ===================== CALENDAR ===================== */
+.content{padding:10px; display:grid; gap:10px}
+.calendar{background:var(--surface); border:1px solid var(--ring); border-radius:var(--r-lg); box-shadow:var(--shadow-2); padding:8px}
+.cal-head{display:flex; align-items:center; justify-content:space-between; padding:2px 6px 6px}
+.head-right{display:flex; align-items:center; gap:8px}
+.muted{color:var(--muted); font-size:12px}
+.weekdays{display:grid; grid-template-columns:repeat(7,1fr); gap:4px; padding:0 6px 4px; color:#8d97ae; font-weight:900; font-size:11px}
+.grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+
+.day{
+  background:var(--surface); border:1px solid var(--ring); border-radius:12px; padding:8px; min-height:96px;
+  display:grid; grid-template-rows:auto 1fr; gap:4px; position:relative; box-shadow:var(--shadow-1);
+  transition:transform .08s ease, box-shadow .15s ease;
+}
+.day:hover{transform:translateY(-1px); box-shadow:0 12px 26px rgba(15, 23, 42, .10)}
+.day.muted{opacity:.9}
+.day.today{outline:2px solid color-mix(in oklab, var(--accent) 28%, transparent); outline-offset:2px}
+
+.dhead{display:flex; align-items:center; justify-content:space-between}
+.dnum{font-weight:900; font-size:11px; display:flex; align-items:center; gap:6px}
+.plus{
+  position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:8px;
+  border:0; color:#fff; cursor:pointer; font-weight:900; font-size:14px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:0 10px 20px color-mix(in oklab, var(--accent) 32%, transparent);
+}
+.list{display:grid; gap:4px}
+.empty{opacity:.65; color:#97a0b3; font-size:11px}
+.card{
+  display:flex; align-items:center; gap:6px; padding:6px 8px;
+  border-radius:10px; border:1px solid rgba(0,0,0,.05); box-shadow:0 6px 14px rgba(15,23,42,.08);
+}
+.card .pip{width:22px; height:22px; border-radius:7px; display:grid; place-items:center; color:#1d2435; font-size:12px; font-weight:900}
+.timechip{margin-left:auto; font-weight:900; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.05); font-size:10px}
+.ig   {background:#FFEFF7; border-color:#FFD9EC} .ig .pip{background:#FFB7DA}
+.fb   {background:#EDF2FF; border-color:#DDE6FF} .fb .pip{background:#BFD0FF}
+.x    {background:#EEF1F7; border-color:#DDE3F1} .x  .pip{background:#CFD7E7}
+.yt   {background:#FFE9EC; border-color:#FFD5DB} .yt .pip{background:#FFB8C0}
+.tt   {background:#FFF4D2; border-color:#FFE8AA} .tt .pip{background:#FFD57A}
+.blog {background:#E9F9F0; border-color:#D3F0E2} .blog .pip{background:#BFE9CF}
+.web  {background:#FFEDE6; border-color:#FFD9CC} .web .pip{background:#FFC7AE}
+[data-theme="dark"] .timechip{background:rgba(0,0,0,.3); border-color:rgba(255,255,255,.06); color:#fff}
+.card[draggable="true"]{cursor:grab}
+.card.dragging{opacity:.6; transform:scale(.98)}
+.day.dragover{outline:2px dashed var(--accent); outline-offset:2px}
+
+/* View-by dropdown */
+.iconbtn{appearance:none; border:1px solid var(--ring); background:var(--surface); border-radius:10px; padding:6px 8px; cursor:pointer; font-weight:800}
+.eye{display:inline-flex; align-items:center; gap:6px}
+.dropdown{
+  position:absolute; right:0; top:36px; min-width:220px;
+  background:var(--surface); border:1px solid var(--ring); border-radius:12px;
+  box-shadow:var(--shadow-2); padding:10px; display:none; z-index:10;
+}
+.dropdown.open{display:block}
+.drop-row{display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:8px}
+.drop-row:hover{background:var(--surface-2)}
+.ico-pill{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:900}
+
+/* ===================== MODALS & FLYS ===================== */
+.modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(20,20,28,.28); padding:16px; z-index:60}
+.modal.open{display:flex}
+.panel{width:100%; max-width:720px; background:var(--surface); border:1px solid var(--ring); border-radius:16px; box-shadow:var(--shadow-2); overflow:hidden; transform:translateY(6px); opacity:0; animation:pop .16s ease forwards}
+@keyframes pop{to{transform:translateY(0); opacity:1}}
+.panel-head{display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--ring); font-weight:900}
+.panel-body{padding:12px; display:grid; gap:10px}
+.panel-foot{display:flex; justify-content:space-between; gap:8px; padding:10px 12px; border-top:1px solid var(--ring)}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.input, select, textarea{
+  width:100%; padding:8px 10px; border:1px solid var(--ring); border-radius:10px; background:var(--surface); color:var(--ink); outline:none;
+}
+.input:focus, select:focus, textarea:focus{border-color:color-mix(in oklab, var(--accent) 35%, #cbd5ff); background:var(--surface-2)}
+.note{font-size:12px; color:var(--muted)}
+.chips{display:flex; gap:6px; flex-wrap:wrap}
+.chip{display:inline-flex; align-items:center; gap:6px; padding:6px 9px; border-radius:999px; border:1px solid var(--ring); background:var(--surface); font-weight:800; cursor:pointer}
+.chip[data-on="true"]{background:var(--chip); border-color:var(--chip-b); color:#1f2a5a}
+[data-theme="dark"] .chip[data-on="true"]{color:#c9d5ff}
+
+/* Fly popovers */
+.fly{position:fixed; inset:0; display:none; place-items:center; z-index:70; background:rgba(15,17,26,.18); padding:12px}
+.fly.open{display:grid}
+.fly .card{width:min(520px, 92vw); background:var(--surface); border:1px solid var(--ring); border-radius:14px; box-shadow:var(--shadow-2); padding:12px; display:block}
+.fly h3{margin:0 0 6px; font-weight:900}
+.fly .sub{color:var(--muted); font-size:12px; margin-bottom:8px}
+
+/* ===================== ALT PAGES ===================== */
+.page{display:none}
+.page.active{display:block}
+
+/* Campaigns vertical list */
+.camp-wrap{background:var(--surface); border:1px solid var(--ring); border-radius:16px; box-shadow:var(--shadow-2); padding:12px}
+.camp-toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+.camp-list{display:grid; gap:8px}
+.camp-item{display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; border:1px solid var(--ring); border-radius:12px; padding:10px; box-shadow:var(--shadow-1)}
+.camp-date{font-weight:900; font-size:12px; color:#475569}
+.camp-name{font-weight:900}
+.camp-meta{font-size:12px; color:#64748b}
+
+/* Analytics placeholder cards */
+.ana-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.ana-card{background:var(--surface); border:1px solid var(--ring); border-radius:16px; box-shadow:var(--shadow-2); padding:12px; display:grid; gap:8px}
+.kpi{font-size:26px; font-weight:900}
+.small{font-size:12px; color:#64748b}
+
+/* Responsive */
+@media (max-width:900px){
+  .app{grid-template-columns:78px 1fr}
+  .brandname{display:none}
+  .row2{grid-template-columns:1fr}
+  .ana-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Icons -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-cal" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2h2v3H7V2m8 0h2v3h-2V2M5 7h14v13H5V7m2 4h4v4H7v-4z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5m0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5z"/></symbol>
+  <symbol id="i-camp" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v3H3V4m0 5h18v3H3V9m0 5h18v3H3v-3z"/></symbol>
+  <symbol id="i-ana" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17h18v2H3v-2m2-2l4-5 3 4 5-7 4 6v2H5z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6c-5 0-9 6-9 6s4 6 9 6 9-6 9-6-4-6-9-6m0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/></symbol>
+</svg>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="brand">
+      <div class="logo"></div>
+      <div class="brandname">Phasee</div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <a href="#" data-page="calendar" data-active="true"><svg width="18" height="18"><use href="#i-cal"/></svg> Calendar</a>
+      <a href="#" data-page="profile"><svg width="18" height="18"><use href="#i-user"/></svg> Profile</a>
+      <a href="#" data-page="campaigns"><svg width="18" height="18"><use href="#i-camp"/></svg> Campaigns</a>
+      <a href="#" data-page="analytics"><svg width="18" height="18"><use href="#i-ana"/></svg> Analytics</a>
+    </nav>
+
+    <div class="foot">
+      <a class="settings-link" id="settingsLink">Settings</a>
+      <div class="note">Phasee Core Subscription.</div>
+      <a class="upgrade-link" href="/upgrade" id="sidebarUpgrade">Upgrade Plan</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <section class="main">
+    <header class="top">
+      <div class="title">
+        <button class="btn" id="prev">‹</button>
+        <div class="month" id="monthLabel">—</div>
+        <button class="btn" id="next">›</button>
+        <button class="btn ghost" id="today">Today</button>
+      </div>
+      <div class="acct">
+        <select id="acctSel"><option>Acme Co</option><option>Northwind</option><option>Contoso</option></select>
+      </div>
+    </header>
+
+    <!-- CALENDAR PAGE (DEFAULT) -->
+    <div class="content page active" id="pageCalendar">
+      <div class="calendar">
+        <div class="cal-head">
+          <div class="muted" id="rangeText">—</div>
+          <div class="head-right">
+            <div class="muted" id="postCount">0 scheduled</div>
+            <button class="iconbtn eye" id="viewByBtn" title="View by">
+              <svg width="18" height="18"><use href="#i-eye"/></svg>
+            </button>
+            <div class="dropdown" id="viewByMenu" aria-label="Filter platforms"></div>
+          </div>
+        </div>
+        <div class="weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+
+    <!-- CAMPAIGNS PAGE -->
+    <div class="content page" id="pageCampaigns">
+      <div class="camp-wrap">
+        <div class="camp-toolbar">
+          <b>Campaigns</b>
+          <button class="btn primary" id="newCampaign">+ New Campaign</button>
+        </div>
+        <div class="camp-list" id="campList"></div>
+        <div class="note" id="campEmpty" style="display:none">No campaigns yet.</div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS PAGE -->
+    <div class="content page" id="pageAnalytics">
+      <div class="ana-grid">
+        <div class="ana-card">
+          <b>Upcoming (This Month)</b>
+          <div class="kpi" id="kpiUpcoming">0</div>
+          <div class="small">Visible posts matching your filters.</div>
+        </div>
+        <div class="ana-card">
+          <b>Top Platform</b>
+          <div class="kpi" id="kpiTopPlat">—</div>
+          <div class="small">Based on scheduled items.</div>
+        </div>
+        <div class="ana-card">
+          <b>Your Mix</b>
+          <div id="mixList" class="small">—</div>
+        </div>
+        <div class="ana-card">
+          <b>Industry Benchmarks</b>
+          <div class="small">Industry: <span id="benchIndustry">—</span></div>
+          <div class="small">Benchmarks will appear here (placeholder).</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SETTINGS (CENTERED) -->
+<div class="fly" id="flySettings" aria-hidden="true">
+  <div class="card">
+    <h3>Settings</h3>
+    <div class="sub">Basic app preferences.</div>
+    <div class="row2">
+      <div class="input" style="display:grid;gap:6px">
+        <b>Theme</b>
+        <div class="chips">
+          <span class="chip" data-theme="orchid" data-on="true">Orchid</span>
+          <span class="chip" data-theme="slate">Slate</span>
+          <span class="chip" data-theme="dark">Dark</span>
+        </div>
+      </div>
+      <div class="input" style="display:grid;gap:6px">
+        <b>Timezone</b>
+        <select id="setTZ"><option value="local">Local</option><option value="UTC">UTC</option></select>
+        <b>Week Starts</b>
+        <select id="setWeekStart"><option value="0">Sunday</option><option value="1">Monday</option></select>
+        <b>Time Format</b>
+        <select id="setTimeFmt"><option value="12">12-hour</option><option value="24">24-hour</option></select>
+      </div>
+    </div>
+    <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center">
+      <a class="upgrade-link" href="/upgrade" target="_blank" rel="noopener">Upgrade Plan</a>
+      <button class="btn" id="settingsClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE (HOVERING POP-UP) -->
+<div class="fly" id="flyProfile" aria-hidden="true">
+  <div class="card">
+    <h3>Profile</h3>
+    <div class="sub">Tell Phasee about your business so we can tailor analytics & prompts.</div>
+    <div class="row2">
+      <div class="input" style="display:grid;gap:6px">
+        <label>Company / Brand</label><input id="pName" class="input" placeholder="e.g., Acme Co">
+        <label>Industry</label><input id="pIndustry" class="input" placeholder="e.g., DTC skincare">
+        <label>Years active</label><input id="pYears" class="input" type="number" min="0" max="200" placeholder="e.g., 5">
+        <label>Culture / Tone</label>
+        <select id="pTone" class="input"><option>Casual</option><option>Professional</option><option>Playful</option><option>Bold</option></select>
+      </div>
+      <div class="input" style="display:grid;gap:6px">
+        <label>Logo</label><input id="pLogo" class="input" type="file" accept="image/*">
+        <img id="pLogoPrev" alt="" style="max-width:160px; border-radius:10px; display:none; border:1px solid var(--ring)">
+        <label>Primary Color</label><input id="pColor1" class="input" type="color" value="#6F6AE6">
+        <label>Secondary Color</label><input id="pColor2" class="input" type="color" value="#8B7CFF">
+      </div>
+    </div>
+    <label>Notes / Pertinent info</label>
+    <textarea id="pNotes" class="input" placeholder="Anything that helps us build better prompts & comps"></textarea>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px">
+      <button class="btn" id="profileClose">Close</button>
+      <button class="btn primary" id="profileSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ADD MODAL -->
+<div class="modal" id="quickModal" role="dialog" aria-modal="true" aria-label="Quick add">
+  <div class="panel">
+    <div class="panel-head">Add item <button class="btn" id="closeQuick">Close</button></div>
+    <div class="panel-body">
+      <label for="qaName">Title</label><input class="input" id="qaName" placeholder="Post title">
+      <div class="row2">
+        <div><label for="qaType">Platform</label>
+          <select id="qaType" class="input"><option>Instagram</option><option>Facebook</option><option>X</option><option>YouTube</option><option>TikTok</option><option>Blog</option><option>Website</option></select>
+        </div>
+        <div><label for="qaTime">Time</label><input class="input" id="qaTime" placeholder="e.g., 1:30p"></div>
+      </div>
+      <div class="row2">
+        <div><label for="qaOwner">Owner</label><input class="input" id="qaOwner" placeholder="Owner"></div>
+        <div><label for="qaProg">Progress</label><input class="input" id="qaProg" type="number" min="0" max="100" placeholder="0–100"></div>
+      </div>
+      <label for="qaCopy">Copy (optional)</label><textarea id="qaCopy" class="input" placeholder="Draft copy…"></textarea>
+      <div class="row2">
+        <div>
+          <label for="qaRepeat">Repeat</label>
+          <select id="qaRepeat" class="input">
+            <option value="none" selected>None</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div>
+          <label for="qaRepeatCount">Times</label>
+          <input id="qaRepeatCount" class="input" type="number" min="1" max="12" value="1">
+        </div>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <button class="btn" id="cancelQuick">Cancel</button>
+      <button class="btn primary" id="saveQuick">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAY DRAWER MODAL -->
+<div class="modal daymodal" id="dayModal" role="dialog" aria-modal="true" aria-label="Day details">
+  <div class="panel">
+    <div class="panel-head">
+      <span id="dayTitle">Items</span>
+      <button class="btn" id="closeDay">Close</button>
+    </div>
+    <div class="panel-body">
+      <div id="dayEmpty" class="note" style="display:none">Nothing scheduled yet.</div>
+      <div id="dayList" class="daylist"></div>
+    </div>
+    <div class="panel-foot">
+      <button class="btn" id="addToDay">+ Quick add to this day</button>
+      <span class="note" id="dayCount"></span>
+    </div>
+  </div>
+</div>
+
+<!-- NEW CAMPAIGN MODAL -->
+<div class="modal" id="campModal" role="dialog" aria-modal="true">
+  <div class="panel">
+    <div class="panel-head">New Campaign <button class="btn" id="campClose">Close</button></div>
+    <div class="panel-body">
+      <div class="row2">
+        <div><label>Name</label><input id="campName" class="input" placeholder="e.g., Fall Launch"></div>
+        <div><label>Objective</label><input id="campObj" class="input" placeholder="e.g., Awareness"></div>
+      </div>
+      <div class="row2">
+        <div><label>Start</label><input id="campStart" class="input" type="date"></div>
+        <div><label>End</label><input id="campEnd" class="input" type="date"></div>
+      </div>
+      <div>
+        <label>Platforms</label>
+        <div class="chips" id="campPlatforms">
+          <span class="chip" data-on="true" data-val="Instagram">Instagram</span>
+          <span class="chip" data-on="true" data-val="Facebook">Facebook</span>
+          <span class="chip" data-val="X">X/Twitter</span>
+          <span class="chip" data-val="YouTube">YouTube</span>
+          <span class="chip" data-val="Blog">Blog</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <button class="btn" id="campCancel">Cancel</button>
+      <button class="btn primary" id="campSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ======= Helpers (FIXED): $ = one, $$ = all ======= */
+const $  = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+/* ======= Storage Keys ======= */
+const DB_KEY = 'schedulo-db-v1';
+const SETTINGS_KEY = 'schedulo-settings-v1';
+const FILTERS_KEY = 'schedulo-filters-v1';
+const PROFILE_KEY = 'schedulo-profile-v1';
+const CAMPAIGN_KEY = 'schedulo-campaigns-v1';
+
+/* ======= Utils ======= */
+function load(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback }catch{ return fallback } }
+function save(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch{} }
+const esc = s=> (s||'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const isoOf = (y,m,d)=> new Date(y,m,d).toISOString().slice(0,10);
+function fmtTime(t, fmt='12'){
+  if(!t) return '—';
+  if(fmt==='24'){
+    const m = /^(\d{1,2}):?(\d{2})?\s*([ap])?$/i.exec(t.replace(/\s/g,''));
+    if(!m) return t;
+    let h=+m[1], min=m[2]?+m[2]:0, ap=(m[3]||'').toLowerCase();
+    if(ap==='p' && h<12) h+=12; if(ap==='a' && h===12) h=0;
+    return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
+  }
+  return t;
+}
+
+/* ======= State ======= */
+let view = (()=>{const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}})();
+let db = load(DB_KEY, {});            
+let filters = load(FILTERS_KEY, {Instagram:true, Facebook:true, X:true, YouTube:true, TikTok:true, Blog:true, Website:true});
+let settings = load(SETTINGS_KEY, {theme:document.documentElement.getAttribute('data-theme')||'orchid', tz:'local', weekStart:0, timeFmt:'12'});
+let profile = load(PROFILE_KEY, {});
+let campaigns = load(CAMPAIGN_KEY, []);
+
+/* ======= Platform Map ======= */
+const PLATS = [
+  {key:'Instagram', cls:'ig', label:'Instagram'},
+  {key:'Facebook',  cls:'fb', label:'Facebook'},
+  {key:'X',         cls:'x',  label:'X/Twitter'},
+  {key:'YouTube',   cls:'yt', label:'YouTube'},
+  {key:'TikTok',    cls:'tt', label:'TikTok'},
+  {key:'Blog',      cls:'blog', label:'Blog'},
+  {key:'Website',   cls:'web', label:'Website'},
+];
+
+/* ======= Calendar ======= */
+const grid = $('#grid');
+const monthLabel = $('#monthLabel');
+const rangeText = $('#rangeText');
+const postCount = $('#postCount');
+
+function buildCalendar(y,m){
+  grid.innerHTML='';
+  const first = new Date(y,m,1);
+  const startDayRaw = first.getDay();
+  const weekStart = Number(settings.weekStart||0);
+  const startDay = (startDayRaw - weekStart + 7) % 7;
+
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const prevDays = new Date(y,m,0).getDate();
+  const cells = 42;
+
+  monthLabel.textContent = first.toLocaleString(undefined,{month:'long',year:'numeric'});
+  rangeText.textContent = `${first.toLocaleDateString(undefined,{month:'short'})} 1–${daysInMonth}`;
+  const todayISO = new Date().toISOString().slice(0,10);
+
+  let visibleTotal=0;
+
+  for(let i=0;i<cells;i++){
+    const cell = document.createElement('div'); cell.className='day';
+    let dayNum, iso, muted=false;
+    if(i<startDay){ dayNum=prevDays-startDay+i+1; iso=isoOf(y,m-1,dayNum); muted=true; }
+    else if(i>=startDay+daysInMonth){ dayNum=i-(startDay+daysInMonth)+1; iso=isoOf(y,m+1,dayNum); muted=true; }
+    else { dayNum=i-startDay+1; iso=isoOf(y,m,dayNum); }
+    if(muted) cell.classList.add('muted');
+    if(iso===todayISO) cell.classList.add('today');
+    cell.dataset.iso=iso;
+
+    const head=document.createElement('div'); head.className='dhead';
+    head.innerHTML=`<div class="dnum">${dayNum} <span class="dots">···</span></div>`;
+    const plus=document.createElement('button'); plus.className='plus'; plus.textContent='+'; plus.onclick=(e)=>{ e.stopPropagation(); openQuick(iso); };
+
+    const list=document.createElement('div'); list.className='list';
+    const items=(db[iso]||[]).filter(it => filters[it.platform??'']!==false);
+    visibleTotal += items.length;
+
+    if(items.length===0) list.innerHTML='<div class="empty">No items</div>';
+    else items.forEach((it, idx)=> list.appendChild(renderCard(it, iso, idx)));
+
+    cell.addEventListener('click', (e) => {
+      if(e.target.closest('.plus')) return;
+      openDay(iso);
+    });
+
+    cell.addEventListener('dragover', (e)=>{ e.preventDefault(); cell.classList.add('dragover'); });
+    cell.addEventListener('dragleave', ()=> cell.classList.remove('dragover'));
+    cell.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      cell.classList.remove('dragover');
+      const payload = JSON.parse(e.dataTransfer.getData('text/plain')||'{}');
+      if(!payload || payload.iso==null || payload.index==null) return;
+      const srcIso = payload.iso, idx = Number(payload.index);
+      const arr = db[srcIso]||[];
+      const [moved] = arr.splice(idx,1);
+      if(arr.length) db[srcIso]=arr; else delete db[srcIso];
+      const tgtIso = iso;
+      db[tgtIso] ??= [];
+      db[tgtIso].push(moved);
+      save(DB_KEY, db);
+      buildCalendar(view.y,view.m);
+    });
+
+    cell.append(head, plus, list);
+    grid.appendChild(cell);
+  }
+
+  postCount.textContent = `${visibleTotal} scheduled`;
+}
+
+function renderCard(it, iso, idx){
+  const cls = (PLATS.find(p=>p.key.toLowerCase()===(it.platform||'').toLowerCase())?.cls) || 'blog';
+  const card=document.createElement('div'); card.className=`card ${cls}`;
+  card.setAttribute('draggable','true');
+  card.dataset.iso = iso;
+  card.dataset.index = idx;
+
+  card.innerHTML = `
+    <div class="pip">${(it.platform||'')[0]||'P'}</div>
+    <div>${esc(it.title||'Untitled')}</div>
+    <div class="timechip">${esc(fmtTime(it.time||'', settings.timeFmt))}</div>`;
+
+  card.addEventListener('dragstart', (e)=>{
+    card.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', JSON.stringify({ iso, index: idx }));
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+  return card;
+}
+
+/* ======= Nav Switching ======= */
+$('#nav').addEventListener('click', (e)=>{
+  const a = e.target.closest('a'); if(!a) return;
+  e.preventDefault();
+  $$('#nav a').forEach(n=>n.dataset.active='false');
+  a.dataset.active='true';
+  const page=a.getAttribute('data-page');
+
+  // default: show calendar
+  $$('.page').forEach(p=>p.classList.remove('active'));
+  if(page==='calendar'){ $('#pageCalendar').classList.add('active'); buildCalendar(view.y, view.m); return; }
+  if(page==='campaigns'){ $('#pageCampaigns').classList.add('active'); renderCampaigns(); return; }
+  if(page==='analytics'){ $('#pageAnalytics').classList.add('active'); refreshAnalytics(); return; }
+  if(page==='profile'){ openProfile(); $('#pageCalendar').classList.add('active'); } // keep calendar visible
+});
+
+/* ======= Header Buttons ======= */
+$('#prev').onclick=()=>{ view.m--; if(view.m<0){view.m=11;view.y--} buildCalendar(view.y,view.m) }
+$('#next').onclick=()=>{ view.m++; if(view.m>11){view.m=0;view.y++} buildCalendar(view.y,view.m) }
+$('#today').onclick=()=>{ const d=new Date(); view={y:d.getFullYear(),m:d.getMonth()}; buildCalendar(view.y,view.m) }
+
+/* ======= View-By (Eye) ======= */
+const viewByBtn = $('#viewByBtn');
+const viewByMenu = $('#viewByMenu');
+
+function renderViewBy(){
+  viewByMenu.innerHTML='';
+  PLATS.forEach(p=>{
+    const row = document.createElement('label'); row.className='drop-row';
+    const pill = document.createElement('div'); pill.className=`ico-pill ${p.cls} pip`; pill.textContent = p.key[0];
+    const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = filters[p.key]!==false;
+    cb.addEventListener('change', ()=>{ filters[p.key]=cb.checked; save(FILTERS_KEY, filters); buildCalendar(view.y, view.m); });
+    const txt = document.createElement('span'); txt.textContent = ' ' + p.label;
+    row.append(pill, cb, txt);
+    viewByMenu.appendChild(row);
+  });
+}
+viewByBtn.addEventListener('click', (e)=>{ e.stopPropagation(); viewByMenu.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!e.target.closest('#viewByMenu') && !e.target.closest('#viewByBtn')) viewByMenu.classList.remove('open'); });
+
+/* ======= Settings ======= */
+const flySettings = $('#flySettings');
+$('#settingsLink').onclick = ()=>{ syncSettingsUI(); flySettings.classList.add('open'); };
+$('#settingsClose').onclick = ()=> flySettings.classList.remove('open');
+$$('#flySettings .chip').forEach(ch=>{
+  ch.addEventListener('click', ()=>{
+    $$('#flySettings .chip').forEach(x=>x.dataset.on='false');
+    ch.dataset.on='true';
+    settings.theme = ch.dataset.theme;
+    document.documentElement.setAttribute('data-theme', settings.theme);
+    save(SETTINGS_KEY, settings);
+  });
+});
+function syncSettingsUI(){
+  $$('#flySettings .chip').forEach(x=>x.dataset.on = (x.dataset.theme===settings.theme)+'');
+  $('#setTZ').value = settings.tz||'local';
+  $('#setWeekStart').value = String(settings.weekStart||0);
+  $('#setTimeFmt').value = settings.timeFmt||'12';
+}
+$('#setTZ').onchange = ()=>{ settings.tz = $('#setTZ').value; save(SETTINGS_KEY, settings); };
+$('#setWeekStart').onchange = ()=>{ settings.weekStart = Number($('#setWeekStart').value||0); save(SETTINGS_KEY, settings); buildCalendar(view.y, view.m); };
+$('#setTimeFmt').onchange = ()=>{ settings.timeFmt = $('#setTimeFmt').value; save(SETTINGS_KEY, settings); buildCalendar(view.y, view.m); };
+
+/* ======= Profile ======= */
+const flyProfile = $('#flyProfile');
+function openProfile(){ loadProfileUI(); flyProfile.classList.add('open'); }
+$('#profileClose').onclick = ()=> flyProfile.classList.remove('open');
+$('#profileSave').onclick = ()=>{
+  profile = {
+    name: $('#pName').value.trim(),
+    industry: $('#pIndustry').value.trim(),
+    years: Number($('#pYears').value||0),
+    tone: $('#pTone').value,
+    color1: $('#pColor1').value, color2: $('#pColor2').value,
+    notes: $('#pNotes').value,
+    logo: profile.logo||null
+  };
+  save(PROFILE_KEY, profile);
+  flyProfile.classList.remove('open');
+  refreshAnalytics();
+};
+$('#pLogo').addEventListener('change', (e)=>{
+  const f = e.target.files?.[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ profile.logo = r.result; $('#pLogoPrev').src = profile.logo; $('#pLogoPrev').style.display='block'; };
+  r.readAsDataURL(f);
+});
+function loadProfileUI(){
+  $('#pName').value = profile.name||'';
+  $('#pIndustry').value = profile.industry||'';
+  $('#pYears').value = profile.years||'';
+  $('#pTone').value = profile.tone||'Casual';
+  $('#pColor1').value = profile.color1||'#6F6AE6';
+  $('#pColor2').value = profile.color2||'#8B7CFF';
+  $('#pNotes').value = profile.notes||'';
+  if(profile.logo){ $('#pLogoPrev').src = profile.logo; $('#pLogoPrev').style.display='block'; } else { $('#pLogoPrev').style.display='none'; }
+}
+
+/* ======= Quick Add & Day Drawer ======= */
+const quickModal = $('#quickModal');
+let quickISO = null;
+function openQuick(iso){
+  quickISO = iso;
+  $('#qaName').value=''; $('#qaType').value='Instagram'; $('#qaTime').value=''; $('#qaOwner').value=''; $('#qaCopy').value=''; $('#qaProg').value=''; $('#qaRepeat').value='none'; $('#qaRepeatCount').value='1';
+  quickModal.classList.add('open');
+}
+$('#closeQuick').onclick=()=>quickModal.classList.remove('open');
+$('#cancelQuick').onclick=()=>quickModal.classList.remove('open');
+$('#saveQuick').onclick=()=>{
+  if(!quickISO) return;
+  const base = {
+    platform: $('#qaType').value,
+    title: $('#qaName').value || 'Untitled',
+    time: $('#qaTime').value || '',
+    owner: $('#qaOwner').value || null,
+    progress: ($('#qaProg').value==='') ? null : Math.max(0,Math.min(100,Number($('#qaProg').value))),
+    copy: $('#qaCopy').value || ''
+  };
+  db[quickISO] ??= [];
+  db[quickISO].push({...base});
+
+  const freq = ($('#qaRepeat').value || 'none');
+  const count = Math.max(1, Math.min(12, Number($('#qaRepeatCount').value)||1));
+  if(freq !== 'none'){
+    const d0 = new Date(quickISO);
+    for(let i=1;i<count;i++){
+      const d = new Date(d0);
+      if(freq==='weekly') d.setDate(d.getDate() + 7*i);
+      if(freq==='monthly') d.setMonth(d.getMonth() + i);
+      const iso = d.toISOString().slice(0,10);
+      db[iso] ??= []; db[iso].push({...base});
+    }
+  }
+  save(DB_KEY, db);
+  quickModal.classList.remove('open');
+  buildCalendar(view.y,view.m);
+};
+
+const dayModal = $('#dayModal');
+const dayTitle = $('#dayTitle');
+const dayList  = $('#dayList');
+const dayEmpty = $('#dayEmpty');
+const dayCount = $('#dayCount');
+let dayISO = null;
+
+function openDay(iso){
+  dayISO = iso; dayTitle.textContent = `Items · ${iso}`;
+  renderDayList();
+  dayModal.classList.add('open');
+}
+function closeDay(){ dayModal.classList.remove('open'); dayISO = null; }
+$('#closeDay').onclick = closeDay;
+$('#addToDay').onclick = () => { if(dayISO) openQuick(dayISO); };
+
+function renderDayList(){
+  const items = (db[dayISO] || []).filter(it => filters[it.platform??'']!==false);
+  dayList.innerHTML = '';
+  if(items.length === 0){
+    dayEmpty.style.display = 'block';
+    dayCount.textContent = '0 items';
+    return;
+  }
+  dayEmpty.style.display = 'none';
+  dayCount.textContent = `${items.length} item${items.length>1?'s':''}`;
+  items.forEach((it, idx) => {
+    const row = document.createElement('div');
+    row.className = 'camp-item';
+    const pip = document.createElement('div'); pip.className = 'pip ico-pill ' + (PLATS.find(p=>p.key===it.platform)?.cls||'blog'); pip.textContent = (it.platform||'P')[0];
+    const body = document.createElement('div');
+    body.innerHTML = `<div class="camp-name">${esc(it.title||'Untitled')}</div>
+                      <div class="camp-meta">${esc(it.platform||'Post')} · ${esc(it.owner||'—')} · ${esc(fmtTime(it.time||'', settings.timeFmt))}</div>`;
+    const del = document.createElement('button'); del.className = 'iconbtn'; del.textContent = 'Delete';
+    del.onclick = () => {
+      const arr = db[dayISO] || [];
+      const origIdx = (db[dayISO]||[]).findIndex(x => x===it);
+      arr.splice(origIdx>=0?origIdx:idx, 1);
+      if(arr.length) db[dayISO] = arr; else delete db[dayISO];
+      save(DB_KEY, db);
+      renderDayList();
+      buildCalendar(view.y, view.m);
+    };
+    row.append(pip, body, del);
+    dayList.appendChild(row);
+  });
+}
+
+/* ======= Campaigns ======= */
+$('#newCampaign').onclick = ()=> { $('#campModal').classList.add('open'); };
+$('#campClose').onclick = ()=> $('#campModal').classList.remove('open');
+$('#campCancel').onclick = ()=> $('#campModal').classList.remove('open');
+$('#campPlatforms').addEventListener('click', (e)=>{ const c=e.target.closest('.chip'); if(!c) return; c.dataset.on = c.dataset.on==='true'?'false':'true'; });
+$('#campSave').onclick = ()=>{
+  const name = $('#campName').value.trim() || 'Campaign';
+  const obj = $('#campObj').value.trim() || 'General';
+  const s = $('#campStart').value; const e = $('#campEnd').value;
+  const plats = $$('#campPlatforms .chip[data-on="true"]').map(x=>x.dataset.val);
+  if(!s || !e){ alert('Please provide start and end dates.'); return; }
+  campaigns.push({name, obj, start:s, end:e, plats});
+  save(CAMPAIGN_KEY, campaigns);
+  $('#campModal').classList.remove('open');
+  renderCampaigns();
+};
+function renderCampaigns(){
+  const list = $('#campList');
+  const empty = $('#campEmpty');
+  list.innerHTML='';
+  const arr = [...campaigns].sort((a,b)=> a.start.localeCompare(b.start));
+  if(arr.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  arr.forEach(c=>{
+    const row=document.createElement('div'); row.className='camp-item';
+    const date=document.createElement('div'); date.className='camp-date'; date.textContent = `${c.start} → ${c.end}`;
+    const body=document.createElement('div'); body.innerHTML = `<div class="camp-name">${esc(c.name)}</div><div class="camp-meta">${esc(c.obj)} · ${esc(c.plats.join(', ')||'—')}</div>`;
+    const del=document.createElement('button'); del.className='iconbtn'; del.textContent='Delete';
+    del.onclick=()=>{ campaigns = campaigns.filter(x=>x!==c); save(CAMPAIGN_KEY, campaigns); renderCampaigns(); };
+    row.append(date, body, del);
+    list.appendChild(row);
+  });
+}
+
+/* ======= Analytics ======= */
+function refreshAnalytics(){
+  const y=view.y, m=view.m, daysInMonth=new Date(y,m+1,0).getDate();
+  const startISO=isoOf(y,m,1), endISO=isoOf(y,m,daysInMonth);
+  let total=0; const platCount={};
+  for(const k in db){
+    if(k<startISO || k>endISO) continue;
+    (db[k]||[]).forEach(it=>{
+      if(filters[it.platform??'']===false) return;
+      total++;
+      const p=(it.platform||'Other'); platCount[p]=(platCount[p]||0)+1;
+    });
+  }
+  $('#kpiUpcoming').textContent = total;
+  const top = Object.entries(platCount).sort((a,b)=>b[1]-a[1])[0];
+  $('#kpiTopPlat').textContent = top ? `${top[0]} (${top[1]})` : '—';
+  $('#mixList').innerHTML = Object.keys(platCount).length? Object.entries(platCount).map(([p,n])=>`${p}: ${n}`).join('<br>'):'—';
+  $('#benchIndustry').textContent = profile.industry || '—';
+}
+
+/* ======= ViewBy build & Theme apply ======= */
+renderViewBy();
+document.documentElement.setAttribute('data-theme', settings.theme||'orchid');
+
+/* ======= Header nav ======= */
+$('#prev'); // keep refs alive (no-op)
+
+/* ======= Init: calendar is default ======= */
+(()=>{ const d=new Date(); view={y:d.getFullYear(),m:d.getMonth()}; buildCalendar(view.y,view.m) })();
+</script>
+</body>
+</html>
