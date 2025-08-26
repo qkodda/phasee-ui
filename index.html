@@ -4,7 +4,23 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Phasee · Plan ahead. Stay ahead.</title>
+
+<!-- SEO & Social -->
+<meta name="description" content="Phasee — plan ahead, stay ahead. A clean calendar + campaigns UI for creators and teams.">
+<meta name="theme-color" content="#6F6AE6">
+<meta property="og:title" content="Phasee · Plan ahead. Stay ahead.">
+<meta property="og:description" content="A clean calendar + campaigns UI for creators and teams.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://phasee-ui.vercel.app/">
+<meta property="og:image" content="https://phasee-ui.vercel.app/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Fonts & Favicon -->
+<link rel="icon" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
 /* ===================== THEME SYSTEM ===================== */
 :root{
@@ -66,7 +82,8 @@ a{color:inherit; text-decoration:none}
   padding:16px 12px; display:flex; flex-direction:column; gap:10px; z-index:5;
 }
 .brand{display:flex; align-items:center; gap:10px; font-weight:900; padding:6px 8px}
-.logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 7px 16px color-mix(in oklab, var(--accent) 38%, transparent)}
+/* .logo removed visually */
+.logo{display:none}
 .brandname{font-size:22px}
 
 .nav{display:grid; gap:6px; margin-top:8px}
@@ -75,6 +92,8 @@ a{color:inherit; text-decoration:none}
   padding:10px; border-radius:12px; font-weight:800; border:1px solid transparent;
 }
 .nav a[data-active="true"], .nav a:hover{background:var(--surface-2); border-color:var(--ring)}
+.nav hr{border:0; border-top:1px solid var(--ring); margin:6px 0}
+.nav svg{width:18px;height:18px}
 
 .side .foot{margin-top:auto; display:grid; gap:8px; padding:8px}
 .settings-link{font-weight:800; color:#3b3f77; cursor:pointer; width:max-content}
@@ -211,9 +230,31 @@ a{color:inherit; text-decoration:none}
   .row2{grid-template-columns:1fr}
   .ana-grid{grid-template-columns:1fr}
 }
+
+/* ===== Accessibility polish ===== */
+:focus-visible{
+  outline: 2px solid color-mix(in oklab, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+}
+button.btn{ min-height: 36px; }
 </style>
 </head>
 <body>
+
+<!-- Apply saved theme before paint (no flash) -->
+<script>
+(function() {
+  try {
+    const s = localStorage.getItem('schedulo-settings-v1');
+    const theme = s ? JSON.parse(s).theme : null;
+    if (theme) document.documentElement.setAttribute('data-theme', theme);
+  } catch {}
+})();
+</script>
 
 <!-- Icons -->
 <svg style="display:none" aria-hidden="true">
@@ -222,21 +263,36 @@ a{color:inherit; text-decoration:none}
   <symbol id="i-camp" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v3H3V4m0 5h18v3H3V9m0 5h18v3H3v-3z"/></symbol>
   <symbol id="i-ana" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17h18v2H3v-2m2-2l4-5 3 4 5-7 4 6v2H5z"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6c-5 0-9 6-9 6s4 6 9 6 9-6 9-6-4-6-9-6m0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/></symbol>
+  <!-- Social icons -->
+  <symbol id="i-ig" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7m0 2h10c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3m10.5 1a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1M12 7a5 5 0 0 0-5 5 5 5 0 0 0 5 5 5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3z"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2m8 17v-6h2.1l.3-2.4H13V9.6c0-.7.2-1.2 1.2-1.2h1.2V6.1c-.2 0-1-.1-1.9-.1-1.9 0-3.3 1.2-3.3 3.4v1.9H8v2.4h2.1V20h2.9Z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18 2H6a4 4 0 0 0-4 4v12c0 2.2 1.8 4 4 4h12c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4M8.7 7.5h1.9l2.5 3.8 2.5-3.8h1.8l-3.4 5 3.5 5.1h-1.9l-2.7-4-2.7 4H8.3l3.5-5.1-3.1-4.9Z"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24"><path fill="currentColor" d="M10 15l5.2-3L10 9v6m10-10c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h16z"/></symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m4.3 7.3c.1.4.1.7.1 1.1 0 2.3-1.8 4.2-4.2 4.2-1.3 0-2.5-.6-3.2-1.5a4.2 4.2 0 0 0 6.5-3.8c0-.1 0-.1 0 0h.8z"/></symbol>
+  <symbol id="i-blog" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v2H4V4m0 4h10v2H4V8m0 4h16v2H4v-2m0 4h10v2H4v-2z"/></symbol>
+  <symbol id="i-web" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-10 10 10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2Z"/></symbol>
 </svg>
 
 <div class="app">
   <!-- SIDEBAR -->
-  <aside class="side">
+  <aside class="side" role="navigation" aria-label="Primary">
     <div class="brand">
-      <div class="logo"></div>
       <div class="brandname">Phasee</div>
     </div>
 
     <nav class="nav" id="nav">
-      <a href="#" data-page="calendar" data-active="true"><svg width="18" height="18"><use href="#i-cal"/></svg> Calendar</a>
+      <a href="#" data-page="calendar" data-active="true" aria-current="page"><svg width="18" height="18"><use href="#i-cal"/></svg> Calendar</a>
       <a href="#" data-page="profile"><svg width="18" height="18"><use href="#i-user"/></svg> Profile</a>
       <a href="#" data-page="campaigns"><svg width="18" height="18"><use href="#i-camp"/></svg> Campaigns</a>
       <a href="#" data-page="analytics"><svg width="18" height="18"><use href="#i-ana"/></svg> Analytics</a>
+      <hr>
+      <a href="#"><svg width="18" height="18"><use href="#i-ig"/></svg> Instagram</a>
+      <a href="#"><svg width="18" height="18"><use href="#i-fb"/></svg> Facebook</a>
+      <a href="#"><svg width="18" height="18"><use href="#i-x"/></svg> X/Twitter</a>
+      <a href="#"><svg width="18" height="18"><use href="#i-yt"/></svg> YouTube</a>
+      <a href="#"><svg width="18" height="18"><use href="#i-tt"/></svg> TikTok</a>
+      <a href="#"><svg width="18" height="18"><use href="#i-blog"/></svg> Blog</a>
+      <a href="#"><svg width="18" height="18"><use href="#i-web"/></svg> Website</a>
     </nav>
 
     <div class="foot">
@@ -250,13 +306,15 @@ a{color:inherit; text-decoration:none}
   <section class="main">
     <header class="top">
       <div class="title">
-        <button class="btn" id="prev">‹</button>
+        <button class="btn" id="prev" type="button">‹</button>
         <div class="month" id="monthLabel">—</div>
-        <button class="btn" id="next">›</button>
-        <button class="btn ghost" id="today">Today</button>
+        <button class="btn" id="next" type="button">›</button>
+        <button class="btn ghost" id="today" type="button">Today</button>
       </div>
       <div class="acct">
-        <select id="acctSel"><option>Acme Co</option><option>Northwind</option><option>Contoso</option></select>
+        <select id="acctSel" aria-label="Workspace">
+          <option>My Workspace</option><option>Acme Co</option><option>Northwind</option><option>Contoso</option>
+        </select>
       </div>
     </header>
 
@@ -267,15 +325,16 @@ a{color:inherit; text-decoration:none}
           <div class="muted" id="rangeText">—</div>
           <div class="head-right">
             <div class="muted" id="postCount">0 scheduled</div>
-            <button class="iconbtn eye" id="viewByBtn" title="View by">
+            <button class="iconbtn eye" id="viewByBtn" title="View by" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="viewByMenu">
               <svg width="18" height="18"><use href="#i-eye"/></svg>
             </button>
-            <div class="dropdown" id="viewByMenu" aria-label="Filter platforms"></div>
+            <div class="dropdown" id="viewByMenu" aria-label="Filter platforms" role="menu" aria-hidden="true"></div>
           </div>
         </div>
         <div class="weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
         <div class="grid" id="grid"></div>
       </div>
+      <div class="muted" style="padding:6px 8px">Tip: drag cards between days • Press “+” on a day to quick add</div>
     </div>
 
     <!-- CAMPAIGNS PAGE -->
@@ -283,7 +342,7 @@ a{color:inherit; text-decoration:none}
       <div class="camp-wrap">
         <div class="camp-toolbar">
           <b>Campaigns</b>
-          <button class="btn primary" id="newCampaign">+ New Campaign</button>
+          <button class="btn primary" id="newCampaign" type="button">+ New Campaign</button>
         </div>
         <div class="camp-list" id="campList"></div>
         <div class="note" id="campEmpty" style="display:none">No campaigns yet.</div>
@@ -342,7 +401,7 @@ a{color:inherit; text-decoration:none}
     </div>
     <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center">
       <a class="upgrade-link" href="/upgrade" target="_blank" rel="noopener">Upgrade Plan</a>
-      <button class="btn" id="settingsClose">Close</button>
+      <button class="btn" id="settingsClose" type="button">Close</button>
     </div>
   </div>
 </div>
@@ -370,8 +429,8 @@ a{color:inherit; text-decoration:none}
     <label>Notes / Pertinent info</label>
     <textarea id="pNotes" class="input" placeholder="Anything that helps us build better prompts & comps"></textarea>
     <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px">
-      <button class="btn" id="profileClose">Close</button>
-      <button class="btn primary" id="profileSave">Save</button>
+      <button class="btn" id="profileClose" type="button">Close</button>
+      <button class="btn primary" id="profileSave" type="button">Save</button>
     </div>
   </div>
 </div>
@@ -379,7 +438,7 @@ a{color:inherit; text-decoration:none}
 <!-- QUICK ADD MODAL -->
 <div class="modal" id="quickModal" role="dialog" aria-modal="true" aria-label="Quick add">
   <div class="panel">
-    <div class="panel-head">Add item <button class="btn" id="closeQuick">Close</button></div>
+    <div class="panel-head">Add item <button class="btn" id="closeQuick" type="button">Close</button></div>
     <div class="panel-body">
       <label for="qaName">Title</label><input class="input" id="qaName" placeholder="Post title">
       <div class="row2">
@@ -409,8 +468,8 @@ a{color:inherit; text-decoration:none}
       </div>
     </div>
     <div class="panel-foot">
-      <button class="btn" id="cancelQuick">Cancel</button>
-      <button class="btn primary" id="saveQuick">Save</button>
+      <button class="btn" id="cancelQuick" type="button">Cancel</button>
+      <button class="btn primary" id="saveQuick" type="button">Save</button>
     </div>
   </div>
 </div>
@@ -420,14 +479,14 @@ a{color:inherit; text-decoration:none}
   <div class="panel">
     <div class="panel-head">
       <span id="dayTitle">Items</span>
-      <button class="btn" id="closeDay">Close</button>
+      <button class="btn" id="closeDay" type="button">Close</button>
     </div>
     <div class="panel-body">
       <div id="dayEmpty" class="note" style="display:none">Nothing scheduled yet.</div>
       <div id="dayList" class="daylist"></div>
     </div>
     <div class="panel-foot">
-      <button class="btn" id="addToDay">+ Quick add to this day</button>
+      <button class="btn" id="addToDay" type="button">+ Quick add to this day</button>
       <span class="note" id="dayCount"></span>
     </div>
   </div>
@@ -436,7 +495,7 @@ a{color:inherit; text-decoration:none}
 <!-- NEW CAMPAIGN MODAL -->
 <div class="modal" id="campModal" role="dialog" aria-modal="true">
   <div class="panel">
-    <div class="panel-head">New Campaign <button class="btn" id="campClose">Close</button></div>
+    <div class="panel-head">New Campaign <button class="btn" id="campClose" type="button">Close</button></div>
     <div class="panel-body">
       <div class="row2">
         <div><label>Name</label><input id="campName" class="input" placeholder="e.g., Fall Launch"></div>
@@ -458,8 +517,8 @@ a{color:inherit; text-decoration:none}
       </div>
     </div>
     <div class="panel-foot">
-      <button class="btn" id="campCancel">Cancel</button>
-      <button class="btn primary" id="campSave">Save</button>
+      <button class="btn" id="campCancel" type="button">Cancel</button>
+      <button class="btn primary" id="campSave" type="button">Save</button>
     </div>
   </div>
 </div>
@@ -484,10 +543,8 @@ const isoOf = (y,m,d)=> new Date(y,m,d).toISOString().slice(0,10);
 function fmtTime(t, fmt='12'){
   if(!t) return '—';
   if(fmt==='24'){
-    const m = /^(\d{1,2}):?(\d{2})?\s*([ap])?$/i.exec(t.replace(/\s/g,''));
-    if(!m) return t;
-    let h=+m[1], min=m[2]?+m[2]:0, ap=(m[3]||'').toLowerCase();
-    if(ap==='p' && h<12) h+=12; if(ap==='a' && h===12) h=0;
+    const m = /^(\d{1,2}):?(\d{2})?\s*([ap])?$/i.exec(t.replace(/\s/g,'')); if(!m) return t;
+    let h=+m[1], min=m[2]?+m[2]:0, ap=(m[3]||'').toLowerCase(); if(ap==='p' && h<12) h+=12; if(ap==='a' && h===12) h=0;
     return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
   }
   return t;
@@ -547,7 +604,7 @@ function buildCalendar(y,m){
 
     const head=document.createElement('div'); head.className='dhead';
     head.innerHTML=`<div class="dnum">${dayNum} <span class="dots">···</span></div>`;
-    const plus=document.createElement('button'); plus.className='plus'; plus.textContent='+'; plus.onclick=(e)=>{ e.stopPropagation(); openQuick(iso); };
+    const plus=document.createElement('button'); plus.className='plus'; plus.type='button'; plus.textContent='+'; plus.onclick=(e)=>{ e.stopPropagation(); openQuick(iso); };
 
     const list=document.createElement('div'); list.className='list';
     const items=(db[iso]||[]).filter(it => filters[it.platform??'']!==false);
@@ -611,8 +668,9 @@ function renderCard(it, iso, idx){
 $('#nav').addEventListener('click', (e)=>{
   const a = e.target.closest('a'); if(!a) return;
   e.preventDefault();
-  $$('#nav a').forEach(n=>n.dataset.active='false');
+  $$('#nav a').forEach(n=>{ n.dataset.active='false'; n.removeAttribute('aria-current'); });
   a.dataset.active='true';
+  a.setAttribute('aria-current','page');
   const page=a.getAttribute('data-page');
 
   // default: show calendar
@@ -635,17 +693,35 @@ const viewByMenu = $('#viewByMenu');
 function renderViewBy(){
   viewByMenu.innerHTML='';
   PLATS.forEach(p=>{
-    const row = document.createElement('label'); row.className='drop-row';
+    const row = document.createElement('label'); row.className='drop-row'; row.setAttribute('role','menuitemcheckbox');
     const pill = document.createElement('div'); pill.className=`ico-pill ${p.cls} pip`; pill.textContent = p.key[0];
     const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = filters[p.key]!==false;
-    cb.addEventListener('change', ()=>{ filters[p.key]=cb.checked; save(FILTERS_KEY, filters); buildCalendar(view.y, view.m); });
+    cb.addEventListener('change', ()=>{
+      filters[p.key]=cb.checked; 
+      save(FILTERS_KEY, filters); 
+      buildCalendar(view.y, view.m);
+      row.setAttribute('aria-checked', String(cb.checked));
+    });
     const txt = document.createElement('span'); txt.textContent = ' ' + p.label;
     row.append(pill, cb, txt);
+    row.setAttribute('aria-checked', String(cb.checked));
     viewByMenu.appendChild(row);
   });
 }
-viewByBtn.addEventListener('click', (e)=>{ e.stopPropagation(); viewByMenu.classList.toggle('open'); });
-document.addEventListener('click', (e)=>{ if(!e.target.closest('#viewByMenu') && !e.target.closest('#viewByBtn')) viewByMenu.classList.remove('open'); });
+viewByBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const open = !viewByMenu.classList.contains('open');
+  viewByMenu.classList.toggle('open', open);
+  viewByBtn.setAttribute('aria-expanded', String(open));
+  viewByMenu.setAttribute('aria-hidden', String(!open));
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('#viewByMenu') && !e.target.closest('#viewByBtn')){
+    viewByMenu.classList.remove('open');
+    viewByBtn.setAttribute('aria-expanded', 'false');
+    viewByMenu.setAttribute('aria-hidden', 'true');
+  }
+});
 
 /* ======= Settings ======= */
 const flySettings = $('#flySettings');
@@ -661,7 +737,7 @@ $$('#flySettings .chip').forEach(ch=>{
   });
 });
 function syncSettingsUI(){
-  $$('#flySettings .chip').forEach(x=>x.dataset.on = (x.dataset.theme===settings.theme)+'');
+  $$('#flySettings .chip').forEach(x=>x.dataset.on = (x.dataset.theme===settings.theme)+'' );
   $('#setTZ').value = settings.tz||'local';
   $('#setWeekStart').value = String(settings.weekStart||0);
   $('#setTimeFmt').value = settings.timeFmt||'12';
@@ -778,7 +854,7 @@ function renderDayList(){
     const body = document.createElement('div');
     body.innerHTML = `<div class="camp-name">${esc(it.title||'Untitled')}</div>
                       <div class="camp-meta">${esc(it.platform||'Post')} · ${esc(it.owner||'—')} · ${esc(fmtTime(it.time||'', settings.timeFmt))}</div>`;
-    const del = document.createElement('button'); del.className = 'iconbtn'; del.textContent = 'Delete';
+    const del = document.createElement('button'); del.className = 'iconbtn'; del.type='button'; del.textContent = 'Delete';
     del.onclick = () => {
       const arr = db[dayISO] || [];
       const origIdx = (db[dayISO]||[]).findIndex(x => x===it);
@@ -820,7 +896,7 @@ function renderCampaigns(){
     const row=document.createElement('div'); row.className='camp-item';
     const date=document.createElement('div'); date.className='camp-date'; date.textContent = `${c.start} → ${c.end}`;
     const body=document.createElement('div'); body.innerHTML = `<div class="camp-name">${esc(c.name)}</div><div class="camp-meta">${esc(c.obj)} · ${esc(c.plats.join(', ')||'—')}</div>`;
-    const del=document.createElement('button'); del.className='iconbtn'; del.textContent='Delete';
+    const del=document.createElement('button'); del.className='iconbtn'; del.type='button'; del.textContent='Delete';
     del.onclick=()=>{ campaigns = campaigns.filter(x=>x!==c); save(CAMPAIGN_KEY, campaigns); renderCampaigns(); };
     row.append(date, body, del);
     list.appendChild(row);
@@ -849,10 +925,6 @@ function refreshAnalytics(){
 
 /* ======= ViewBy build & Theme apply ======= */
 renderViewBy();
-document.documentElement.setAttribute('data-theme', settings.theme||'orchid');
-
-/* ======= Header nav ======= */
-$('#prev'); // keep refs alive (no-op)
 
 /* ======= Init: calendar is default ======= */
 (()=>{ const d=new Date(); view={y:d.getFullYear(),m:d.getMonth()}; buildCalendar(view.y,view.m) })();
