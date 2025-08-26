@@ -82,7 +82,7 @@ a{color:inherit; text-decoration:none}
   padding:16px 12px; display:flex; flex-direction:column; gap:10px; z-index:5;
 }
 .brand{display:flex; align-items:center; gap:10px; font-weight:900; padding:6px 8px}
-/* .logo removed visually */
+/* hide old logo square */
 .logo{display:none}
 .brandname{font-size:22px}
 
@@ -92,7 +92,6 @@ a{color:inherit; text-decoration:none}
   padding:10px; border-radius:12px; font-weight:800; border:1px solid transparent;
 }
 .nav a[data-active="true"], .nav a:hover{background:var(--surface-2); border-color:var(--ring)}
-.nav hr{border:0; border-top:1px solid var(--ring); margin:6px 0}
 .nav svg{width:18px;height:18px}
 
 .side .foot{margin-top:auto; display:grid; gap:8px; padding:8px}
@@ -169,7 +168,7 @@ a{color:inherit; text-decoration:none}
 .iconbtn{appearance:none; border:1px solid var(--ring); background:var(--surface); border-radius:10px; padding:6px 8px; cursor:pointer; font-weight:800}
 .eye{display:inline-flex; align-items:center; gap:6px}
 .dropdown{
-  position:absolute; right:0; top:36px; min-width:220px;
+  position:absolute; right:0; top:36px; min-width:240px;
   background:var(--surface); border:1px solid var(--ring); border-radius:12px;
   box-shadow:var(--shadow-2); padding:10px; display:none; z-index:10;
 }
@@ -177,6 +176,7 @@ a{color:inherit; text-decoration:none}
 .drop-row{display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:8px}
 .drop-row:hover{background:var(--surface-2)}
 .ico-pill{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:900}
+.ico-pill svg{width:14px;height:14px}
 
 /* ===================== MODALS & FLYS ===================== */
 .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(20,20,28,.28); padding:16px; z-index:60}
@@ -200,7 +200,7 @@ a{color:inherit; text-decoration:none}
 /* Fly popovers */
 .fly{position:fixed; inset:0; display:none; place-items:center; z-index:70; background:rgba(15,17,26,.18); padding:12px}
 .fly.open{display:grid}
-.fly .card{width:min(520px, 92vw); background:var(--surface); border:1px solid var(--ring); border-radius:14px; box-shadow:var(--shadow-2); padding:12px; display:block}
+.fly .card{width:min(720px, 92vw); background:var(--surface); border:1px solid var(--ring); border-radius:14px; box-shadow:var(--shadow-2); padding:12px; display:block}
 .fly h3{margin:0 0 6px; font-weight:900}
 .fly .sub{color:var(--muted); font-size:12px; margin-bottom:8px}
 
@@ -281,18 +281,10 @@ button.btn{ min-height: 36px; }
     </div>
 
     <nav class="nav" id="nav">
-      <a href="#" data-page="calendar" data-active="true" aria-current="page"><svg width="18" height="18"><use href="#i-cal"/></svg> Calendar</a>
-      <a href="#" data-page="profile"><svg width="18" height="18"><use href="#i-user"/></svg> Profile</a>
-      <a href="#" data-page="campaigns"><svg width="18" height="18"><use href="#i-camp"/></svg> Campaigns</a>
-      <a href="#" data-page="analytics"><svg width="18" height="18"><use href="#i-ana"/></svg> Analytics</a>
-      <hr>
-      <a href="#"><svg width="18" height="18"><use href="#i-ig"/></svg> Instagram</a>
-      <a href="#"><svg width="18" height="18"><use href="#i-fb"/></svg> Facebook</a>
-      <a href="#"><svg width="18" height="18"><use href="#i-x"/></svg> X/Twitter</a>
-      <a href="#"><svg width="18" height="18"><use href="#i-yt"/></svg> YouTube</a>
-      <a href="#"><svg width="18" height="18"><use href="#i-tt"/></svg> TikTok</a>
-      <a href="#"><svg width="18" height="18"><use href="#i-blog"/></svg> Blog</a>
-      <a href="#"><svg width="18" height="18"><use href="#i-web"/></svg> Website</a>
+      <a href="#" data-page="calendar" data-active="true" aria-current="page"><svg><use href="#i-cal"/></svg> Calendar</a>
+      <a href="#" data-page="profile"><svg><use href="#i-user"/></svg> Profile</a>
+      <a href="#" data-page="campaigns"><svg><use href="#i-camp"/></svg> Campaigns</a>
+      <a href="#" data-page="analytics"><svg><use href="#i-ana"/></svg> Analytics</a>
     </nav>
 
     <div class="foot">
@@ -309,11 +301,12 @@ button.btn{ min-height: 36px; }
         <button class="btn" id="prev" type="button">‹</button>
         <div class="month" id="monthLabel">—</div>
         <button class="btn" id="next" type="button">›</button>
-        <button class="btn ghost" id="today" type="button">Today</button>
+        <!-- Removed Today button -->
       </div>
       <div class="acct">
         <select id="acctSel" aria-label="Workspace">
-          <option>My Workspace</option><option>Acme Co</option><option>Northwind</option><option>Contoso</option>
+          <!-- Removed "My Workspace" -->
+          <option>Acme Co</option><option>Northwind</option><option>Contoso</option>
         </select>
       </div>
     </header>
@@ -326,7 +319,7 @@ button.btn{ min-height: 36px; }
           <div class="head-right">
             <div class="muted" id="postCount">0 scheduled</div>
             <button class="iconbtn eye" id="viewByBtn" title="View by" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="viewByMenu">
-              <svg width="18" height="18"><use href="#i-eye"/></svg>
+              <svg><use href="#i-eye"/></svg>
             </button>
             <div class="dropdown" id="viewByMenu" aria-label="Filter platforms" role="menu" aria-hidden="true"></div>
           </div>
@@ -380,7 +373,8 @@ button.btn{ min-height: 36px; }
 <div class="fly" id="flySettings" aria-hidden="true">
   <div class="card">
     <h3>Settings</h3>
-    <div class="sub">Basic app preferences.</div>
+    <div class="sub">Preferences & connections.</div>
+
     <div class="row2">
       <div class="input" style="display:grid;gap:6px">
         <b>Theme</b>
@@ -391,15 +385,70 @@ button.btn{ min-height: 36px; }
         </div>
       </div>
       <div class="input" style="display:grid;gap:6px">
-        <b>Timezone</b>
+        <b>Calendar</b>
+        <label>Timezone</label>
         <select id="setTZ"><option value="local">Local</option><option value="UTC">UTC</option></select>
-        <b>Week Starts</b>
+        <label>Week Starts</label>
         <select id="setWeekStart"><option value="0">Sunday</option><option value="1">Monday</option></select>
-        <b>Time Format</b>
+        <label>Time Format</label>
         <select id="setTimeFmt"><option value="12">12-hour</option><option value="24">24-hour</option></select>
       </div>
     </div>
-    <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center">
+
+    <div class="input" style="display:grid;gap:8px; margin-top:10px">
+      <b>Connected Accounts</b>
+      <div class="row2">
+        <div class="input" style="display:grid;gap:6px">
+          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-ig"/></svg> Instagram</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="connectIG" type="button">Connect</button>
+            <span class="note" id="statusIG">Not connected</span>
+          </div>
+        </div>
+        <div class="input" style="display:grid;gap:6px">
+          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-fb"/></svg> Facebook</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="connectFB" type="button">Connect</button>
+            <span class="note" id="statusFB">Not connected</span>
+          </div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="input" style="display:grid;gap:6px">
+          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-x"/></svg> X / Twitter</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="connectX" type="button">Connect</button>
+            <span class="note" id="statusX">Not connected</span>
+          </div>
+        </div>
+        <div class="input" style="display:grid;gap:6px">
+          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-yt"/></svg> YouTube</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="connectYT" type="button">Connect</button>
+            <span class="note" id="statusYT">Not connected</span>
+          </div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="input" style="display:grid;gap:6px">
+          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-tt"/></svg> TikTok</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="connectTT" type="button">Connect</button>
+            <span class="note" id="statusTT">Not connected</span>
+          </div>
+        </div>
+        <div class="input" style="display:grid;gap:6px">
+          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-blog"/></svg> Blog</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="connectBlog" type="button">Connect</button>
+            <span class="note" id="statusBlog">Not connected</span>
+          </div>
+        </div>
+      </div>
+      <div class="note">These are placeholders for OAuth. When we wire the backend, these will open the real login flows.</div>
+    </div>
+
+    <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center">
       <a class="upgrade-link" href="/upgrade" target="_blank" rel="noopener">Upgrade Plan</a>
       <button class="btn" id="settingsClose" type="button">Close</button>
     </div>
@@ -524,7 +573,7 @@ button.btn{ min-height: 36px; }
 </div>
 
 <script>
-/* ======= Helpers (FIXED): $ = one, $$ = all ======= */
+/* ======= Helpers ======= */
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
@@ -534,6 +583,7 @@ const SETTINGS_KEY = 'schedulo-settings-v1';
 const FILTERS_KEY = 'schedulo-filters-v1';
 const PROFILE_KEY = 'schedulo-profile-v1';
 const CAMPAIGN_KEY = 'schedulo-campaigns-v1';
+const ACCOUNTS_KEY = 'schedulo-accounts-v1';
 
 /* ======= Utils ======= */
 function load(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback }catch{ return fallback } }
@@ -557,16 +607,17 @@ let filters = load(FILTERS_KEY, {Instagram:true, Facebook:true, X:true, YouTube:
 let settings = load(SETTINGS_KEY, {theme:document.documentElement.getAttribute('data-theme')||'orchid', tz:'local', weekStart:0, timeFmt:'12'});
 let profile = load(PROFILE_KEY, {});
 let campaigns = load(CAMPAIGN_KEY, []);
+let accounts = load(ACCOUNTS_KEY, { IG:false, FB:false, X:false, YT:false, TT:false, BLOG:false });
 
-/* ======= Platform Map ======= */
+/* ======= Platform Map (with icons) ======= */
 const PLATS = [
-  {key:'Instagram', cls:'ig', label:'Instagram'},
-  {key:'Facebook',  cls:'fb', label:'Facebook'},
-  {key:'X',         cls:'x',  label:'X/Twitter'},
-  {key:'YouTube',   cls:'yt', label:'YouTube'},
-  {key:'TikTok',    cls:'tt', label:'TikTok'},
-  {key:'Blog',      cls:'blog', label:'Blog'},
-  {key:'Website',   cls:'web', label:'Website'},
+  {key:'Instagram', cls:'ig', label:'Instagram', sym:'#i-ig'},
+  {key:'Facebook',  cls:'fb', label:'Facebook',  sym:'#i-fb'},
+  {key:'X',         cls:'x',  label:'X/Twitter', sym:'#i-x'},
+  {key:'YouTube',   cls:'yt', label:'YouTube',   sym:'#i-yt'},
+  {key:'TikTok',    cls:'tt', label:'TikTok',    sym:'#i-tt'},
+  {key:'Blog',      cls:'blog', label:'Blog',    sym:'#i-blog'},
+  {key:'Website',   cls:'web', label:'Website',  sym:'#i-web'},
 ];
 
 /* ======= Calendar ======= */
@@ -684,7 +735,7 @@ $('#nav').addEventListener('click', (e)=>{
 /* ======= Header Buttons ======= */
 $('#prev').onclick=()=>{ view.m--; if(view.m<0){view.m=11;view.y--} buildCalendar(view.y,view.m) }
 $('#next').onclick=()=>{ view.m++; if(view.m>11){view.m=0;view.y++} buildCalendar(view.y,view.m) }
-$('#today').onclick=()=>{ const d=new Date(); view={y:d.getFullYear(),m:d.getMonth()}; buildCalendar(view.y,view.m) }
+// Removed Today button & handler
 
 /* ======= View-By (Eye) ======= */
 const viewByBtn = $('#viewByBtn');
@@ -693,16 +744,28 @@ const viewByMenu = $('#viewByMenu');
 function renderViewBy(){
   viewByMenu.innerHTML='';
   PLATS.forEach(p=>{
-    const row = document.createElement('label'); row.className='drop-row'; row.setAttribute('role','menuitemcheckbox');
-    const pill = document.createElement('div'); pill.className=`ico-pill ${p.cls} pip`; pill.textContent = p.key[0];
-    const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = filters[p.key]!==false;
+    const row = document.createElement('label'); 
+    row.className='drop-row'; 
+    row.setAttribute('role','menuitemcheckbox');
+
+    const pill = document.createElement('div'); 
+    pill.className=`ico-pill ${p.cls} pip`;
+    pill.innerHTML = `<svg><use href="${p.sym}"/></svg>`;
+
+    const cb = document.createElement('input'); 
+    cb.type='checkbox'; 
+    cb.checked = filters[p.key]!==false;
+
     cb.addEventListener('change', ()=>{
       filters[p.key]=cb.checked; 
       save(FILTERS_KEY, filters); 
       buildCalendar(view.y, view.m);
       row.setAttribute('aria-checked', String(cb.checked));
     });
-    const txt = document.createElement('span'); txt.textContent = ' ' + p.label;
+
+    const txt = document.createElement('span'); 
+    txt.textContent = ' ' + p.label;
+
     row.append(pill, cb, txt);
     row.setAttribute('aria-checked', String(cb.checked));
     viewByMenu.appendChild(row);
@@ -725,7 +788,7 @@ document.addEventListener('click', (e)=>{
 
 /* ======= Settings ======= */
 const flySettings = $('#flySettings');
-$('#settingsLink').onclick = ()=>{ syncSettingsUI(); flySettings.classList.add('open'); };
+$('#settingsLink').onclick = ()=>{ syncSettingsUI(); syncAccountsUI(); flySettings.classList.add('open'); };
 $('#settingsClose').onclick = ()=> flySettings.classList.remove('open');
 $$('#flySettings .chip').forEach(ch=>{
   ch.addEventListener('click', ()=>{
@@ -745,6 +808,31 @@ function syncSettingsUI(){
 $('#setTZ').onchange = ()=>{ settings.tz = $('#setTZ').value; save(SETTINGS_KEY, settings); };
 $('#setWeekStart').onchange = ()=>{ settings.weekStart = Number($('#setWeekStart').value||0); save(SETTINGS_KEY, settings); buildCalendar(view.y, view.m); };
 $('#setTimeFmt').onchange = ()=>{ settings.timeFmt = $('#setTimeFmt').value; save(SETTINGS_KEY, settings); buildCalendar(view.y, view.m); };
+
+/* ======= Connected Accounts (placeholders) ======= */
+function toggleAccount(key, btnEl, statusEl){
+  accounts[key] = !accounts[key];
+  save(ACCOUNTS_KEY, accounts);
+  btnEl.textContent = accounts[key] ? 'Disconnect' : 'Connect';
+  statusEl.textContent = accounts[key] ? 'Connected' : 'Not connected';
+}
+function syncAccountsUI(){
+  const map = [
+    ['IG',  '#connectIG',  '#statusIG'],
+    ['FB',  '#connectFB',  '#statusFB'],
+    ['X',   '#connectX',   '#statusX'],
+    ['YT',  '#connectYT',  '#statusYT'],
+    ['TT',  '#connectTT',  '#statusTT'],
+    ['BLOG','#connectBlog','#statusBlog'],
+  ];
+  map.forEach(([k, bSel, sSel])=>{
+    const b = $(bSel), s = $(sSel);
+    if(!b || !s) return;
+    b.textContent = accounts[k] ? 'Disconnect' : 'Connect';
+    s.textContent = accounts[k] ? 'Connected' : 'Not connected';
+    b.onclick = ()=> toggleAccount(k, b, s);
+  });
+}
 
 /* ======= Profile ======= */
 const flyProfile = $('#flyProfile');
@@ -850,7 +938,10 @@ function renderDayList(){
   items.forEach((it, idx) => {
     const row = document.createElement('div');
     row.className = 'camp-item';
-    const pip = document.createElement('div'); pip.className = 'pip ico-pill ' + (PLATS.find(p=>p.key===it.platform)?.cls||'blog'); pip.textContent = (it.platform||'P')[0];
+    const sym = (PLATS.find(p=>p.key===it.platform)?.sym)||'#i-blog';
+    const pip = document.createElement('div'); 
+    pip.className = 'pip ico-pill ' + (PLATS.find(p=>p.key===it.platform)?.cls||'blog'); 
+    pip.innerHTML = `<svg><use href="${sym}"/></svg>`;
     const body = document.createElement('div');
     body.innerHTML = `<div class="camp-name">${esc(it.title||'Untitled')}</div>
                       <div class="camp-meta">${esc(it.platform||'Post')} · ${esc(it.owner||'—')} · ${esc(fmtTime(it.time||'', settings.timeFmt))}</div>`;
@@ -923,10 +1014,8 @@ function refreshAnalytics(){
   $('#benchIndustry').textContent = profile.industry || '—';
 }
 
-/* ======= ViewBy build & Theme apply ======= */
+/* ======= Build controls & init ======= */
 renderViewBy();
-
-/* ======= Init: calendar is default ======= */
 (()=>{ const d=new Date(); view={y:d.getFullYear(),m:d.getMonth()}; buildCalendar(view.y,view.m) })();
 </script>
 </body>
