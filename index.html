@@ -1,296 +1,209 @@
 <!doctype html>
 <html lang="en" data-theme="orchid">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Phasee · Plan ahead. Stay ahead.</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phasee · Plan ahead. Stay ahead.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
-<!-- SEO & Social -->
-<meta name="description" content="Phasee — plan ahead, stay ahead. A clean calendar + campaigns UI for creators and teams.">
-<meta name="theme-color" content="#6F6AE6">
-<meta property="og:title" content="Phasee · Plan ahead. Stay ahead.">
-<meta property="og:description" content="A clean calendar + campaigns UI for creators and teams.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://phasee-ui.vercel.app/">
-<meta property="og:image" content="https://phasee-ui.vercel.app/og-image.jpg">
-<meta name="twitter:card" content="summary_large_image">
+  <style>
+  /* ===================== THEME & BASE ===================== */
+  :root{
+    --font: 13.5px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    --r-lg:14px; --r:10px; --r-sm:8px;
+    --shadow-1: 0 5px 14px rgba(15,23,42,.06);
+    --shadow-2: 0 12px 26px rgba(15,23,42,.10);
+  }
+  [data-theme="orchid"]{
+    --bg-grad: radial-gradient(900px 480px at 20% -10%, #F1F3FF 0%, #ffffff 40%, #F7F8FF 100%);
+    --surface:#ffffff; --surface-2:#F4F6FF; --ring:#E2E7FF;
+    --ink:#0f172a; --muted:#6b7280;
+    --accent:#6F6AE6; --accent-2:#8B7CFF;
+    --chip:#EEF0FF; --chip-b:#DADFFF;
+  }
+  [data-theme="dark"]{
+    --bg-grad: linear-gradient(180deg,#0b0d12,#0f1320);
+    --surface:#121623; --surface-2:#0f1422; --ring:#1f2434;
+    --ink:#e5e7eb; --muted:#9aa3b2;
+    --accent:#7C5CFF; --accent-2:#5EC8FF;
+    --chip:#172037; --chip-b:#283354;
+  }
 
-<!-- Fonts & Favicon -->
-<link rel="icon" href="/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font:var(--font); color:var(--ink); background:var(--bg-grad)}
+  a{color:inherit; text-decoration:none}
 
-<style>
-/* ===================== THEME SYSTEM ===================== */
-:root{
-  --font: 14px/1.55 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  --r-lg:16px; --r:12px; --r-sm:9px;
-  --shadow-1: 0 5px 14px rgba(15,23,42,.06);
-  --shadow-2: 0 12px 26px rgba(15,23,42,.10);
-}
-[data-theme="orchid"]{
-  --bg-grad: radial-gradient(1000px 520px at 20% -10%, #F1F3FF 0%, #ffffff 40%, #F7F8FF 100%);
-  --surface:#ffffff; --surface-2:#F4F6FF; --ring:#E2E7FF;
-  --ink:#0f172a; --muted:#6b7280;
-  --accent:#6F6AE6; --accent-2:#8B7CFF;
-  --chip:#EEF0FF; --chip-b:#DADFFF;
-}
-[data-theme="slate"]{
-  --bg-grad: linear-gradient(180deg,#f7f8fb,#ffffff);
-  --surface:#ffffff; --surface-2:#f3f4f6; --ring:#e5e7eb;
-  --ink:#0f172a; --muted:#6b7280;
-  --accent:#3B82F6; --accent-2:#6366F1;
-  --chip:#eef2ff; --chip-b:#c7d2fe;
-}
-[data-theme="dark"]{
-  --bg-grad: linear-gradient(180deg,#0b0d12,#0f1320);
-  --surface:#121623; --surface-2:#0f1422; --ring:#1f2434;
-  --ink:#e5e7eb; --muted:#9aa3b2;
-  --accent:#7C5CFF; --accent-2:#5EC8FF;
-  --chip:#172037; --chip-b:#283354;
-}
+  .btn{
+    appearance:none; border:1px solid var(--ring); background:var(--surface); color:var(--ink);
+    padding:6px 8px; border-radius:8px; font-weight:800; cursor:pointer; white-space:nowrap;
+    transition:filter .15s, transform .04s, box-shadow .15s;
+  }
+  .btn:hover{filter:brightness(1.03)}
+  .btn:active{transform:translateY(.4px)}
+  .btn.primary{
+    border-color:transparent; color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 8px 20px color-mix(in oklab, var(--accent) 28%, transparent);
+  }
+  .btn.ghost{background:transparent}
 
-/* ===================== BASE & LAYOUT ===================== */
-*{box-sizing:border-box}
-html,body{margin:0;height:100%}
-body{font:var(--font); color:var(--ink); background:var(--bg-grad)}
-a{color:inherit; text-decoration:none}
+  .badge{
+    display:inline-flex; align-items:center; gap:6px; padding:3px 7px; border-radius:999px;
+    background:var(--surface-2); border:1px solid var(--ring); font-weight:800; font-size:12px;
+  }
 
-.btn{
-  appearance:none; border:1px solid var(--ring); background:var(--surface); color:var(--ink);
-  padding:8px 10px; border-radius:10px; font-weight:800; cursor:pointer; white-space:nowrap;
-  transition:filter .15s, transform .04s, box-shadow .15s;
-}
-.btn:hover{filter:brightness(1.03)}
-.btn:active{transform:translateY(.4px)}
-.btn.primary{
-  border-color:transparent; color:#fff;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  box-shadow:0 8px 20px color-mix(in oklab, var(--accent) 28%, transparent);
-}
-.btn.ghost{background:transparent}
+  /* Shell */
+  .app{display:grid; grid-template-columns:180px 1fr; min-height:100dvh}
 
-/* Shell */
-.app{display:grid; grid-template-columns: 220px 1fr; min-height:100dvh}
+  /* Sidebar */
+  .side{
+    position:sticky; top:0; height:100dvh; background:linear-gradient(180deg, var(--surface), var(--surface-2));
+    border-right:1px solid var(--ring); padding:12px 10px; display:flex; flex-direction:column; gap:10px; z-index:5;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:900; padding:6px 8px}
+  .brandname{font-size:20px}
 
-/* Sidebar */
-.side{
-  position:sticky; top:0; height:100dvh;
-  background:linear-gradient(180deg, var(--surface), var(--surface-2));
-  border-right:1px solid var(--ring);
-  padding:16px 12px; display:flex; flex-direction:column; gap:10px; z-index:5;
-}
-.brand{display:flex; align-items:center; gap:10px; font-weight:900; padding:6px 8px}
-/* hide old logo square */
-.logo{display:none}
-.brandname{font-size:22px}
+  .nav{display:grid; gap:6px; margin-top:8px}
+  .nav a{
+    display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; font-weight:800; border:1px solid transparent;
+  }
+  .nav a[data-active="true"], .nav a:hover{background:var(--surface-2); border-color:var(--ring)}
+  .nav svg{opacity:.8}
 
-.nav{display:grid; gap:6px; margin-top:8px}
-.nav a{
-  display:flex; align-items:center; gap:10px;
-  padding:10px; border-radius:12px; font-weight:800; border:1px solid transparent;
-}
-.nav a[data-active="true"], .nav a:hover{background:var(--surface-2); border-color:var(--ring)}
-.nav svg{width:18px;height:18px}
+  .side .foot{margin-top:auto; display:grid; gap:6px; padding:6px}
+  .settings-link{font-weight:800; color:#3b3f77; cursor:pointer; width:max-content}
+  [data-theme="dark"] .settings-link{color:#a7b4ff}
+  .settings-link:hover{text-decoration:underline}
+  .upgrade-link{font-weight:900; color:#6F6AE6}
+  .upgrade-link:hover{text-decoration:underline}
 
-.side .foot{margin-top:auto; display:grid; gap:8px; padding:8px}
-.settings-link{font-weight:800; color:#3b3f77; cursor:pointer; width:max-content}
-[data-theme="dark"] .settings-link{color:#a7b4ff}
-.settings-link:hover{text-decoration:underline}
-.upgrade-link{font-weight:900; color:#6F6AE6}
-.upgrade-link:hover{text-decoration:underline}
+  /* Main */
+  .main{display:grid; grid-template-rows:56px 1fr}
+  .top{
+    background:linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface-2) 60%, var(--surface) 40%));
+    border-bottom:1px solid var(--ring); padding:0 12px;
+    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:4;
+  }
+  .title{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .month{font-weight:900; font-size:18px}
+  .toolbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; position:relative}
 
-/* Main */
-.main{display:grid; grid-template-rows:56px 1fr}
-.top{
-  background:linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface-2) 60%, var(--surface) 40%));
-  border-bottom:1px solid var(--ring); padding:0 14px;
-  display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:4;
-}
-.title{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-.month{font-weight:900; font-size:18px}
-.toolbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; position:relative}
+  /* Content panels */
+  .content{padding:10px; display:grid; gap:10px}
+  .card{background:var(--surface); border:1px solid var(--ring); border-radius:12px; box-shadow:var(--shadow-1); padding:10px}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
 
-/* Account pill (top-right) */
-.acct{display:flex; align-items:center; gap:6px}
-.acct select{
-  appearance:none; border:1px solid var(--ring); background:var(--surface); color:var(--ink);
-  padding:8px 10px; border-radius:10px; font-weight:800;
-}
+  /* Calendar */
+  .calendar{background:var(--surface); border:1px solid var(--ring); border-radius:10px; box-shadow:var(--shadow-2); padding:6px}
+  .cal-head{display:flex; align-items:center; justify-content:space-between; padding:2px 6px 6px}
+  .muted{color:var(--muted); font-size:12px}
+  .weekdays{display:grid; grid-template-columns:repeat(7,1fr); gap:3px; padding:0 6px 4px; color:#8d97ae; font-weight:900; font-size:11px}
+  .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:3px}
+  .day{
+    background:var(--surface); border:1px solid var(--ring); border-radius:10px; padding:6px; min-height:84px;
+    display:grid; grid-template-rows:auto 1fr; gap:4px; position:relative; box-shadow:var(--shadow-1);
+    transition:transform .08s ease, box-shadow .15s ease;
+  }
+  .day:hover{transform:translateY(-1px); box-shadow:0 12px 26px rgba(15, 23, 42, .10)}
+  .day.muted{opacity:.9}
+  .day.today{outline:2px solid color-mix(in oklab, var(--accent) 28%, transparent); outline-offset:2px}
+  .dhead{display:flex; align-items:center; justify-content:space-between}
+  .dnum{font-weight:900; font-size:11px; display:flex; align-items:center; gap:6px}
+  .plus{
+    position:absolute; top:6px; right:6px; width:22px; height:22px; border-radius:8px; border:0; color:#fff; cursor:pointer; font-weight:900; font-size:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:0 10px 20px color-mix(in oklab, var(--accent) 32%, transparent);
+  }
+  .list{display:grid; gap:4px}
+  .empty{opacity:.65; color:#97a0b3; font-size:11px}
+  .cal-card{
+    display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:10px; border:1px solid rgba(0,0,0,.05); box-shadow:0 6px 14px rgba(15,23,42,.08);
+  }
+  .cal-card .pip{width:20px; height:20px; border-radius:7px; display:grid; place-items:center; color:#1d2435; font-size:12px; font-weight:900}
+  .timechip{margin-left:auto; font-weight:900; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.05); font-size:10px}
+  .ig{background:#FFEFF7; border-color:#FFD9EC} .ig .pip{background:#FFB7DA}
+  .fb{background:#EDF2FF; border-color:#DDE6FF} .fb .pip{background:#BFD0FF}
+  .x {background:#EEF1F7; border-color:#DDE3F1} .x  .pip{background:#CFD7E7}
+  .yt{background:#FFE9EC; border-color:#FFD5DB} .yt .pip{background:#FFB8C0}
+  .tt{background:#FFF4D2; border-color:#FFE8AA} .tt .pip{background:#FFD57A}
+  .blog{background:#E9F9F0; border-color:#D3F0E2} .blog .pip{background:#BFE9CF}
+  .pin{background:#FFE4EA; border-color:#FFC9D6} .pin .pip{background:#FF9EB5}
+  .li{background:#E8F3FF; border-color:#D3E7FF} .li .pip{background:#A9D0FF}
 
-/* ===================== CALENDAR ===================== */
-.content{padding:10px; display:grid; gap:10px}
-.calendar{background:var(--surface); border:1px solid var(--ring); border-radius:var(--r-lg); box-shadow:var(--shadow-2); padding:8px}
-.cal-head{display:flex; align-items:center; justify-content:space-between; padding:2px 6px 6px}
-.head-right{display:flex; align-items:center; gap:8px}
-.muted{color:var(--muted); font-size:12px}
-.weekdays{display:grid; grid-template-columns:repeat(7,1fr); gap:4px; padding:0 6px 4px; color:#8d97ae; font-weight:900; font-size:11px}
-.grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+  /* Dropdown (eye/View by) */
+  .iconbtn{appearance:none; border:1px solid var(--ring); background:var(--surface); border-radius:10px; padding:6px 8px; cursor:pointer; font-weight:800}
+  .eye{display:inline-flex; align-items:center; gap:6px}
+  .dropdown{
+    position:absolute; right:0; top:36px; min-width:240px; background:var(--surface); border:1px solid var(--ring);
+    border-radius:12px; box-shadow:var(--shadow-2); padding:10px; display:none; z-index:10;
+  }
+  .dropdown.open{display:block}
+  .drop-row{display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:8px}
+  .drop-row:hover{background:var(--surface-2)}
+  .ico-pill{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:900}
 
-.day{
-  background:var(--surface); border:1px solid var(--ring); border-radius:12px; padding:8px; min-height:96px;
-  display:grid; grid-template-rows:auto 1fr; gap:4px; position:relative; box-shadow:var(--shadow-1);
-  transition:transform .08s ease, box-shadow .15s ease;
-}
-.day:hover{transform:translateY(-1px); box-shadow:0 12px 26px rgba(15, 23, 42, .10)}
-.day.muted{opacity:.9}
-.day.today{outline:2px solid color-mix(in oklab, var(--accent) 28%, transparent); outline-offset:2px}
+  /* Sections visibility */
+  .page{display:none}
+  .page.active{display:block}
 
-.dhead{display:flex; align-items:center; justify-content:space-between}
-.dnum{font-weight:900; font-size:11px; display:flex; align-items:center; gap:6px}
-.plus{
-  position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:8px;
-  border:0; color:#fff; cursor:pointer; font-weight:900; font-size:14px;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:0 10px 20px color-mix(in oklab, var(--accent) 32%, transparent);
-}
-.list{display:grid; gap:4px}
-.empty{opacity:.65; color:#97a0b3; font-size:11px}
-.card{
-  display:flex; align-items:center; gap:6px; padding:6px 8px;
-  border-radius:10px; border:1px solid rgba(0,0,0,.05); box-shadow:0 6px 14px rgba(15,23,42,.08);
-}
-.card .pip{width:22px; height:22px; border-radius:7px; display:grid; place-items:center; color:#1d2435; font-size:12px; font-weight:900}
-.timechip{margin-left:auto; font-weight:900; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.05); font-size:10px}
-.ig   {background:#FFEFF7; border-color:#FFD9EC} .ig .pip{background:#FFB7DA}
-.fb   {background:#EDF2FF; border-color:#DDE6FF} .fb .pip{background:#BFD0FF}
-.x    {background:#EEF1F7; border-color:#DDE3F1} .x  .pip{background:#CFD7E7}
-.yt   {background:#FFE9EC; border-color:#FFD5DB} .yt .pip{background:#FFB8C0}
-.tt   {background:#FFF4D2; border-color:#FFE8AA} .tt .pip{background:#FFD57A}
-.blog {background:#E9F9F0; border-color:#D3F0E2} .blog .pip{background:#BFE9CF}
-.web  {background:#FFEDE6; border-color:#FFD9CC} .web .pip{background:#FFC7AE}
-[data-theme="dark"] .timechip{background:rgba(0,0,0,.3); border-color:rgba(255,255,255,.06); color:#fff}
-.card[draggable="true"]{cursor:grab}
-.card.dragging{opacity:.6; transform:scale(.98)}
-.day.dragover{outline:2px dashed var(--accent); outline-offset:2px}
+  /* Tables/simple lists */
+  .table{width:100%; border-collapse:separate; border-spacing:0 8px; font-size:13px}
+  .th{color:var(--muted); font-weight:900; padding:6px 8px}
+  .tr{background:var(--surface); border:1px solid var(--ring); border-radius:10px; box-shadow:var(--shadow-1)}
+  .td{padding:10px}
 
-/* View-by dropdown */
-.iconbtn{appearance:none; border:1px solid var(--ring); background:var(--surface); border-radius:10px; padding:6px 8px; cursor:pointer; font-weight:800}
-.eye{display:inline-flex; align-items:center; gap:6px}
-.dropdown{
-  position:absolute; right:0; top:36px; min-width:240px;
-  background:var(--surface); border:1px solid var(--ring); border-radius:12px;
-  box-shadow:var(--shadow-2); padding:10px; display:none; z-index:10;
-}
-.dropdown.open{display:block}
-.drop-row{display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:8px}
-.drop-row:hover{background:var(--surface-2)}
-.ico-pill{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:900}
-.ico-pill svg{width:14px;height:14px}
+  /* Forms */
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  label{font-weight:800; font-size:12px}
+  .input, select, textarea{
+    width:100%; padding:8px 10px; border:1px solid var(--ring); border-radius:10px; background:var(--surface); color:var(--ink); outline:none;
+  }
+  .input:focus, select:focus, textarea:focus{border-color:color-mix(in oklab, var(--accent) 35%, #cbd5ff); background:var(--surface-2)}
 
-/* ===================== MODALS & FLYS ===================== */
-.modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(20,20,28,.28); padding:16px; z-index:60}
-.modal.open{display:flex}
-.panel{width:100%; max-width:720px; background:var(--surface); border:1px solid var(--ring); border-radius:16px; box-shadow:var(--shadow-2); overflow:hidden; transform:translateY(6px); opacity:0; animation:pop .16s ease forwards}
-@keyframes pop{to{transform:translateY(0); opacity:1}}
-.panel-head{display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--ring); font-weight:900}
-.panel-body{padding:12px; display:grid; gap:10px}
-.panel-foot{display:flex; justify-content:space-between; gap:8px; padding:10px 12px; border-top:1px solid var(--ring)}
-.row2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
-.input, select, textarea{
-  width:100%; padding:8px 10px; border:1px solid var(--ring); border-radius:10px; background:var(--surface); color:var(--ink); outline:none;
-}
-.input:focus, select:focus, textarea:focus{border-color:color-mix(in oklab, var(--accent) 35%, #cbd5ff); background:var(--surface-2)}
-.note{font-size:12px; color:var(--muted)}
-.chips{display:flex; gap:6px; flex-wrap:wrap}
-.chip{display:inline-flex; align-items:center; gap:6px; padding:6px 9px; border-radius:999px; border:1px solid var(--ring); background:var(--surface); font-weight:800; cursor:pointer}
-.chip[data-on="true"]{background:var(--chip); border-color:var(--chip-b); color:#1f2a5a}
-[data-theme="dark"] .chip[data-on="true"]{color:#c9d5ff}
+  /* Compact tweaks already applied above */
 
-/* Fly popovers */
-.fly{position:fixed; inset:0; display:none; place-items:center; z-index:70; background:rgba(15,17,26,.18); padding:12px}
-.fly.open{display:grid}
-.fly .card{width:min(720px, 92vw); background:var(--surface); border:1px solid var(--ring); border-radius:14px; box-shadow:var(--shadow-2); padding:12px; display:block}
-.fly h3{margin:0 0 6px; font-weight:900}
-.fly .sub{color:var(--muted); font-size:12px; margin-bottom:8px}
-
-/* ===================== ALT PAGES ===================== */
-.page{display:none}
-.page.active{display:block}
-
-/* Campaigns vertical list */
-.camp-wrap{background:var(--surface); border:1px solid var(--ring); border-radius:16px; box-shadow:var(--shadow-2); padding:12px}
-.camp-toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
-.camp-list{display:grid; gap:8px}
-.camp-item{display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; border:1px solid var(--ring); border-radius:12px; padding:10px; box-shadow:var(--shadow-1)}
-.camp-date{font-weight:900; font-size:12px; color:#475569}
-.camp-name{font-weight:900}
-.camp-meta{font-size:12px; color:#64748b}
-
-/* Analytics placeholder cards */
-.ana-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-.ana-card{background:var(--surface); border:1px solid var(--ring); border-radius:16px; box-shadow:var(--shadow-2); padding:12px; display:grid; gap:8px}
-.kpi{font-size:26px; font-weight:900}
-.small{font-size:12px; color:#64748b}
-
-/* Responsive */
-@media (max-width:900px){
-  .app{grid-template-columns:78px 1fr}
-  .brandname{display:none}
-  .row2{grid-template-columns:1fr}
-  .ana-grid{grid-template-columns:1fr}
-}
-
-/* ===== Accessibility polish ===== */
-:focus-visible{
-  outline: 2px solid color-mix(in oklab, var(--accent) 60%, transparent);
-  outline-offset: 2px;
-  border-radius: 10px;
-}
-@media (prefers-reduced-motion: reduce){
-  *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
-}
-button.btn{ min-height: 36px; }
-</style>
+  @media (max-width:980px){
+    .app{grid-template-columns:78px 1fr}
+    .brandname{display:none}
+    .form-grid{grid-template-columns:1fr}
+  }
+  </style>
 </head>
+
 <body>
-
-<!-- Apply saved theme before paint (no flash) -->
-<script>
-(function() {
-  try {
-    const s = localStorage.getItem('schedulo-settings-v1');
-    const theme = s ? JSON.parse(s).theme : null;
-    if (theme) document.documentElement.setAttribute('data-theme', theme);
-  } catch {}
-})();
-</script>
-
-<!-- Icons -->
-<svg style="display:none" aria-hidden="true">
-  <symbol id="i-cal" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2h2v3H7V2m8 0h2v3h-2V2M5 7h14v13H5V7m2 4h4v4H7v-4z"/></symbol>
-  <symbol id="i-user" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5m0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5z"/></symbol>
-  <symbol id="i-camp" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v3H3V4m0 5h18v3H3V9m0 5h18v3H3v-3z"/></symbol>
-  <symbol id="i-ana" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17h18v2H3v-2m2-2l4-5 3 4 5-7 4 6v2H5z"/></symbol>
-  <symbol id="i-eye" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6c-5 0-9 6-9 6s4 6 9 6 9-6 9-6-4-6-9-6m0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/></symbol>
-  <!-- Social icons -->
-  <symbol id="i-ig" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7m0 2h10c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3m10.5 1a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1M12 7a5 5 0 0 0-5 5 5 5 0 0 0 5 5 5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3z"/></symbol>
-  <symbol id="i-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2m8 17v-6h2.1l.3-2.4H13V9.6c0-.7.2-1.2 1.2-1.2h1.2V6.1c-.2 0-1-.1-1.9-.1-1.9 0-3.3 1.2-3.3 3.4v1.9H8v2.4h2.1V20h2.9Z"/></symbol>
-  <symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18 2H6a4 4 0 0 0-4 4v12c0 2.2 1.8 4 4 4h12c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4M8.7 7.5h1.9l2.5 3.8 2.5-3.8h1.8l-3.4 5 3.5 5.1h-1.9l-2.7-4-2.7 4H8.3l3.5-5.1-3.1-4.9Z"/></symbol>
-  <symbol id="i-yt" viewBox="0 0 24 24"><path fill="currentColor" d="M10 15l5.2-3L10 9v6m10-10c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h16z"/></symbol>
-  <symbol id="i-tt" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m4.3 7.3c.1.4.1.7.1 1.1 0 2.3-1.8 4.2-4.2 4.2-1.3 0-2.5-.6-3.2-1.5a4.2 4.2 0 0 0 6.5-3.8c0-.1 0-.1 0 0h.8z"/></symbol>
-  <symbol id="i-blog" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v2H4V4m0 4h10v2H4V8m0 4h16v2H4v-2m0 4h10v2H4v-2z"/></symbol>
-  <symbol id="i-web" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-10 10 10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2Z"/></symbol>
-</svg>
-
 <div class="app">
   <!-- SIDEBAR -->
-  <aside class="side" role="navigation" aria-label="Primary">
+  <aside class="side">
     <div class="brand">
       <div class="brandname">Phasee</div>
     </div>
 
     <nav class="nav" id="nav">
-      <a href="#" data-page="calendar" data-active="true" aria-current="page"><svg><use href="#i-cal"/></svg> Calendar</a>
-      <a href="#" data-page="profile"><svg><use href="#i-user"/></svg> Profile</a>
-      <a href="#" data-page="campaigns"><svg><use href="#i-camp"/></svg> Campaigns</a>
-      <a href="#" data-page="analytics"><svg><use href="#i-ana"/></svg> Analytics</a>
+      <a href="#/calendar" data-route="calendar" data-active="true">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2h2v3H7V2m8 0h2v3h-2V2M5 7h14v13H5V7m2 4h4v4H7v-4z"/></svg>
+        Calendar
+      </a>
+      <a href="#/profile" data-route="profile">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5m0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5z"/></svg>
+        Profile
+      </a>
+      <a href="#/campaigns" data-route="campaigns">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v3H3V4m0 5h18v3H3V9m0 5h18v3H3v-3z"/></svg>
+        Campaigns
+      </a>
+      <a href="#/analytics" data-route="analytics">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17h18v2H3v-2m2-2l4-5 3 4 5-7 4 6v2H5z"/></svg>
+        Analytics
+      </a>
+      <a href="#/settings" data-route="settings">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 8a4 4 0 1 0 4 4a4 4 0 0 0-4-4m8.94 3.34l-1.25-.22a6.91 6.91 0 0 0-1-2.41l.75-1.03a.5.5 0 0 0-.04-.64l-1.41-1.41a.5.5 0 0 0-.64-.04l-1.03.75a6.91 6.91 0 0 0-2.41-1l-.22-1.25A.5.5 0 0 0 10.5 3h-2a.5.5 0 0 0-.49.41L7.82 4.66a6.91 6.91 0 0 0-2.41 1l-1.03-.75a.5.5 0 0 0-.64.04L2.33 6.36a.5.5 0 0 0-.04.64l.75 1.03a6.91 6.91 0 0 0-1 2.41l-1.25.22A.5.5 0 0 0 0 12.5v2a.5.5 0 0 0 .41.49l1.25.22a6.91 6.91 0 0 0 1 2.41l-.75 1.03a.5.5 0 0 0 .04.64l1.41 1.41a.5.5 0 0 0 .64.04l1.03-.75a6.91 6.91 0 0 0 2.41 1l.22 1.25a.5.5 0 0 0 .49.41h2a.5.5 0 0 0 .49-.41l.22-1.25a6.91 6.91 0 0 0 2.41-1l1.03.75a.5.5 0 0 0 .64-.04l1.41-1.41a.5.5 0 0 0 .04-.64l-.75-1.03a6.91 6.91 0 0 0 1-2.41l1.25-.22a.5.5 0 0 0 .41-.49v-2a.5.5 0 0 0-.41-.49Z"/></svg>
+        Settings
+      </a>
     </nav>
 
     <div class="foot">
-      <a class="settings-link" id="settingsLink">Settings</a>
-      <div class="note">Phasee Core Subscription.</div>
-      <a class="upgrade-link" href="/upgrade" id="sidebarUpgrade">Upgrade Plan</a>
+      <div class="note">Phasee Core Subscription</div>
+      <a class="upgrade-link" href="#">Upgrade Plan</a>
     </div>
   </aside>
 
@@ -298,344 +211,274 @@ button.btn{ min-height: 36px; }
   <section class="main">
     <header class="top">
       <div class="title">
-        <button class="btn" id="prev" type="button">‹</button>
+        <button class="btn" id="prev" title="Previous">‹</button>
         <div class="month" id="monthLabel">—</div>
-        <button class="btn" id="next" type="button">›</button>
-        <!-- Removed Today button -->
+        <button class="btn" id="next" title="Next">›</button>
       </div>
-      <div class="acct">
-        <select id="acctSel" aria-label="Workspace">
-          <!-- Removed "My Workspace" -->
-          <option>Acme Co</option><option>Northwind</option><option>Contoso</option>
-        </select>
+      <div class="toolbar">
+        <div class="muted" id="schedCount">0 scheduled</div>
+        <button class="iconbtn eye" id="viewByBtn" title="View by">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6c-5 0-9 6-9 6s4 6 9 6 9-6 9-6-4-6-9-6m0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/></svg>
+        </button>
+        <div class="dropdown" id="viewByMenu"></div>
+        <button class="btn">Acme Co</button>
       </div>
     </header>
 
-    <!-- CALENDAR PAGE (DEFAULT) -->
-    <div class="content page active" id="pageCalendar">
+    <!-- CALENDAR PAGE -->
+    <div class="content page active" id="page-calendar">
       <div class="calendar">
         <div class="cal-head">
           <div class="muted" id="rangeText">—</div>
-          <div class="head-right">
-            <div class="muted" id="postCount">0 scheduled</div>
-            <button class="iconbtn eye" id="viewByBtn" title="View by" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="viewByMenu">
-              <svg><use href="#i-eye"/></svg>
-            </button>
-            <div class="dropdown" id="viewByMenu" aria-label="Filter platforms" role="menu" aria-hidden="true"></div>
-          </div>
         </div>
         <div class="weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
         <div class="grid" id="grid"></div>
       </div>
-      <div class="muted" style="padding:6px 8px">Tip: drag cards between days • Press “+” on a day to quick add</div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="content page" id="page-profile">
+      <div class="card">
+        <h3>Profile</h3>
+        <div class="form-grid">
+          <div>
+            <label>Company / Brand</label>
+            <input id="pName" class="input" placeholder="e.g., Acme Co">
+          </div>
+          <div>
+            <label>Industry</label>
+            <input id="pIndustry" class="input" placeholder="e.g., DTC skincare">
+          </div>
+          <div>
+            <label>Founded (Year)</label>
+            <select id="pYear" class="input"></select>
+          </div>
+          <div>
+            <label>Tone / Culture</label>
+            <input id="pTone" class="input" placeholder="e.g., Playful, Bold">
+          </div>
+          <div>
+            <label>Logo / Image</label>
+            <input id="pLogo" class="input" type="file" accept="image/*">
+          </div>
+          <div>
+            <label>Preview</label>
+            <img id="pLogoPrev" alt="" style="max-width:160px; border-radius:10px; display:none; border:1px solid var(--ring)">
+          </div>
+          <div style="grid-column:1 / -1">
+            <label>Additional Information</label>
+            <textarea id="pNotes" class="input" rows="3" placeholder="Anything that helps us build better prompts & comps"></textarea>
+          </div>
+        </div>
+        <div class="row" style="justify-content:flex-end">
+          <button class="btn primary" id="profileSave">Save</button>
+        </div>
+      </div>
     </div>
 
     <!-- CAMPAIGNS PAGE -->
-    <div class="content page" id="pageCampaigns">
-      <div class="camp-wrap">
-        <div class="camp-toolbar">
-          <b>Campaigns</b>
-          <button class="btn primary" id="newCampaign" type="button">+ New Campaign</button>
+    <div class="content page" id="page-campaigns">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <h3>Campaigns</h3>
+          <div class="row">
+            <label class="muted">Sort:</label>
+            <select id="campSort" class="input">
+              <option value="date">Date</option>
+              <option value="platform">Platform</option>
+              <option value="title">Title</option>
+            </select>
+            <button class="btn primary" id="newCampaign">+ New Campaign</button>
+          </div>
         </div>
-        <div class="camp-list" id="campList"></div>
-        <div class="note" id="campEmpty" style="display:none">No campaigns yet.</div>
+
+        <table class="table" id="campTable">
+          <thead>
+            <tr class="th">
+              <td class="th">Date</td>
+              <td class="th">Title</td>
+              <td class="th">Platforms</td>
+              <td class="th">Owner</td>
+              <td class="th">Status</td>
+              <td class="th">Actions</td>
+            </tr>
+          </thead>
+          <tbody id="campTbody"></tbody>
+        </table>
       </div>
     </div>
 
     <!-- ANALYTICS PAGE -->
-    <div class="content page" id="pageAnalytics">
-      <div class="ana-grid">
-        <div class="ana-card">
-          <b>Upcoming (This Month)</b>
-          <div class="kpi" id="kpiUpcoming">0</div>
-          <div class="small">Visible posts matching your filters.</div>
+    <div class="content page" id="page-analytics">
+      <div class="row" style="align-items:stretch">
+        <div class="card" style="flex:1">
+          <h3>Industry</h3>
+          <select id="anaIndustry" class="input" style="max-width:320px">
+            <option value="general">General</option>
+            <option value="beauty">Beauty</option>
+            <option value="fitness">Fitness</option>
+            <option value="fashion">Fashion</option>
+            <option value="tech">Tech</option>
+            <option value="food">Food & Beverage</option>
+            <option value="gaming">Gaming</option>
+            <option value="finance">Finance</option>
+          </select>
+          <div class="muted" style="margin-top:8px">Benchmarks (placeholder) update with industry.</div>
         </div>
-        <div class="ana-card">
-          <b>Top Platform</b>
-          <div class="kpi" id="kpiTopPlat">—</div>
-          <div class="small">Based on scheduled items.</div>
+
+        <div class="card" style="flex:1">
+          <h3>Competitors (Goals)</h3>
+          <div class="row" style="flex-direction:column; gap:8px">
+            <input class="input" id="comp1" placeholder="Competitor / Handle #1">
+            <input class="input" id="comp2" placeholder="Competitor / Handle #2">
+            <button class="btn" id="addComp">+ Add More</button>
+            <div id="compMore" class="row" style="flex-direction:column; gap:8px"></div>
+          </div>
+          <div class="muted" style="margin-top:8px">Use this to compare cadence & performance over time.</div>
         </div>
-        <div class="ana-card">
-          <b>Your Mix</b>
-          <div id="mixList" class="small">—</div>
-        </div>
-        <div class="ana-card">
-          <b>Industry Benchmarks</b>
-          <div class="small">Industry: <span id="benchIndustry">—</span></div>
-          <div class="small">Benchmarks will appear here (placeholder).</div>
+
+        <div class="card" style="flex:1">
+          <h3>Personal</h3>
+          <div class="row" style="gap:20px">
+            <div>
+              <div class="muted">Scheduled this month</div>
+              <div id="kpiUpcoming" style="font-weight:900; font-size:26px">0</div>
+            </div>
+            <div>
+              <div class="muted">Top Platform</div>
+              <div id="kpiTopPlat" style="font-weight:900; font-size:26px">—</div>
+            </div>
+          </div>
+          <div class="muted" style="margin-top:8px">Filter</div>
+          <div id="anaFilter" class="row" style="gap:6px; margin-top:6px"></div>
         </div>
       </div>
     </div>
+
+    <!-- SETTINGS PAGE -->
+    <div class="content page" id="page-settings">
+      <div class="row" style="align-items:stretch">
+        <div class="card" style="flex:1.6">
+          <h3>Settings</h3>
+          <div class="row" style="gap:16px; margin-bottom:8px">
+            <div>
+              <div class="muted">Theme</div>
+              <label><input type="radio" name="theme" value="orchid" checked> Day</label>
+              <label style="margin-left:8px"><input type="radio" name="theme" value="dark"> Night</label>
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <h4>Integrations</h4>
+            <div class="muted">Connect social platforms for login & scheduling.</div>
+            <div class="row" style="margin-top:8px; gap:8px; flex-wrap:wrap">
+              <button class="btn" data-oauth="instagram">Connect Instagram</button>
+              <button class="btn" data-oauth="tiktok">Connect TikTok</button>
+              <button class="btn" data-oauth="facebook">Connect Facebook</button>
+              <button class="btn" data-oauth="pinterest">Connect Pinterest</button>
+              <button class="btn" data-oauth="twitter">Connect X/Twitter</button>
+              <button class="btn" data-oauth="linkedin">Connect LinkedIn</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="flex:1">
+          <h3>Account</h3>
+          <div class="muted">Billing info, plan, profile, and organization settings.</div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn">Manage Account</button>
+            <button class="btn">Change Plan</button>
+          </div>
+
+          <h4 style="margin-top:14px">Auth</h4>
+          <div class="row">
+            <button class="btn primary" id="loginBtn">Log in</button>
+            <button class="btn" id="logoutBtn">Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </section>
 </div>
 
-<!-- SETTINGS (CENTERED) -->
-<div class="fly" id="flySettings" aria-hidden="true">
-  <div class="card">
-    <h3>Settings</h3>
-    <div class="sub">Preferences & connections.</div>
-
-    <div class="row2">
-      <div class="input" style="display:grid;gap:6px">
-        <b>Theme</b>
-        <div class="chips">
-          <span class="chip" data-theme="orchid" data-on="true">Orchid</span>
-          <span class="chip" data-theme="slate">Slate</span>
-          <span class="chip" data-theme="dark">Dark</span>
-        </div>
-      </div>
-      <div class="input" style="display:grid;gap:6px">
-        <b>Calendar</b>
-        <label>Timezone</label>
-        <select id="setTZ"><option value="local">Local</option><option value="UTC">UTC</option></select>
-        <label>Week Starts</label>
-        <select id="setWeekStart"><option value="0">Sunday</option><option value="1">Monday</option></select>
-        <label>Time Format</label>
-        <select id="setTimeFmt"><option value="12">12-hour</option><option value="24">24-hour</option></select>
-      </div>
-    </div>
-
-    <div class="input" style="display:grid;gap:8px; margin-top:10px">
-      <b>Connected Accounts</b>
-      <div class="row2">
-        <div class="input" style="display:grid;gap:6px">
-          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-ig"/></svg> Instagram</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn" id="connectIG" type="button">Connect</button>
-            <span class="note" id="statusIG">Not connected</span>
-          </div>
-        </div>
-        <div class="input" style="display:grid;gap:6px">
-          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-fb"/></svg> Facebook</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn" id="connectFB" type="button">Connect</button>
-            <span class="note" id="statusFB">Not connected</span>
-          </div>
-        </div>
-      </div>
-      <div class="row2">
-        <div class="input" style="display:grid;gap:6px">
-          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-x"/></svg> X / Twitter</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn" id="connectX" type="button">Connect</button>
-            <span class="note" id="statusX">Not connected</span>
-          </div>
-        </div>
-        <div class="input" style="display:grid;gap:6px">
-          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-yt"/></svg> YouTube</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn" id="connectYT" type="button">Connect</button>
-            <span class="note" id="statusYT">Not connected</span>
-          </div>
-        </div>
-      </div>
-      <div class="row2">
-        <div class="input" style="display:grid;gap:6px">
-          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-tt"/></svg> TikTok</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn" id="connectTT" type="button">Connect</button>
-            <span class="note" id="statusTT">Not connected</span>
-          </div>
-        </div>
-        <div class="input" style="display:grid;gap:6px">
-          <label style="display:flex;align-items:center;gap:6px"><svg width="16" height="16"><use href="#i-blog"/></svg> Blog</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn" id="connectBlog" type="button">Connect</button>
-            <span class="note" id="statusBlog">Not connected</span>
-          </div>
-        </div>
-      </div>
-      <div class="note">These are placeholders for OAuth. When we wire the backend, these will open the real login flows.</div>
-    </div>
-
-    <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center">
-      <a class="upgrade-link" href="/upgrade" target="_blank" rel="noopener">Upgrade Plan</a>
-      <button class="btn" id="settingsClose" type="button">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- PROFILE (HOVERING POP-UP) -->
-<div class="fly" id="flyProfile" aria-hidden="true">
-  <div class="card">
-    <h3>Profile</h3>
-    <div class="sub">Tell Phasee about your business so we can tailor analytics & prompts.</div>
-    <div class="row2">
-      <div class="input" style="display:grid;gap:6px">
-        <label>Company / Brand</label><input id="pName" class="input" placeholder="e.g., Acme Co">
-        <label>Industry</label><input id="pIndustry" class="input" placeholder="e.g., DTC skincare">
-        <label>Years active</label><input id="pYears" class="input" type="number" min="0" max="200" placeholder="e.g., 5">
-        <label>Culture / Tone</label>
-        <select id="pTone" class="input"><option>Casual</option><option>Professional</option><option>Playful</option><option>Bold</option></select>
-      </div>
-      <div class="input" style="display:grid;gap:6px">
-        <label>Logo</label><input id="pLogo" class="input" type="file" accept="image/*">
-        <img id="pLogoPrev" alt="" style="max-width:160px; border-radius:10px; display:none; border:1px solid var(--ring)">
-        <label>Primary Color</label><input id="pColor1" class="input" type="color" value="#6F6AE6">
-        <label>Secondary Color</label><input id="pColor2" class="input" type="color" value="#8B7CFF">
-      </div>
-    </div>
-    <label>Notes / Pertinent info</label>
-    <textarea id="pNotes" class="input" placeholder="Anything that helps us build better prompts & comps"></textarea>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px">
-      <button class="btn" id="profileClose" type="button">Close</button>
-      <button class="btn primary" id="profileSave" type="button">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- QUICK ADD MODAL -->
-<div class="modal" id="quickModal" role="dialog" aria-modal="true" aria-label="Quick add">
-  <div class="panel">
-    <div class="panel-head">Add item <button class="btn" id="closeQuick" type="button">Close</button></div>
-    <div class="panel-body">
-      <label for="qaName">Title</label><input class="input" id="qaName" placeholder="Post title">
-      <div class="row2">
-        <div><label for="qaType">Platform</label>
-          <select id="qaType" class="input"><option>Instagram</option><option>Facebook</option><option>X</option><option>YouTube</option><option>TikTok</option><option>Blog</option><option>Website</option></select>
-        </div>
-        <div><label for="qaTime">Time</label><input class="input" id="qaTime" placeholder="e.g., 1:30p"></div>
-      </div>
-      <div class="row2">
-        <div><label for="qaOwner">Owner</label><input class="input" id="qaOwner" placeholder="Owner"></div>
-        <div><label for="qaProg">Progress</label><input class="input" id="qaProg" type="number" min="0" max="100" placeholder="0–100"></div>
-      </div>
-      <label for="qaCopy">Copy (optional)</label><textarea id="qaCopy" class="input" placeholder="Draft copy…"></textarea>
-      <div class="row2">
-        <div>
-          <label for="qaRepeat">Repeat</label>
-          <select id="qaRepeat" class="input">
-            <option value="none" selected>None</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-          </select>
-        </div>
-        <div>
-          <label for="qaRepeatCount">Times</label>
-          <input id="qaRepeatCount" class="input" type="number" min="1" max="12" value="1">
-        </div>
-      </div>
-    </div>
-    <div class="panel-foot">
-      <button class="btn" id="cancelQuick" type="button">Cancel</button>
-      <button class="btn primary" id="saveQuick" type="button">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- DAY DRAWER MODAL -->
-<div class="modal daymodal" id="dayModal" role="dialog" aria-modal="true" aria-label="Day details">
-  <div class="panel">
-    <div class="panel-head">
-      <span id="dayTitle">Items</span>
-      <button class="btn" id="closeDay" type="button">Close</button>
-    </div>
-    <div class="panel-body">
-      <div id="dayEmpty" class="note" style="display:none">Nothing scheduled yet.</div>
-      <div id="dayList" class="daylist"></div>
-    </div>
-    <div class="panel-foot">
-      <button class="btn" id="addToDay" type="button">+ Quick add to this day</button>
-      <span class="note" id="dayCount"></span>
-    </div>
-  </div>
-</div>
-
-<!-- NEW CAMPAIGN MODAL -->
-<div class="modal" id="campModal" role="dialog" aria-modal="true">
-  <div class="panel">
-    <div class="panel-head">New Campaign <button class="btn" id="campClose" type="button">Close</button></div>
-    <div class="panel-body">
-      <div class="row2">
-        <div><label>Name</label><input id="campName" class="input" placeholder="e.g., Fall Launch"></div>
-        <div><label>Objective</label><input id="campObj" class="input" placeholder="e.g., Awareness"></div>
-      </div>
-      <div class="row2">
-        <div><label>Start</label><input id="campStart" class="input" type="date"></div>
-        <div><label>End</label><input id="campEnd" class="input" type="date"></div>
-      </div>
-      <div>
-        <label>Platforms</label>
-        <div class="chips" id="campPlatforms">
-          <span class="chip" data-on="true" data-val="Instagram">Instagram</span>
-          <span class="chip" data-on="true" data-val="Facebook">Facebook</span>
-          <span class="chip" data-val="X">X/Twitter</span>
-          <span class="chip" data-val="YouTube">YouTube</span>
-          <span class="chip" data-val="Blog">Blog</span>
-        </div>
-      </div>
-    </div>
-    <div class="panel-foot">
-      <button class="btn" id="campCancel" type="button">Cancel</button>
-      <button class="btn primary" id="campSave" type="button">Save</button>
-    </div>
-  </div>
-</div>
-
 <script>
-/* ======= Helpers ======= */
+/* ===================== CONFIG ===================== */
+/** Change this to your API (Railway) origin, e.g. https://phasee-brain-production.up.railway.app */
+const API_BASE = (window.PHASEE_API_BASE || "https://phasee-brain-production.up.railway.app").replace(/\/+$/,'');
+
+/* ===================== Helpers ===================== */
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
-/* ======= Storage Keys ======= */
-const DB_KEY = 'schedulo-db-v1';
-const SETTINGS_KEY = 'schedulo-settings-v1';
-const FILTERS_KEY = 'schedulo-filters-v1';
-const PROFILE_KEY = 'schedulo-profile-v1';
-const CAMPAIGN_KEY = 'schedulo-campaigns-v1';
-const ACCOUNTS_KEY = 'schedulo-accounts-v1';
-
-/* ======= Utils ======= */
-function load(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback }catch{ return fallback } }
-function save(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch{} }
 const esc = s=> (s||'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-const isoOf = (y,m,d)=> new Date(y,m,d).toISOString().slice(0,10);
-function fmtTime(t, fmt='12'){
-  if(!t) return '—';
-  if(fmt==='24'){
-    const m = /^(\d{1,2}):?(\d{2})?\s*([ap])?$/i.exec(t.replace(/\s/g,'')); if(!m) return t;
-    let h=+m[1], min=m[2]?+m[2]:0, ap=(m[3]||'').toLowerCase(); if(ap==='p' && h<12) h+=12; if(ap==='a' && h===12) h=0;
-    return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
-  }
-  return t;
+function save(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
+function load(k,fallback){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fallback }catch{ return fallback } }
+function isoOf(y,m,d){ return new Date(y,m,d).toISOString().slice(0,10); }
+
+/* ===================== Routing ===================== */
+const routes = ['calendar','profile','campaigns','analytics','settings'];
+function showRoute(route){
+  routes.forEach(r=>{
+    $('#page-'+r).classList.toggle('active', r===route);
+    $('#nav [data-route="'+r+'"]').dataset.active = (r===route)+'';
+  });
+  if(route==='analytics') refreshAnalytics();
 }
+function handleHash(){
+  const r = (location.hash.replace(/^#\/?/,'')||'calendar').split('/')[0];
+  if(!routes.includes(r)) return showRoute('calendar');
+  showRoute(r);
+}
+window.addEventListener('hashchange', handleHash);
 
-/* ======= State ======= */
-let view = (()=>{const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}})();
-let db = load(DB_KEY, {});            
-let filters = load(FILTERS_KEY, {Instagram:true, Facebook:true, X:true, YouTube:true, TikTok:true, Blog:true, Website:true});
-let settings = load(SETTINGS_KEY, {theme:document.documentElement.getAttribute('data-theme')||'orchid', tz:'local', weekStart:0, timeFmt:'12'});
-let profile = load(PROFILE_KEY, {});
-let campaigns = load(CAMPAIGN_KEY, []);
-let accounts = load(ACCOUNTS_KEY, { IG:false, FB:false, X:false, YT:false, TT:false, BLOG:false });
+/* ===================== Calendar ===================== */
+let settings = load('phasee-settings', { theme:'orchid' });
+let filters = load('phasee-filters', { Instagram:true, TikTok:true, Facebook:true, Pinterest:true, X:true, LinkedIn:true, YouTube:true, Blog:true, Website:true });
+let db = load('phasee-cal', {});   // simple local store for calendar items
+let campaigns = load('phasee-camps', []);
 
-/* ======= Platform Map (with icons) ======= */
-const PLATS = [
-  {key:'Instagram', cls:'ig', label:'Instagram', sym:'#i-ig'},
-  {key:'Facebook',  cls:'fb', label:'Facebook',  sym:'#i-fb'},
-  {key:'X',         cls:'x',  label:'X/Twitter', sym:'#i-x'},
-  {key:'YouTube',   cls:'yt', label:'YouTube',   sym:'#i-yt'},
-  {key:'TikTok',    cls:'tt', label:'TikTok',    sym:'#i-tt'},
-  {key:'Blog',      cls:'blog', label:'Blog',    sym:'#i-blog'},
-  {key:'Website',   cls:'web', label:'Website',  sym:'#i-web'},
-];
-
-/* ======= Calendar ======= */
 const grid = $('#grid');
 const monthLabel = $('#monthLabel');
 const rangeText = $('#rangeText');
-const postCount = $('#postCount');
+const schedCount = $('#schedCount');
+
+function buildViewBy(){
+  const menu = $('#viewByMenu'); menu.innerHTML='';
+  const items = [
+    {k:'Instagram', cls:'ig', label:'Instagram'},
+    {k:'TikTok', cls:'tt', label:'TikTok'},
+    {k:'Facebook', cls:'fb', label:'Facebook'},
+    {k:'Pinterest', cls:'pin', label:'Pinterest'},
+    {k:'X', cls:'x', label:'X / Twitter'},
+    {k:'LinkedIn', cls:'li', label:'LinkedIn'},
+    {k:'YouTube', cls:'yt', label:'YouTube'},
+    {k:'Blog', cls:'blog', label:'Blog'},
+  ];
+  items.forEach(p=>{
+    const row=document.createElement('label'); row.className='drop-row';
+    const pill=document.createElement('div'); pill.className='ico-pill '+p.cls; pill.textContent=p.k[0];
+    const cb=document.createElement('input'); cb.type='checkbox'; cb.checked = filters[p.k]!==false;
+    cb.addEventListener('change', () => { filters[p.k]=cb.checked; save('phasee-filters',filters); buildCalendar(view.y,view.m); });
+    const txt=document.createElement('span'); txt.textContent=' '+p.label;
+    row.append(pill, cb, txt);
+    menu.appendChild(row);
+  });
+}
+$('#viewByBtn').addEventListener('click', (e)=>{ e.stopPropagation(); $('#viewByMenu').classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!e.target.closest('#viewByMenu') && !e.target.closest('#viewByBtn')) $('#viewByMenu').classList.remove('open'); });
+
+let view = (()=>{const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}})();
 
 function buildCalendar(y,m){
   grid.innerHTML='';
-  const first = new Date(y,m,1);
-  const startDayRaw = first.getDay();
-  const weekStart = Number(settings.weekStart||0);
+  const first=new Date(y,m,1);
+  const startDayRaw=first.getDay();
+  const weekStart=0;
   const startDay = (startDayRaw - weekStart + 7) % 7;
 
-  const daysInMonth = new Date(y,m+1,0).getDate();
-  const prevDays = new Date(y,m,0).getDate();
-  const cells = 42;
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const prevDays=new Date(y,m,0).getDate();
+  const cells=42;
 
   monthLabel.textContent = first.toLocaleString(undefined,{month:'long',year:'numeric'});
   rangeText.textContent = `${first.toLocaleDateString(undefined,{month:'short'})} 1–${daysInMonth}`;
@@ -644,7 +487,7 @@ function buildCalendar(y,m){
   let visibleTotal=0;
 
   for(let i=0;i<cells;i++){
-    const cell = document.createElement('div'); cell.className='day';
+    const cell=document.createElement('div'); cell.className='day';
     let dayNum, iso, muted=false;
     if(i<startDay){ dayNum=prevDays-startDay+i+1; iso=isoOf(y,m-1,dayNum); muted=true; }
     else if(i>=startDay+daysInMonth){ dayNum=i-(startDay+daysInMonth)+1; iso=isoOf(y,m+1,dayNum); muted=true; }
@@ -654,348 +497,110 @@ function buildCalendar(y,m){
     cell.dataset.iso=iso;
 
     const head=document.createElement('div'); head.className='dhead';
-    head.innerHTML=`<div class="dnum">${dayNum} <span class="dots">···</span></div>`;
-    const plus=document.createElement('button'); plus.className='plus'; plus.type='button'; plus.textContent='+'; plus.onclick=(e)=>{ e.stopPropagation(); openQuick(iso); };
+    head.innerHTML=`<div class="dnum">${dayNum}</div>`;
+    const plus=document.createElement('button'); plus.className='plus'; plus.textContent='+'; plus.onclick=(e)=>{ e.stopPropagation(); quickAdd(iso); };
 
     const list=document.createElement('div'); list.className='list';
     const items=(db[iso]||[]).filter(it => filters[it.platform??'']!==false);
     visibleTotal += items.length;
 
     if(items.length===0) list.innerHTML='<div class="empty">No items</div>';
-    else items.forEach((it, idx)=> list.appendChild(renderCard(it, iso, idx)));
-
-    cell.addEventListener('click', (e) => {
-      if(e.target.closest('.plus')) return;
-      openDay(iso);
-    });
-
-    cell.addEventListener('dragover', (e)=>{ e.preventDefault(); cell.classList.add('dragover'); });
-    cell.addEventListener('dragleave', ()=> cell.classList.remove('dragover'));
-    cell.addEventListener('drop', (e)=>{
-      e.preventDefault();
-      cell.classList.remove('dragover');
-      const payload = JSON.parse(e.dataTransfer.getData('text/plain')||'{}');
-      if(!payload || payload.iso==null || payload.index==null) return;
-      const srcIso = payload.iso, idx = Number(payload.index);
-      const arr = db[srcIso]||[];
-      const [moved] = arr.splice(idx,1);
-      if(arr.length) db[srcIso]=arr; else delete db[srcIso];
-      const tgtIso = iso;
-      db[tgtIso] ??= [];
-      db[tgtIso].push(moved);
-      save(DB_KEY, db);
-      buildCalendar(view.y,view.m);
+    else items.forEach(it=>{
+      const card=document.createElement('div'); card.className='cal-card '+(classOf(it.platform));
+      card.innerHTML=`<div class="pip">${(it.platform||'P')[0]}</div><div>${esc(it.title||'Untitled')}</div><div class="timechip">${esc(it.time||'')}</div>`;
+      list.appendChild(card);
     });
 
     cell.append(head, plus, list);
     grid.appendChild(cell);
   }
 
-  postCount.textContent = `${visibleTotal} scheduled`;
+  schedCount.textContent = `${visibleTotal} scheduled`;
 }
 
-function renderCard(it, iso, idx){
-  const cls = (PLATS.find(p=>p.key.toLowerCase()===(it.platform||'').toLowerCase())?.cls) || 'blog';
-  const card=document.createElement('div'); card.className=`card ${cls}`;
-  card.setAttribute('draggable','true');
-  card.dataset.iso = iso;
-  card.dataset.index = idx;
-
-  card.innerHTML = `
-    <div class="pip">${(it.platform||'')[0]||'P'}</div>
-    <div>${esc(it.title||'Untitled')}</div>
-    <div class="timechip">${esc(fmtTime(it.time||'', settings.timeFmt))}</div>`;
-
-  card.addEventListener('dragstart', (e)=>{
-    card.classList.add('dragging');
-    e.dataTransfer.setData('text/plain', JSON.stringify({ iso, index: idx }));
-    e.dataTransfer.effectAllowed = 'move';
-  });
-  card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
-  return card;
+function classOf(platform){
+  const map = {Instagram:'ig', TikTok:'tt', Facebook:'fb', Pinterest:'pin', X:'x', LinkedIn:'li', YouTube:'yt', Blog:'blog', Website:'web'};
+  return map[platform]||'blog';
 }
 
-/* ======= Nav Switching ======= */
-$('#nav').addEventListener('click', (e)=>{
-  const a = e.target.closest('a'); if(!a) return;
-  e.preventDefault();
-  $$('#nav a').forEach(n=>{ n.dataset.active='false'; n.removeAttribute('aria-current'); });
-  a.dataset.active='true';
-  a.setAttribute('aria-current','page');
-  const page=a.getAttribute('data-page');
+function quickAdd(iso){
+  db[iso] ??= [];
+  db[iso].push({ platform:'Instagram', title:'New Post', time:'' });
+  save('phasee-cal', db);
+  buildCalendar(view.y, view.m);
+}
 
-  // default: show calendar
-  $$('.page').forEach(p=>p.classList.remove('active'));
-  if(page==='calendar'){ $('#pageCalendar').classList.add('active'); buildCalendar(view.y, view.m); return; }
-  if(page==='campaigns'){ $('#pageCampaigns').classList.add('active'); renderCampaigns(); return; }
-  if(page==='analytics'){ $('#pageAnalytics').classList.add('active'); refreshAnalytics(); return; }
-  if(page==='profile'){ openProfile(); $('#pageCalendar').classList.add('active'); } // keep calendar visible
-});
-
-/* ======= Header Buttons ======= */
 $('#prev').onclick=()=>{ view.m--; if(view.m<0){view.m=11;view.y--} buildCalendar(view.y,view.m) }
 $('#next').onclick=()=>{ view.m++; if(view.m>11){view.m=0;view.y++} buildCalendar(view.y,view.m) }
-// Removed Today button & handler
 
-/* ======= View-By (Eye) ======= */
-const viewByBtn = $('#viewByBtn');
-const viewByMenu = $('#viewByMenu');
-
-function renderViewBy(){
-  viewByMenu.innerHTML='';
-  PLATS.forEach(p=>{
-    const row = document.createElement('label'); 
-    row.className='drop-row'; 
-    row.setAttribute('role','menuitemcheckbox');
-
-    const pill = document.createElement('div'); 
-    pill.className=`ico-pill ${p.cls} pip`;
-    pill.innerHTML = `<svg><use href="${p.sym}"/></svg>`;
-
-    const cb = document.createElement('input'); 
-    cb.type='checkbox'; 
-    cb.checked = filters[p.key]!==false;
-
-    cb.addEventListener('change', ()=>{
-      filters[p.key]=cb.checked; 
-      save(FILTERS_KEY, filters); 
-      buildCalendar(view.y, view.m);
-      row.setAttribute('aria-checked', String(cb.checked));
-    });
-
-    const txt = document.createElement('span'); 
-    txt.textContent = ' ' + p.label;
-
-    row.append(pill, cb, txt);
-    row.setAttribute('aria-checked', String(cb.checked));
-    viewByMenu.appendChild(row);
-  });
-}
-viewByBtn.addEventListener('click', (e)=>{
-  e.stopPropagation();
-  const open = !viewByMenu.classList.contains('open');
-  viewByMenu.classList.toggle('open', open);
-  viewByBtn.setAttribute('aria-expanded', String(open));
-  viewByMenu.setAttribute('aria-hidden', String(!open));
-});
-document.addEventListener('click', (e)=>{
-  if(!e.target.closest('#viewByMenu') && !e.target.closest('#viewByBtn')){
-    viewByMenu.classList.remove('open');
-    viewByBtn.setAttribute('aria-expanded', 'false');
-    viewByMenu.setAttribute('aria-hidden', 'true');
+/* ===================== Profile ===================== */
+function fillYears(){
+  const sel = $('#pYear'); sel.innerHTML='';
+  const now=(new Date()).getFullYear();
+  for(let y=now; y>=1900; y--){
+    const opt=document.createElement('option'); opt.value=String(y); opt.textContent=String(y);
+    sel.appendChild(opt);
   }
-});
-
-/* ======= Settings ======= */
-const flySettings = $('#flySettings');
-$('#settingsLink').onclick = ()=>{ syncSettingsUI(); syncAccountsUI(); flySettings.classList.add('open'); };
-$('#settingsClose').onclick = ()=> flySettings.classList.remove('open');
-$$('#flySettings .chip').forEach(ch=>{
-  ch.addEventListener('click', ()=>{
-    $$('#flySettings .chip').forEach(x=>x.dataset.on='false');
-    ch.dataset.on='true';
-    settings.theme = ch.dataset.theme;
-    document.documentElement.setAttribute('data-theme', settings.theme);
-    save(SETTINGS_KEY, settings);
-  });
-});
-function syncSettingsUI(){
-  $$('#flySettings .chip').forEach(x=>x.dataset.on = (x.dataset.theme===settings.theme)+'' );
-  $('#setTZ').value = settings.tz||'local';
-  $('#setWeekStart').value = String(settings.weekStart||0);
-  $('#setTimeFmt').value = settings.timeFmt||'12';
 }
-$('#setTZ').onchange = ()=>{ settings.tz = $('#setTZ').value; save(SETTINGS_KEY, settings); };
-$('#setWeekStart').onchange = ()=>{ settings.weekStart = Number($('#setWeekStart').value||0); save(SETTINGS_KEY, settings); buildCalendar(view.y, view.m); };
-$('#setTimeFmt').onchange = ()=>{ settings.timeFmt = $('#setTimeFmt').value; save(SETTINGS_KEY, settings); buildCalendar(view.y, view.m); };
-
-/* ======= Connected Accounts (placeholders) ======= */
-function toggleAccount(key, btnEl, statusEl){
-  accounts[key] = !accounts[key];
-  save(ACCOUNTS_KEY, accounts);
-  btnEl.textContent = accounts[key] ? 'Disconnect' : 'Connect';
-  statusEl.textContent = accounts[key] ? 'Connected' : 'Not connected';
-}
-function syncAccountsUI(){
-  const map = [
-    ['IG',  '#connectIG',  '#statusIG'],
-    ['FB',  '#connectFB',  '#statusFB'],
-    ['X',   '#connectX',   '#statusX'],
-    ['YT',  '#connectYT',  '#statusYT'],
-    ['TT',  '#connectTT',  '#statusTT'],
-    ['BLOG','#connectBlog','#statusBlog'],
-  ];
-  map.forEach(([k, bSel, sSel])=>{
-    const b = $(bSel), s = $(sSel);
-    if(!b || !s) return;
-    b.textContent = accounts[k] ? 'Disconnect' : 'Connect';
-    s.textContent = accounts[k] ? 'Connected' : 'Not connected';
-    b.onclick = ()=> toggleAccount(k, b, s);
-  });
-}
-
-/* ======= Profile ======= */
-const flyProfile = $('#flyProfile');
-function openProfile(){ loadProfileUI(); flyProfile.classList.add('open'); }
-$('#profileClose').onclick = ()=> flyProfile.classList.remove('open');
-$('#profileSave').onclick = ()=>{
-  profile = {
-    name: $('#pName').value.trim(),
-    industry: $('#pIndustry').value.trim(),
-    years: Number($('#pYears').value||0),
-    tone: $('#pTone').value,
-    color1: $('#pColor1').value, color2: $('#pColor2').value,
-    notes: $('#pNotes').value,
-    logo: profile.logo||null
-  };
-  save(PROFILE_KEY, profile);
-  flyProfile.classList.remove('open');
-  refreshAnalytics();
-};
 $('#pLogo').addEventListener('change', (e)=>{
-  const f = e.target.files?.[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ()=>{ profile.logo = r.result; $('#pLogoPrev').src = profile.logo; $('#pLogoPrev').style.display='block'; };
+  const f=e.target.files?.[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ $('#pLogoPrev').src=r.result; $('#pLogoPrev').style.display='block'; };
   r.readAsDataURL(f);
 });
-function loadProfileUI(){
-  $('#pName').value = profile.name||'';
-  $('#pIndustry').value = profile.industry||'';
-  $('#pYears').value = profile.years||'';
-  $('#pTone').value = profile.tone||'Casual';
-  $('#pColor1').value = profile.color1||'#6F6AE6';
-  $('#pColor2').value = profile.color2||'#8B7CFF';
-  $('#pNotes').value = profile.notes||'';
-  if(profile.logo){ $('#pLogoPrev').src = profile.logo; $('#pLogoPrev').style.display='block'; } else { $('#pLogoPrev').style.display='none'; }
-}
-
-/* ======= Quick Add & Day Drawer ======= */
-const quickModal = $('#quickModal');
-let quickISO = null;
-function openQuick(iso){
-  quickISO = iso;
-  $('#qaName').value=''; $('#qaType').value='Instagram'; $('#qaTime').value=''; $('#qaOwner').value=''; $('#qaCopy').value=''; $('#qaProg').value=''; $('#qaRepeat').value='none'; $('#qaRepeatCount').value='1';
-  quickModal.classList.add('open');
-}
-$('#closeQuick').onclick=()=>quickModal.classList.remove('open');
-$('#cancelQuick').onclick=()=>quickModal.classList.remove('open');
-$('#saveQuick').onclick=()=>{
-  if(!quickISO) return;
-  const base = {
-    platform: $('#qaType').value,
-    title: $('#qaName').value || 'Untitled',
-    time: $('#qaTime').value || '',
-    owner: $('#qaOwner').value || null,
-    progress: ($('#qaProg').value==='') ? null : Math.max(0,Math.min(100,Number($('#qaProg').value))),
-    copy: $('#qaCopy').value || ''
+$('#profileSave').onclick=()=>{
+  const prof = {
+    name: $('#pName').value.trim(),
+    industry: $('#pIndustry').value.trim(),
+    founded: $('#pYear').value,
+    tone: $('#pTone').value.trim(),
+    notes: $('#pNotes').value.trim()
   };
-  db[quickISO] ??= [];
-  db[quickISO].push({...base});
-
-  const freq = ($('#qaRepeat').value || 'none');
-  const count = Math.max(1, Math.min(12, Number($('#qaRepeatCount').value)||1));
-  if(freq !== 'none'){
-    const d0 = new Date(quickISO);
-    for(let i=1;i<count;i++){
-      const d = new Date(d0);
-      if(freq==='weekly') d.setDate(d.getDate() + 7*i);
-      if(freq==='monthly') d.setMonth(d.getMonth() + i);
-      const iso = d.toISOString().slice(0,10);
-      db[iso] ??= []; db[iso].push({...base});
-    }
-  }
-  save(DB_KEY, db);
-  quickModal.classList.remove('open');
-  buildCalendar(view.y,view.m);
-};
-
-const dayModal = $('#dayModal');
-const dayTitle = $('#dayTitle');
-const dayList  = $('#dayList');
-const dayEmpty = $('#dayEmpty');
-const dayCount = $('#dayCount');
-let dayISO = null;
-
-function openDay(iso){
-  dayISO = iso; dayTitle.textContent = `Items · ${iso}`;
-  renderDayList();
-  dayModal.classList.add('open');
+  save('phasee-profile', prof);
+  alert('Profile saved');
 }
-function closeDay(){ dayModal.classList.remove('open'); dayISO = null; }
-$('#closeDay').onclick = closeDay;
-$('#addToDay').onclick = () => { if(dayISO) openQuick(dayISO); };
 
-function renderDayList(){
-  const items = (db[dayISO] || []).filter(it => filters[it.platform??'']!==false);
-  dayList.innerHTML = '';
-  if(items.length === 0){
-    dayEmpty.style.display = 'block';
-    dayCount.textContent = '0 items';
-    return;
-  }
-  dayEmpty.style.display = 'none';
-  dayCount.textContent = `${items.length} item${items.length>1?'s':''}`;
-  items.forEach((it, idx) => {
-    const row = document.createElement('div');
-    row.className = 'camp-item';
-    const sym = (PLATS.find(p=>p.key===it.platform)?.sym)||'#i-blog';
-    const pip = document.createElement('div'); 
-    pip.className = 'pip ico-pill ' + (PLATS.find(p=>p.key===it.platform)?.cls||'blog'); 
-    pip.innerHTML = `<svg><use href="${sym}"/></svg>`;
-    const body = document.createElement('div');
-    body.innerHTML = `<div class="camp-name">${esc(it.title||'Untitled')}</div>
-                      <div class="camp-meta">${esc(it.platform||'Post')} · ${esc(it.owner||'—')} · ${esc(fmtTime(it.time||'', settings.timeFmt))}</div>`;
-    const del = document.createElement('button'); del.className = 'iconbtn'; del.type='button'; del.textContent = 'Delete';
-    del.onclick = () => {
-      const arr = db[dayISO] || [];
-      const origIdx = (db[dayISO]||[]).findIndex(x => x===it);
-      arr.splice(origIdx>=0?origIdx:idx, 1);
-      if(arr.length) db[dayISO] = arr; else delete db[dayISO];
-      save(DB_KEY, db);
-      renderDayList();
-      buildCalendar(view.y, view.m);
-    };
-    row.append(pip, body, del);
-    dayList.appendChild(row);
+/* ===================== Campaigns ===================== */
+function renderCampaigns(){
+  const tb = $('#campTbody'); tb.innerHTML='';
+  const rows = [...campaigns];
+  const sort = $('#campSort').value;
+  rows.sort((a,b)=>{
+    if(sort==='date') return a.start.localeCompare(b.start);
+    if(sort==='platform') return (a.plats?.[0]||'').localeCompare(b.plats?.[0]||'');
+    return (a.title||'').localeCompare(b.title||'');
   });
+  rows.forEach((c, idx)=>{
+    const tr=document.createElement('tr'); tr.className='tr';
+    tr.innerHTML=`
+      <td class="td"><div class="muted">${esc(c.start)} → ${esc(c.end)}</div></td>
+      <td class="td"><b>${esc(c.title||'Campaign')}</b></td>
+      <td class="td">${(c.plats||[]).map(p=>`<span class="badge ${classOf(p)}"><b>${p[0]}</b> ${esc(p)}</span>`).join(' ')}</td>
+      <td class="td">—</td>
+      <td class="td">Draft</td>
+      <td class="td">
+        <button class="btn" data-edit="${idx}">Edit</button>
+        <button class="btn" data-del="${idx}">Delete</button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+  tb.addEventListener('click', (e)=>{
+    const btn=e.target.closest('button'); if(!btn) return;
+    if(btn.dataset.del){ campaigns.splice(Number(btn.dataset.del),1); save('phasee-camps',campaigns); renderCampaigns(); }
+    if(btn.dataset.edit){ alert('Edit coming soon'); }
+  }, {once:true});
 }
-
-/* ======= Campaigns ======= */
-$('#newCampaign').onclick = ()=> { $('#campModal').classList.add('open'); };
-$('#campClose').onclick = ()=> $('#campModal').classList.remove('open');
-$('#campCancel').onclick = ()=> $('#campModal').classList.remove('open');
-$('#campPlatforms').addEventListener('click', (e)=>{ const c=e.target.closest('.chip'); if(!c) return; c.dataset.on = c.dataset.on==='true'?'false':'true'; });
-$('#campSave').onclick = ()=>{
-  const name = $('#campName').value.trim() || 'Campaign';
-  const obj = $('#campObj').value.trim() || 'General';
-  const s = $('#campStart').value; const e = $('#campEnd').value;
-  const plats = $$('#campPlatforms .chip[data-on="true"]').map(x=>x.dataset.val);
-  if(!s || !e){ alert('Please provide start and end dates.'); return; }
-  campaigns.push({name, obj, start:s, end:e, plats});
-  save(CAMPAIGN_KEY, campaigns);
-  $('#campModal').classList.remove('open');
+$('#campSort').onchange=renderCampaigns;
+$('#newCampaign').onclick=()=>{
+  const today = new Date().toISOString().slice(0,10);
+  campaigns.push({ title:'Campaign', start:today, end:today, plats:['Instagram','Facebook'] });
+  save('phasee-camps', campaigns);
   renderCampaigns();
 };
-function renderCampaigns(){
-  const list = $('#campList');
-  const empty = $('#campEmpty');
-  list.innerHTML='';
-  const arr = [...campaigns].sort((a,b)=> a.start.localeCompare(b.start));
-  if(arr.length===0){ empty.style.display='block'; return; }
-  empty.style.display='none';
-  arr.forEach(c=>{
-    const row=document.createElement('div'); row.className='camp-item';
-    const date=document.createElement('div'); date.className='camp-date'; date.textContent = `${c.start} → ${c.end}`;
-    const body=document.createElement('div'); body.innerHTML = `<div class="camp-name">${esc(c.name)}</div><div class="camp-meta">${esc(c.obj)} · ${esc(c.plats.join(', ')||'—')}</div>`;
-    const del=document.createElement('button'); del.className='iconbtn'; del.type='button'; del.textContent='Delete';
-    del.onclick=()=>{ campaigns = campaigns.filter(x=>x!==c); save(CAMPAIGN_KEY, campaigns); renderCampaigns(); };
-    row.append(date, body, del);
-    list.appendChild(row);
-  });
-}
 
-/* ======= Analytics ======= */
+/* ===================== Analytics ===================== */
 function refreshAnalytics(){
+  // recompute from db (month window)
   const y=view.y, m=view.m, daysInMonth=new Date(y,m+1,0).getDate();
   const startISO=isoOf(y,m,1), endISO=isoOf(y,m,daysInMonth);
   let total=0; const platCount={};
@@ -1010,13 +615,57 @@ function refreshAnalytics(){
   $('#kpiUpcoming').textContent = total;
   const top = Object.entries(platCount).sort((a,b)=>b[1]-a[1])[0];
   $('#kpiTopPlat').textContent = top ? `${top[0]} (${top[1]})` : '—';
-  $('#mixList').innerHTML = Object.keys(platCount).length? Object.entries(platCount).map(([p,n])=>`${p}: ${n}`).join('<br>'):'—';
-  $('#benchIndustry').textContent = profile.industry || '—';
+
+  // build quick filter chips
+  const fwrap = $('#anaFilter'); fwrap.innerHTML='';
+  ['Instagram','TikTok','Facebook','Pinterest','X','LinkedIn','YouTube','Blog'].forEach(p=>{
+    const b=document.createElement('span'); b.className='badge '+classOf(p); b.textContent=p;
+    fwrap.appendChild(b);
+  });
 }
 
-/* ======= Build controls & init ======= */
-renderViewBy();
-(()=>{ const d=new Date(); view={y:d.getFullYear(),m:d.getMonth()}; buildCalendar(view.y,view.m) })();
+/* ===================== Settings: Theme & OAuth ===================== */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', settings.theme || 'orchid');
+}
+$$('input[name="theme"]').forEach(r=>{
+  r.checked = (r.value === (settings.theme||'orchid'));
+  r.addEventListener('change', ()=>{
+    settings.theme = r.value;
+    save('phasee-settings', settings);
+    applyTheme();
+  });
+});
+
+$('#loginBtn').onclick = async ()=>{
+  try{
+    // Optional: a central login endpoint (email/password or OAuth portal)
+    location.href = `${API_BASE}/auth/login`;
+  }catch(e){ alert('Login failed'); }
+};
+$('#logoutBtn').onclick = async ()=>{
+  try{
+    location.href = `${API_BASE}/auth/logout`;
+  }catch(e){ alert('Logout failed'); }
+};
+
+// Provider buttons → /oauth/:provider/start
+$('#page-settings').addEventListener('click', (e)=>{
+  const b = e.target.closest('button[data-oauth]'); if(!b) return;
+  const provider = b.getAttribute('data-oauth'); // instagram, tiktok, facebook, pinterest, twitter, linkedin
+  location.href = `${API_BASE}/oauth/${provider}/start?return=${encodeURIComponent(location.href)}`;
+});
+
+/* ===================== Init ===================== */
+function init(){
+  applyTheme();
+  buildViewBy();
+  buildCalendar(view.y, view.m);
+  renderCampaigns();
+  fillYears();
+  handleHash();
+}
+init();
 </script>
 </body>
 </html>
