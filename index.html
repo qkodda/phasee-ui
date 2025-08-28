@@ -1,671 +1,965 @@
 <!doctype html>
-<html lang="en" data-theme="orchid">
+<html lang="en" data-theme="day">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Phasee · Plan ahead. Stay ahead.</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phasee · Plan ahead. Stay ahead.</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+.campaign-shell{ max-width:100%; }
+.camp-table{
+  overflow-x:hidden;          /* no horizontal scroll */
+  position:relative;          /* ensure CSS vars resolve consistently */
+}
 
-  <style>
-  /* ===================== THEME & BASE ===================== */
-  :root{
-    --font: 13.5px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-    --r-lg:14px; --r:10px; --r-sm:8px;
-    --shadow-1: 0 5px 14px rgba(15,23,42,.06);
-    --shadow-2: 0 12px 26px rgba(15,23,42,.10);
+
+/* ===================== THEME + TOKENS ===================== */
+:root{
+  --font: 14.5px/1.55 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  --radius-lg:16px; --radius:12px; --radius-sm:9px;
+  --shadow-1: 0 6px 18px rgba(20,25,38,.06);
+  --shadow-2: 0 14px 30px rgba(20,25,38,.10);
+
+  /* brand / accents */
+  --accent:#7A70F5;             /* primary lavender */
+  --accent-2:#FF8A3D;           /* vibrant orange for pop/hover */
+  --plus:#49D07E;               /* friendly green plus */
+  --plus-glow: rgba(73,208,126,.22);
+
+  /* day */
+  --bg: #F7F8FC;
+  --panel: #ffffff;
+  --panel-2: #FAFBFF;
+  --ring:#E7EAF5;
+  --ink:#0f172a;
+  --muted:#6b7280;
+  --chip:#EEF0FF; --chip-b:#DADFFF;
+}
+[data-theme="night"]{
+  --bg: #0E1220;
+  --panel:#141A2B;
+  --panel-2:#11182A;
+  -objectiive-ring:#1D2740;
+  --ink:#E7ECF8;
+  --muted:#9AA6C0;
+  --chip:#1A2140; --chip-b:#2A335C;
+}
+
+/* ===================== LAYOUT SHELL ===================== */
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font:var(--font); color:var(--ink); background:
+  radial-gradient(1400px 700px at 20% -10%, #F1F3FF 0%, var(--bg) 38%, var(--bg) 100%);}
+
+a{color:inherit; text-decoration:none}
+button{font:inherit}
+
+.app{
+  display:grid; grid-template-columns: 220px 1fr; min-height:100dvh;
+}
+
+/* ===================== SIDEBAR ===================== */
+.side{
+  position:sticky; top:0; height:100dvh; padding:18px 12px 16px;
+  background:linear-gradient(180deg, var(--panel), var(--panel-2));
+  border-right:1px solid var(--ring);
+  display:flex; flex-direction:column; gap:10px; z-index:5;
+}
+.brand{display:flex; align-items:center; gap:10px; padding:6px 8px}
+.logo{width:26px;height:26px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),color-mix(in oklab,var(--accent-2) 65%, #fff 35%));
+  box-shadow:0 8px 18px color-mix(in oklab, var(--accent) 42%, transparent);
+}
+.brandname{font-weight:900; font-size:22px}
+
+.nav{display:grid; gap:6px; margin-top:8px}
+.nav a{
+  display:flex; align-items:center; gap:10px;
+  padding:10px; border-radius:12px; font-weight:800; border:1px solid transparent;
+}
+.nav a[data-active="true"], .nav a:hover{
+  background:var(--panel-2); border-color:var(--ring)
+}
+
+/* Settings block at bottom */
+.side .foot{margin-top:auto; display:grid; gap:8px; padding:8px}
+.settings-link{
+  font-weight:800; cursor:pointer; width:max-content;
+  padding:8px 10px; border-radius:12px;
+}
+.settings-link:hover{background:var(--panel-2); border:1px solid var(--ring)}
+.plan-wrap{display:grid; gap:6px; margin-top:2px}
+.plan-name{font-size:12px; color:var(--muted); text-align:center}
+.upgrade{
+  justify-self:center;
+  border:1px solid transparent; color:#fff; font-weight:900;
+  background:linear-gradient(135deg, var(--accent-2), color-mix(in oklab, var(--accent-2) 85%, #ffd7bf 15%));
+  padding:8px 12px; border-radius:12px; box-shadow:0 10px 20px rgba(255,138,61,.18);
+}
+.upgrade:hover{filter:brightness(1.03)}
+
+/* ===================== TOP BAR ===================== */
+.main{display:grid; grid-template-rows:62px 1fr}
+.top{
+  background:linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel-2) 60%, var(--panel) 40%));
+  border-bottom:1px solid var(--ring); padding:0 16px;
+  display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:4;
+}
+.monthbar{display:flex; align-items:center; gap:8px}
+.monthbtn{appearance:none; border:1px solid var(--ring); background:var(--panel); border-radius:12px; padding:6px 10px; font-weight:800; cursor:pointer}
+.monthlabel{font-weight:900; font-size:18px}
+
+.controls{display:flex; align-items:center; gap:10px; position:relative}
+.iconbtn{appearance:none; border:1px solid var(--ring); background:var(--panel); border-radius:12px; padding:6px 10px; cursor:pointer; font-weight:800}
+
+/* View-by dropdown */
+.dropdown{
+  position:absolute; right:0; top:40px; min-width:240px;
+  background:var(--panel); border:1px solid var(--ring); border-radius:12px;
+  box-shadow:var(--shadow-2); padding:10px; display:none; z-index:10;
+}
+.dropdown.open{display:block}
+.drop-row{display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:8px}
+.drop-row:hover{background:var(--panel-2)}
+.pill{display:inline-flex; align-items:center; gap:6px; padding:4px 8px; font-weight:900; border-radius:999px; border:1px solid var(--ring)}
+.pill .dot{width:8px;height:8px;border-radius:50%}
+
+/* ===================== CALENDAR ===================== */
+.page{display:none}
+.page.active{display:block}
+.wrap{padding:16px}
+
+.calendar{background:var(--panel); border:1px solid var(--ring); border-radius:var(--radius-lg); box-shadow:var(--shadow-2); padding:10px}
+.weeks{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; padding:0 6px 4px; color:#8791a7; font-weight:900; font-size:11px}
+.grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+.day{
+  background:var(--panel); border:1px solid var(--ring); border-radius:14px; padding:10px; min-height:110px;
+  display:grid; grid-template-rows:auto 1fr; gap:6px; position:relative; box-shadow:var(--shadow-1);
+  transition:transform .08s ease, box-shadow .15s ease, border-color .12s ease;
+}
+.day:hover{transform:translateY(-1px); box-shadow:0 16px 36px rgba(15, 23, 42, .12); border-color: color-mix(in oklab, var(--accent-2) 30%, var(--ring))}
+.day.selected{outline:2px solid color-mix(in oklab, var(--accent-2) 32%, transparent); outline-offset:2px}
+.dhead{display:flex; align-items:center; justify-content:space-between}
+.dnum{font-weight:900; font-size:11px}
+.plus{
+  width:26px; height:26px; display:grid; place-items:center; border-radius:9px; border:0; cursor:pointer;
+  color:#03522A; font-weight:900; font-size:16px; line-height:0;
+  background: radial-gradient(14px 14px at 50% 50%, #9CF4C5 0%, var(--plus) 65%, var(--plus) 100%);
+  box-shadow: 0 0 0 6px var(--plus-glow);
+  transition: transform .05s ease;
+}
+.plus:active{transform:translateY(.4px)}
+.empty{opacity:.65; color:#97a0b3; font-size:11px}
+.card{
+  display:flex; align-items:center; gap:6px; padding:6px 8px;
+  border-radius:10px; border:1px solid rgba(0,0,0,.05);
+  box-shadow:0 6px 14px rgba(15,23,42,.07);
+}
+.card .pip{width:22px; height:22px; border-radius:7px; display:grid; place-items:center; color:#1d2435; font-size:12px; font-weight:900}
+.timechip{margin-left:auto; font-weight:900; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.05); font-size:10px}
+
+/* platform colors */
+.p-ig{background:#FFB7DA}
+.p-fb{background:#BFD0FF}
+.p-x{background:#CFD7E7}
+.p-yt{background:#FFB8C0}
+.p-tt{background:#FFD57A}
+.p-bl{background:#BFE9CF}
+.p-web{background:#FFC7AE}
+
+/* ===================== PROFILE (mock-exact) ===================== */
+.profile-card{
+  max-width: 760px;
+  background:var(--panel); border:1px solid var(--ring);
+  border-radius:var(--radius-lg); box-shadow:var(--shadow-2);
+  padding:16px 16px 18px; margin-top:12px;
+}
+.h2{font-weight:900; margin:0 0 8px 0}
+.row{display:grid; grid-template-columns: 1fr 260px; gap:16px; align-items:start}
+.input, .select, textarea{
+  width:100%; padding:10px 12px; border:1px solid var(--ring); border-radius:12px; background:var(--panel); color:var(--ink); outline:none;
+}
+.input::placeholder, textarea::placeholder{color:#9aa3b2}
+.input:focus, .select:focus, textarea:focus{border-color:color-mix(in oklab, var(--accent) 40%, var(--ring))}
+.lab{font-size:12px; color:#7683a1; font-weight:800; margin:10px 0 6px}
+.logoBox{
+  width:120px; height:120px; border:1px dashed var(--ring); border-radius:12px; background:var(--panel-2);
+  background-size:cover; background-position:center; margin-bottom:8px;
+}
+.link-add{display:inline-block; font-weight:800; color:#5c63d6; cursor:pointer; margin-top:6px}
+.link-add:hover{text-decoration:underline}
+.link-row{display:flex; gap:8px; margin-top:6px}
+.savebar{display:flex; justify-content:flex-end; margin-top:12px}
+.savebtn{
+  border:1px solid transparent; color:#fff; font-weight:900; background:linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent-2) 60%, #fff 40%));
+  padding:10px 14px; border-radius:12px; box-shadow:0 10px 20px rgba(122,112,245,.2); cursor:pointer;
+}
+
+/* ===================== CAMPAIGNS + ANALYTICS placeholders ===================== */
+.card{background:var(--panel)}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width:1000px){
+  .app{grid-template-columns:78px 1fr}
+  .brandname{display:none}
+  .row{grid-template-columns:1fr}
+}
+</style>  <!-- ← add this line -->
+
+<style id="phasee-campaigns-clean">
+/* ===== Campaigns: single source of truth ===== */
+/* button look used for + Campaign */
+#pageCampaigns .btn{
+  appearance:none;
+  border:1px solid var(--ring);
+  background:var(--panel);
+  border-radius:12px;
+  padding:8px 12px;
+  font-weight:800;
+  cursor:pointer;
+  transition:filter .15s, transform .04s, box-shadow .15s, border-color .15s;
+}
+#pageCampaigns .btn:hover{ filter:brightness(1.02) }
+#pageCampaigns .btn:active{ transform:translateY(.4px) }
+
+#pageCampaigns .btn.primary{
+  border-color:transparent; color:#fff;
+  background:linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent-2) 60%, #fff 40%));
+  box-shadow:0 10px 20px rgba(122,112,245,.20);
+}
+#pageCampaigns .btn.primary:hover{
+  filter:none;
+  background:linear-gradient(135deg, var(--accent-2), color-mix(in oklab, var(--accent-2) 85%, #ffd7bf 15%));
+  box-shadow:0 12px 22px rgba(255,138,61,.20);
+}
+
+#pageCampaigns .campaign-shell{
+  position:relative;
+  background:var(--panel);
+  border:1px solid var(--ring);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-2);
+  overflow:hidden;
+}
+
+/* Header bar */
+/* Header bar */
+#pageCampaigns .camp-headbar{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding:18px 14px 12px;    /* ↑ more top & bottom padding */
+  border-bottom:1px solid var(--ring);
+  background:linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel-2) 65%, var(--panel) 35%));
+}
+
+/* Floating title badge (kept out of the grid’s flow) */
+#pageCampaigns .camp-title{
+  position:absolute;
+  left:16px;
+  top:-18px;                 /* ↑ lift it higher so it clears the row */
+  padding:6px 10px;          /* a hair bigger for legibility */
+  background:var(--panel);
+  border:1px solid var(--ring);
+  border-radius:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  font-size:12px;
+  line-height:1;
+  pointer-events:none;
+  z-index:2;
+}
+
+/* Table wrapper: leave room under the badge */
+#pageCampaigns .camp-table{
+  padding:10px 12px 12px;   /* ↑ more top padding so “Name” doesn’t sit under badge */
+}
+
+
+/* Table wrapper */
+#pageCampaigns .camp-table{
+  padding:6px 12px 12px;            /* slight top gap under header */
+}
+
+/* Header row (column labels) */
+#pageCampaigns .camp-row.camp-head{
+  display:grid;
+  grid-template-columns:
+    minmax(120px, var(--c-name, 1.35fr))
+    minmax(110px, var(--c-objective, 1.05fr))
+    minmax(120px, var(--c-range, 1.15fr))
+    minmax(95px,  var(--c-posts, 1fr))
+    minmax(95px,  var(--c-status, .95fr))
+    minmax(120px, var(--c-platforms, 1.1fr))
+    minmax(90px,  var(--c-tone, .9fr))
+    minmax(120px, var(--c-notes, 1.1fr));
+  align-items:center;
+  gap:0;
+  padding:8px 14px;                 /* flush to card edges */
+}
+
+/* Header cells */
+#pageCampaigns .camp-row.camp-head .camp-col{
+  position:relative;
+  font-weight:900;
+  color:#0f172a;
+  font-size:12px;
+  padding:8px 10px;
+  line-height:1.2;
+  white-space:nowrap;
+}
+#pageCampaigns .camp-row.camp-head .camp-col + .camp-col::before{
+  content:"";
+  position:absolute; left:0; top:34%;
+  height:36%; width:1px;
+  background:rgba(15,23,42,.05);
+  border-radius:1px;
+}
+
+/* (Future) body rows */
+#pageCampaigns .camp-body .camp-row{
+  display:grid;
+  grid-template-columns:inherit;    /* same columns as header */
+  align-items:center;
+  padding:6px 14px;
+  border-bottom:1px solid rgba(15,23,42,.05);
+}
+#pageCampaigns .camp-body .camp-col{
+  position:relative;
+  font-size:13px;
+  padding:6px 10px;
+  line-height:1.25;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#pageCampaigns .camp-body .camp-row:hover{
+  background:color-mix(in oklab, var(--panel-2) 40%, transparent);
+  border-radius:12px;
+}
+
+/* Narrow screens: hide least-critical column */
+@media (max-width:1240px){
+  #pageCampaigns .camp-row > .camp-col[data-key="notes"]{ display:none; }
+  #pageCampaigns .camp-row{
+    grid-template-columns:
+      minmax(120px, var(--c-name, 1.45fr))
+      minmax(110px, var(--c-objective, 1.1fr))
+      minmax(120px, var(--c-range, 1.2fr))
+      minmax(95px,  var(--c-posts, 1fr))
+      minmax(95px,  var(--c-status, .95fr))
+      minmax(120px, var(--c-platforms, 1.1fr))
+      minmax(90px,  var(--c-tone, .95fr));
   }
-  [data-theme="orchid"]{
-    --bg-grad: radial-gradient(900px 480px at 20% -10%, #F1F3FF 0%, #ffffff 40%, #F7F8FF 100%);
-    --surface:#ffffff; --surface-2:#F4F6FF; --ring:#E2E7FF;
-    --ink:#0f172a; --muted:#6b7280;
-    --accent:#6F6AE6; --accent-2:#8B7CFF;
-    --chip:#EEF0FF; --chip-b:#DADFFF;
-  }
-  [data-theme="dark"]{
-    --bg-grad: linear-gradient(180deg,#0b0d12,#0f1320);
-    --surface:#121623; --surface-2:#0f1422; --ring:#1f2434;
-    --ink:#e5e7eb; --muted:#9aa3b2;
-    --accent:#7C5CFF; --accent-2:#5EC8FF;
-    --chip:#172037; --chip-b:#283354;
+}
+</style>
+<style id="campaigns-last-fix">
+  /* Make the bar a positioning context and stop any earlier rules from winning */
+  #pageCampaigns .camp-headbar{
+    position: relative !important;
+    display: block !important;
+    padding: 16px 14px 12px !important; /* room for badge + button */
+    border-bottom: 1px solid var(--ring) !important;
   }
 
-  *{box-sizing:border-box}
-  html,body{margin:0;height:100%}
-  body{font:var(--font); color:var(--ink); background:var(--bg-grad)}
-  a{color:inherit; text-decoration:none}
-
-  .btn{
-    appearance:none; border:1px solid var(--ring); background:var(--surface); color:var(--ink);
-    padding:6px 8px; border-radius:8px; font-weight:800; cursor:pointer; white-space:nowrap;
-    transition:filter .15s, transform .04s, box-shadow .15s;
-  }
-  .btn:hover{filter:brightness(1.03)}
-  .btn:active{transform:translateY(.4px)}
-  .btn.primary{
-    border-color:transparent; color:#fff;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 8px 20px color-mix(in oklab, var(--accent) 28%, transparent);
-  }
-  .btn.ghost{background:transparent}
-
-  .badge{
-    display:inline-flex; align-items:center; gap:6px; padding:3px 7px; border-radius:999px;
-    background:var(--surface-2); border:1px solid var(--ring); font-weight:800; font-size:12px;
+  /* Float the "Campaigns" badge above the grid, top-left */
+  #pageCampaigns .camp-title{
+    position: absolute !important;
+    left: 16px !important;
+    top: -16px !important;
+    padding: 6px 10px !important;
+    background: var(--panel) !important;
+    border: 1px solid var(--ring) !important;
+    border-radius: 10px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .06em !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
   }
 
-  /* Shell */
-  .app{display:grid; grid-template-columns:180px 1fr; min-height:100dvh}
-
-  /* Sidebar */
-  .side{
-    position:sticky; top:0; height:100dvh; background:linear-gradient(180deg, var(--surface), var(--surface-2));
-    border-right:1px solid var(--ring); padding:12px 10px; display:flex; flex-direction:column; gap:10px; z-index:5;
+  /* Pin the + Campaign button to the far right of the card */
+  #pageCampaigns .camp-actions{
+    position: absolute !important;
+    right: 16px !important;
+    top: 10px !important;
+    margin: 0 !important;
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    z-index: 3 !important;
   }
-  .brand{display:flex; align-items:center; gap:10px; font-weight:900; padding:6px 8px}
-  .brandname{font-size:20px}
 
-  .nav{display:grid; gap:6px; margin-top:8px}
-  .nav a{
-    display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; font-weight:800; border:1px solid transparent;
+  /* Ensure the table starts below the badge */
+  #pageCampaigns .camp-table{
+    padding-top: 12px !important;
   }
-  .nav a[data-active="true"], .nav a:hover{background:var(--surface-2); border-color:var(--ring)}
-  .nav svg{opacity:.8}
 
-  .side .foot{margin-top:auto; display:grid; gap:6px; padding:6px}
-  .settings-link{font-weight:800; color:#3b3f77; cursor:pointer; width:max-content}
-  [data-theme="dark"] .settings-link{color:#a7b4ff}
-  .settings-link:hover{text-decoration:underline}
-  .upgrade-link{font-weight:900; color:#6F6AE6}
-  .upgrade-link:hover{text-decoration:underline}
-
-  /* Main */
-  .main{display:grid; grid-template-rows:56px 1fr}
-  .top{
-    background:linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface-2) 60%, var(--surface) 40%));
-    border-bottom:1px solid var(--ring); padding:0 12px;
-    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:4;
+  /* Keep header row flush with card edges */
+  #pageCampaigns .camp-row.camp-head{
+    padding-left: 14px !important;
+    padding-right: 14px !important;
   }
-  .title{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .month{font-weight:900; font-size:18px}
-  .toolbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; position:relative}
-
-  /* Content panels */
-  .content{padding:10px; display:grid; gap:10px}
-  .card{background:var(--surface); border:1px solid var(--ring); border-radius:12px; box-shadow:var(--shadow-1); padding:10px}
-  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-
-  /* Calendar */
-  .calendar{background:var(--surface); border:1px solid var(--ring); border-radius:10px; box-shadow:var(--shadow-2); padding:6px}
-  .cal-head{display:flex; align-items:center; justify-content:space-between; padding:2px 6px 6px}
-  .muted{color:var(--muted); font-size:12px}
-  .weekdays{display:grid; grid-template-columns:repeat(7,1fr); gap:3px; padding:0 6px 4px; color:#8d97ae; font-weight:900; font-size:11px}
-  .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:3px}
-  .day{
-    background:var(--surface); border:1px solid var(--ring); border-radius:10px; padding:6px; min-height:84px;
-    display:grid; grid-template-rows:auto 1fr; gap:4px; position:relative; box-shadow:var(--shadow-1);
-    transition:transform .08s ease, box-shadow .15s ease;
+</style>
+<style id="fix-camp-pin">
+  /* Make the header its own positioning context */
+  #pageCampaigns .camp-headbar{
+    position:relative !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;   /* default: right side */
+    padding:18px 16px 8px !important;
+    border-bottom:1px solid var(--ring) !important;
+    background:linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel-2) 65%, var(--panel) 35%)) !important;
   }
-  .day:hover{transform:translateY(-1px); box-shadow:0 12px 26px rgba(15, 23, 42, .10)}
-  .day.muted{opacity:.9}
-  .day.today{outline:2px solid color-mix(in oklab, var(--accent) 28%, transparent); outline-offset:2px}
-  .dhead{display:flex; align-items:center; justify-content:space-between}
-  .dnum{font-weight:900; font-size:11px; display:flex; align-items:center; gap:6px}
-  .plus{
-    position:absolute; top:6px; right:6px; width:22px; height:22px; border-radius:8px; border:0; color:#fff; cursor:pointer; font-weight:900; font-size:14px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:0 10px 20px color-mix(in oklab, var(--accent) 32%, transparent);
+
+  /* Float the title as a small badge (doesn't take grid space) */
+  #pageCampaigns .camp-title{
+    position:absolute !important;
+    left:16px !important;
+    top:-12px !important;
+    padding:6px 10px !important;
+    background:var(--panel) !important;
+    border:1px solid var(--ring) !important;
+    border-radius:8px !important;
+    font-weight:900 !important;
+    text-transform:uppercase !important;
+    letter-spacing:.06em !important;
+    font-size:12px !important;
+    line-height:1 !important;
+    pointer-events:none !important;
+    z-index:2 !important;
   }
-  .list{display:grid; gap:4px}
-  .empty{opacity:.65; color:#97a0b3; font-size:11px}
-  .cal-card{
-    display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:10px; border:1px solid rgba(0,0,0,.05); box-shadow:0 6px 14px rgba(15,23,42,.08);
+
+  /* HARD-PIN the actions to the far right */
+  #pageCampaigns .camp-actions{
+    position:absolute !important;
+    right:16px !important;
+    top:10px !important;
+    display:flex !important;
+    gap:8px !important;
+    margin:0 !important;
+    z-index:3 !important;
   }
-  .cal-card .pip{width:20px; height:20px; border-radius:7px; display:grid; place-items:center; color:#1d2435; font-size:12px; font-weight:900}
-  .timechip{margin-left:auto; font-weight:900; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.05); font-size:10px}
-  .ig{background:#FFEFF7; border-color:#FFD9EC} .ig .pip{background:#FFB7DA}
-  .fb{background:#EDF2FF; border-color:#DDE6FF} .fb .pip{background:#BFD0FF}
-  .x {background:#EEF1F7; border-color:#DDE3F1} .x  .pip{background:#CFD7E7}
-  .yt{background:#FFE9EC; border-color:#FFD5DB} .yt .pip{background:#FFB8C0}
-  .tt{background:#FFF4D2; border-color:#FFE8AA} .tt .pip{background:#FFD57A}
-  .blog{background:#E9F9F0; border-color:#D3F0E2} .blog .pip{background:#BFE9CF}
-  .pin{background:#FFE4EA; border-color:#FFC9D6} .pin .pip{background:#FF9EB5}
-  .li{background:#E8F3FF; border-color:#D3E7FF} .li .pip{background:#A9D0FF}
 
-  /* Dropdown (eye/View by) */
-  .iconbtn{appearance:none; border:1px solid var(--ring); background:var(--surface); border-radius:10px; padding:6px 8px; cursor:pointer; font-weight:800}
-  .eye{display:inline-flex; align-items:center; gap:6px}
-  .dropdown{
-    position:absolute; right:0; top:36px; min-width:240px; background:var(--surface); border:1px solid var(--ring);
-    border-radius:12px; box-shadow:var(--shadow-2); padding:10px; display:none; z-index:10;
-  }
-  .dropdown.open{display:block}
-  .drop-row{display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:8px}
-  .drop-row:hover{background:var(--surface-2)}
-  .ico-pill{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:900}
+  /* Give the grid some breathing room below the header */
+  #pageCampaigns .camp-table{ margin-top:8px !important; }
+</style>
 
-  /* Sections visibility */
-  .page{display:none}
-  .page.active{display:block}
-
-  /* Tables/simple lists */
-  .table{width:100%; border-collapse:separate; border-spacing:0 8px; font-size:13px}
-  .th{color:var(--muted); font-weight:900; padding:6px 8px}
-  .tr{background:var(--surface); border:1px solid var(--ring); border-radius:10px; box-shadow:var(--shadow-1)}
-  .td{padding:10px}
-
-  /* Forms */
-  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-  label{font-weight:800; font-size:12px}
-  .input, select, textarea{
-    width:100%; padding:8px 10px; border:1px solid var(--ring); border-radius:10px; background:var(--surface); color:var(--ink); outline:none;
-  }
-  .input:focus, select:focus, textarea:focus{border-color:color-mix(in oklab, var(--accent) 35%, #cbd5ff); background:var(--surface-2)}
-
-  /* Compact tweaks already applied above */
-
-  @media (max-width:980px){
-    .app{grid-template-columns:78px 1fr}
-    .brandname{display:none}
-    .form-grid{grid-template-columns:1fr}
-  }
-  </style>
 </head>
-
 <body>
+
 <div class="app">
   <!-- SIDEBAR -->
   <aside class="side">
     <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
       <div class="brandname">Phasee</div>
     </div>
 
     <nav class="nav" id="nav">
-      <a href="#/calendar" data-route="calendar" data-active="true">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2h2v3H7V2m8 0h2v3h-2V2M5 7h14v13H5V7m2 4h4v4H7v-4z"/></svg>
-        Calendar
-      </a>
-      <a href="#/profile" data-route="profile">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5m0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5z"/></svg>
-        Profile
-      </a>
-      <a href="#/campaigns" data-route="campaigns">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v3H3V4m0 5h18v3H3V9m0 5h18v3H3v-3z"/></svg>
-        Campaigns
-      </a>
-      <a href="#/analytics" data-route="analytics">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17h18v2H3v-2m2-2l4-5 3 4 5-7 4 6v2H5z"/></svg>
-        Analytics
-      </a>
-      <a href="#/settings" data-route="settings">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 8a4 4 0 1 0 4 4a4 4 0 0 0-4-4m8.94 3.34l-1.25-.22a6.91 6.91 0 0 0-1-2.41l.75-1.03a.5.5 0 0 0-.04-.64l-1.41-1.41a.5.5 0 0 0-.64-.04l-1.03.75a6.91 6.91 0 0 0-2.41-1l-.22-1.25A.5.5 0 0 0 10.5 3h-2a.5.5 0 0 0-.49.41L7.82 4.66a6.91 6.91 0 0 0-2.41 1l-1.03-.75a.5.5 0 0 0-.64.04L2.33 6.36a.5.5 0 0 0-.04.64l.75 1.03a6.91 6.91 0 0 0-1 2.41l-1.25.22A.5.5 0 0 0 0 12.5v2a.5.5 0 0 0 .41.49l1.25.22a6.91 6.91 0 0 0 1 2.41l-.75 1.03a.5.5 0 0 0 .04.64l1.41 1.41a.5.5 0 0 0 .64.04l1.03-.75a6.91 6.91 0 0 0 2.41 1l.22 1.25a.5.5 0 0 0 .49.41h2a.5.5 0 0 0 .49-.41l.22-1.25a6.91 6.91 0 0 0 2.41-1l1.03.75a.5.5 0 0 0 .64-.04l1.41-1.41a.5.5 0 0 0 .04-.64l-.75-1.03a6.91 6.91 0 0 0 1-2.41l1.25-.22a.5.5 0 0 0 .41-.49v-2a.5.5 0 0 0-.41-.49Z"/></svg>
-        Settings
-      </a>
+      <a href="#profile" data-page="profile"><span>Profile</span></a>
+      <a href="#calendar" data-page="calendar" data-active="true"><span>Calendar</span></a>
+      <a href="#campaigns" data-page="campaigns"><span>Campaigns</span></a>
+      <a href="#analytics" data-page="analytics"><span>Analytics</span></a>
     </nav>
 
     <div class="foot">
-      <div class="note">Phasee Core Subscription</div>
-      <a class="upgrade-link" href="#">Upgrade Plan</a>
+      <a class="settings-link" id="openSettings">Settings</a>
+      <div class="plan-wrap">
+        <div class="plan-name" id="planName">Phasee Core</div>
+        <button class="upgrade" id="upgradeBtn">Upgrade Plan</button>
+      </div>
     </div>
   </aside>
 
   <!-- MAIN -->
   <section class="main">
+    <!-- TOP BAR -->
     <header class="top">
-      <div class="title">
-        <button class="btn" id="prev" title="Previous">‹</button>
-        <div class="month" id="monthLabel">—</div>
-        <button class="btn" id="next" title="Next">›</button>
+      <div class="monthbar">
+        <button class="monthbtn" id="prev">‹</button>
+        <div class="monthlabel" id="monthLabel">—</div>
+        <button class="monthbtn" id="next">›</button>
       </div>
-      <div class="toolbar">
-        <div class="muted" id="schedCount">0 scheduled</div>
-        <button class="iconbtn eye" id="viewByBtn" title="View by">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6c-5 0-9 6-9 6s4 6 9 6 9-6 9-6-4-6-9-6m0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/></svg>
-        </button>
-        <div class="dropdown" id="viewByMenu"></div>
-        <button class="btn">Acme Co</button>
+      <div class="controls">
+        <button id="viewByBtn" class="iconbtn">👁 View by</button>
+        <div class="dropdown" id="viewByMenu" aria-label="Filter platforms"></div>
+
+        <select class="iconbtn" id="accountSel">
+          <option>Acme Co</option><option>Northwind</option><option>Contoso</option>
+        </select>
       </div>
     </header>
 
-    <!-- CALENDAR PAGE -->
-    <div class="content page active" id="page-calendar">
-      <div class="calendar">
-        <div class="cal-head">
-          <div class="muted" id="rangeText">—</div>
-        </div>
-        <div class="weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
-        <div class="grid" id="grid"></div>
-      </div>
-    </div>
-
-    <!-- PROFILE PAGE -->
-    <div class="content page" id="page-profile">
-      <div class="card">
-        <h3>Profile</h3>
-        <div class="form-grid">
-          <div>
-            <label>Company / Brand</label>
-            <input id="pName" class="input" placeholder="e.g., Acme Co">
-          </div>
-          <div>
-            <label>Industry</label>
-            <input id="pIndustry" class="input" placeholder="e.g., DTC skincare">
-          </div>
-          <div>
-            <label>Founded (Year)</label>
-            <select id="pYear" class="input"></select>
-          </div>
-          <div>
-            <label>Tone / Culture</label>
-            <input id="pTone" class="input" placeholder="e.g., Playful, Bold">
-          </div>
-          <div>
-            <label>Logo / Image</label>
-            <input id="pLogo" class="input" type="file" accept="image/*">
-          </div>
-          <div>
-            <label>Preview</label>
-            <img id="pLogoPrev" alt="" style="max-width:160px; border-radius:10px; display:none; border:1px solid var(--ring)">
-          </div>
-          <div style="grid-column:1 / -1">
-            <label>Additional Information</label>
-            <textarea id="pNotes" class="input" rows="3" placeholder="Anything that helps us build better prompts & comps"></textarea>
-          </div>
-        </div>
-        <div class="row" style="justify-content:flex-end">
-          <button class="btn primary" id="profileSave">Save</button>
+    <!-- CONTENT -->
+    <div class="wrap">
+      <!-- CALENDAR (default) -->
+      <div class="page active" id="pageCalendar">
+        <div class="calendar">
+          <div class="weeks"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+          <div class="grid" id="grid"></div>
         </div>
       </div>
-    </div>
 
-    <!-- CAMPAIGNS PAGE -->
-    <div class="content page" id="page-campaigns">
-      <div class="card">
-        <div class="row" style="justify-content:space-between">
-          <h3>Campaigns</h3>
+      <!-- PROFILE (mock) -->
+      <div class="page" id="pageProfile">
+        <div class="profile-card">
+          <h2 class="h2">Profile</h2>
+
           <div class="row">
-            <label class="muted">Sort:</label>
-            <select id="campSort" class="input">
-              <option value="date">Date</option>
-              <option value="platform">Platform</option>
-              <option value="title">Title</option>
-            </select>
-            <button class="btn primary" id="newCampaign">+ New Campaign</button>
-          </div>
-        </div>
-
-        <table class="table" id="campTable">
-          <thead>
-            <tr class="th">
-              <td class="th">Date</td>
-              <td class="th">Title</td>
-              <td class="th">Platforms</td>
-              <td class="th">Owner</td>
-              <td class="th">Status</td>
-              <td class="th">Actions</td>
-            </tr>
-          </thead>
-          <tbody id="campTbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ANALYTICS PAGE -->
-    <div class="content page" id="page-analytics">
-      <div class="row" style="align-items:stretch">
-        <div class="card" style="flex:1">
-          <h3>Industry</h3>
-          <select id="anaIndustry" class="input" style="max-width:320px">
-            <option value="general">General</option>
-            <option value="beauty">Beauty</option>
-            <option value="fitness">Fitness</option>
-            <option value="fashion">Fashion</option>
-            <option value="tech">Tech</option>
-            <option value="food">Food & Beverage</option>
-            <option value="gaming">Gaming</option>
-            <option value="finance">Finance</option>
-          </select>
-          <div class="muted" style="margin-top:8px">Benchmarks (placeholder) update with industry.</div>
-        </div>
-
-        <div class="card" style="flex:1">
-          <h3>Competitors (Goals)</h3>
-          <div class="row" style="flex-direction:column; gap:8px">
-            <input class="input" id="comp1" placeholder="Competitor / Handle #1">
-            <input class="input" id="comp2" placeholder="Competitor / Handle #2">
-            <button class="btn" id="addComp">+ Add More</button>
-            <div id="compMore" class="row" style="flex-direction:column; gap:8px"></div>
-          </div>
-          <div class="muted" style="margin-top:8px">Use this to compare cadence & performance over time.</div>
-        </div>
-
-        <div class="card" style="flex:1">
-          <h3>Personal</h3>
-          <div class="row" style="gap:20px">
             <div>
-              <div class="muted">Scheduled this month</div>
-              <div id="kpiUpcoming" style="font-weight:900; font-size:26px">0</div>
+              <div class="lab">Company / Brand</div>
+              <input class="input" id="pName" placeholder="e.g., Acme Co">
+
+              <div class="lab">Industry</div>
+              <input class="input" id="pIndustry" placeholder="e.g., DTC skincare">
+
+              <div class="lab">Tone / Culture</div>
+              <input class="input" id="pTone" placeholder="e.g., Playful, Bold">
+
+              <div class="lab">Founded (Year)</div>
+              <select class="select" id="pYear"></select>
+
+              <div class="lab">Motto</div>
+              <input class="input" id="pMotto" placeholder="">
+
+              <div class="lab">Bio</div>
+              <textarea id="pBio" rows="3" class="input" placeholder=""></textarea>
+
+              <div class="lab">Additional Information</div>
+              <textarea id="pNotes" rows="3" class="input" placeholder="Anything that helps us build better prompts & comps"></textarea>
             </div>
+
             <div>
-              <div class="muted">Top Platform</div>
-              <div id="kpiTopPlat" style="font-weight:900; font-size:26px">—</div>
-            </div>
-          </div>
-          <div class="muted" style="margin-top:8px">Filter</div>
-          <div id="anaFilter" class="row" style="gap:6px; margin-top:6px"></div>
-        </div>
-      </div>
-    </div>
+              <div class="lab">Logo / Image</div>
+              <div class="logoBox" id="pLogoBox"></div>
+              <input type="file" id="pLogo" accept="image/*">
 
-    <!-- SETTINGS PAGE -->
-    <div class="content page" id="page-settings">
-      <div class="row" style="align-items:stretch">
-        <div class="card" style="flex:1.6">
-          <h3>Settings</h3>
-          <div class="row" style="gap:16px; margin-bottom:8px">
-            <div>
-              <div class="muted">Theme</div>
-              <label><input type="radio" name="theme" value="orchid" checked> Day</label>
-              <label style="margin-left:8px"><input type="radio" name="theme" value="dark"> Night</label>
+              <div class="lab" style="margin-top:16px">Links</div>
+              <div id="linkWrap"></div>
+              <span class="link-add" id="addLink">+ Add</span>
             </div>
           </div>
 
-          <div style="margin-top:8px">
-            <h4>Integrations</h4>
-            <div class="muted">Connect social platforms for login & scheduling.</div>
-            <div class="row" style="margin-top:8px; gap:8px; flex-wrap:wrap">
-              <button class="btn" data-oauth="instagram">Connect Instagram</button>
-              <button class="btn" data-oauth="tiktok">Connect TikTok</button>
-              <button class="btn" data-oauth="facebook">Connect Facebook</button>
-              <button class="btn" data-oauth="pinterest">Connect Pinterest</button>
-              <button class="btn" data-oauth="twitter">Connect X/Twitter</button>
-              <button class="btn" data-oauth="linkedin">Connect LinkedIn</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" style="flex:1">
-          <h3>Account</h3>
-          <div class="muted">Billing info, plan, profile, and organization settings.</div>
-          <div class="row" style="margin-top:8px">
-            <button class="btn">Manage Account</button>
-            <button class="btn">Change Plan</button>
-          </div>
-
-          <h4 style="margin-top:14px">Auth</h4>
-          <div class="row">
-            <button class="btn primary" id="loginBtn">Log in</button>
-            <button class="btn" id="logoutBtn">Log out</button>
+          <div class="savebar">
+            <button class="savebtn" id="profileSave">Save</button>
           </div>
         </div>
       </div>
-    </div>
 
+      <!-- CAMPAIGNS (kept minimal; will refine later) -->
+   <section id="pageCampaigns" class="page" aria-label="Campaigns">
+  <div class="card panel campaign-shell">
+    <div class="camp-headbar"
+     style="position:relative; display:flex; align-items:center; justify-content:space-between; padding:20px 16px 10px; border-bottom:1px solid var(--ring); background:linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel-2) 65%, var(--panel) 35%));">
+
+  <!-- Floating badge -->
+  <div class="camp-title"
+       style="position:absolute; left:16px; top:-14px; padding:6px 10px; background:var(--panel); border:1px solid var(--ring); border-radius:8px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; font-size:12px; line-height:1; pointer-events:none; z-index:2;">
+    Campaigns
+  </div>
+
+  <!-- Actions pinned right -->
+  <div class="camp-actions"
+       style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+    <button id="btnNewCampaign"
+            style="padding:8px 14px; border-radius:10px; font-weight:900; background:linear-gradient(135deg, var(--accent), var(--accent-2)); color:#fff; border:none; box-shadow:0 6px 14px rgba(0,0,0,.12); cursor:pointer;">
+      + Campaign
+    </button>
+  </div>
+</div>
+
+
+
+
+
+    <div class="camp-table" role="table" aria-label="Campaigns table">
+      <div class="camp-row camp-head" role="row">
+        <div class="camp-col" role="columnheader" data-key="name">
+          <span class="head-label">Name</span>
+          <span class="sort-indicator" aria-hidden="true"></span>
+<i class="col-grip" aria-hidden="true"></i>
+
+        </div>
+        <div class="camp-col" role="columnheader" data-key="objective">
+          <span class="head-label">Objective</span>
+          <span class="sort-indicator"></span>
+<i class="col-grip" aria-hidden="true"></i>
+
+        </div>
+        <div class="camp-col" role="columnheader" data-key="range">
+          <span class="head-label">START/END</span>
+          <span class="sort-indicator"></span>
+<i class="col-grip" aria-hidden="true"></i>
+
+        </div>
+        <div class="camp-col" role="columnheader" data-key="postsPerDay">
+          <span class="head-label">POSTS/DAYS</span>
+          <span class="sort-indicator"></span>
+<i class="col-grip" aria-hidden="true"></i>
+
+        </div>
+        <div class="camp-col" role="columnheader" data-key="status">
+          <span class="head-label">Status</span>
+          <span class="sort-indicator"></span>
+<i class="col-grip" aria-hidden="true"></i>
+
+        </div>
+        <div class="camp-col" role="columnheader" data-key="platforms">
+          <span class="head-label">Platforms</span>
+          <span class="sort-indicator"></span>
+<i class="col-grip" aria-hidden="true"></i>
+
+        </div>
+        <div class="camp-col" role="columnheader" data-key="tone">
+          <span class="head-label">Tone</span>
+          <span class="sort-indicator"></span>
+<i class="col-grip" aria-hidden="true"></i>
+
+        </div>
+        <div class="camp-col" role="columnheader" data-key="notes">
+          <span class="head-label">Additional</span>
+          <span class="sort-indicator"></span>
+<i class="col-grip" aria-hidden="true"></i>
+
+        </div>
+      </div>
+
+      <!-- Body will be added in Step 2 -->
+      <div id="campBody" class="camp-body" role="rowgroup"></div>
+    </div>
+  </div>
+</section>
+
+      <!-- ANALYTICS (kept minimal; will refine later) -->
+      <div class="page" id="pageAnalytics">
+        <div class="profile-card">
+          <h2 class="h2">Analytics</h2>
+          <div>Industry / Competitors / Personal comparison cards. (Placeholder)</div>
+        </div>
+      </div>
+
+      <!-- SETTINGS (navigated from bottom link) -->
+      <div class="page" id="pageSettings">
+        <div class="profile-card">
+          <h2 class="h2">Settings</h2>
+          <div class="lab">Theme</div>
+          <label><input type="radio" name="theme" value="day" checked> Day</label>
+          &nbsp;&nbsp;
+          <label><input type="radio" name="theme" value="night"> Night</label>
+
+          <div class="lab" style="margin-top:12px">Integrations</div>
+          <div class="link-row" style="flex-wrap:wrap">
+            <button class="monthbtn">Connect Instagram</button>
+            <button class="monthbtn">Connect TikTok</button>
+            <button class="monthbtn">Connect Facebook</button>
+            <button class="monthbtn">Connect Pinterest</button>
+            <button class="monthbtn">Connect X/Twitter</button>
+            <button class="monthbtn">Connect LinkedIn</button>
+          </div>
+
+          <div class="lab" style="margin-top:12px">Account</div>
+          <div class="link-row">
+            <button class="monthbtn">Manage Account</button>
+            <button class="monthbtn">Change Plan</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </section>
 </div>
 
 <script>
-/* ===================== CONFIG ===================== */
-/** Change this to your API (Railway) origin, e.g. https://phasee-brain-production.up.railway.app */
-const API_BASE = (window.PHASEE_API_BASE || "https://phasee-brain-production.up.railway.app").replace(/\/+$/,'');
-
-/* ===================== Helpers ===================== */
+/* ======= Helpers ======= */
 const $  = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-const esc = s=> (s||'').replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-function save(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
-function load(k,fallback){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fallback }catch{ return fallback } }
-function isoOf(y,m,d){ return new Date(y,m,d).toISOString().slice(0,10); }
+const isoOf = (y,m,d)=> new Date(y,m,d).toISOString().slice(0,10);
+function saveLS(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
+function loadLS(k,fb){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fb }catch{ return fb } }
 
-/* ===================== Routing ===================== */
-const routes = ['calendar','profile','campaigns','analytics','settings'];
-function showRoute(route){
-  routes.forEach(r=>{
-    $('#page-'+r).classList.toggle('active', r===route);
-    $('#nav [data-route="'+r+'"]').dataset.active = (r===route)+'';
-  });
-  if(route==='analytics') refreshAnalytics();
+/* ======= Storage Keys ======= */
+const DB_KEY = 'phasee-db-v1';
+const SETTINGS_KEY = 'phasee-settings-v1';
+const FILTERS_KEY = 'phasee-filters-v1';
+const PROFILE_KEY = 'phasee-profile-v1';
+
+/* ======= State ======= */
+let db = loadLS(DB_KEY, {});                 // { 'YYYY-MM-DD': [ {platform,title,time,...}, ... ] }
+let filters = loadLS(FILTERS_KEY, {Instagram:true, Facebook:true, X:true, YouTube:true, TikTok:true, Blog:true, Website:true});
+let settings = loadLS(SETTINGS_KEY, {theme:document.documentElement.getAttribute('data-theme')||'day'});
+let profile = loadLS(PROFILE_KEY, {links:[]});
+
+/* ======= Platforms for View-by ======= */
+const PLATS = [
+  {key:'Instagram', cls:'p-ig', dot:'#E8447C'},
+  {key:'Facebook',  cls:'p-fb', dot:'#1877F2'},
+  {key:'X',         cls:'p-x',  dot:'#111'},
+  {key:'YouTube',   cls:'p-yt', dot:'#FF0033'},
+  {key:'TikTok',    cls:'p-tt', dot:'#00F2EA'},
+  {key:'Blog',      cls:'p-bl', dot:'#0A8C5E'},
+  {key:'Website',   cls:'p-web', dot:'#FF8A3D'},
+];
+
+/* ======= Nav Switching ======= */
+const pages = {
+  calendar: $('#pageCalendar'),
+  profile: $('#pageProfile'),
+  campaigns: $('#pageCampaigns'),
+  analytics: $('#pageAnalytics'),
+  settings: $('#pageSettings')
+};
+function showPage(name){
+  Object.values(pages).forEach(p=>p.classList.remove('active'));
+  pages[name]?.classList.add('active');
+  // sidebar highlights
+  $$('#nav a').forEach(a=>a.dataset.active = (a.dataset.page===name));
 }
-function handleHash(){
-  const r = (location.hash.replace(/^#\/?/,'')||'calendar').split('/')[0];
-  if(!routes.includes(r)) return showRoute('calendar');
-  showRoute(r);
-}
-window.addEventListener('hashchange', handleHash);
+$('#nav').addEventListener('click',(e)=>{
+  const a = e.target.closest('a'); if(!a) return;
+  e.preventDefault();
+  showPage(a.dataset.page);
+});
+$('#openSettings').addEventListener('click', ()=> showPage('settings'));
 
-/* ===================== Calendar ===================== */
-let settings = load('phasee-settings', { theme:'orchid' });
-let filters = load('phasee-filters', { Instagram:true, TikTok:true, Facebook:true, Pinterest:true, X:true, LinkedIn:true, YouTube:true, Blog:true, Website:true });
-let db = load('phasee-cal', {});   // simple local store for calendar items
-let campaigns = load('phasee-camps', []);
-
+/* ======= Month + Calendar ======= */
+let view = (()=>{const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}})();
 const grid = $('#grid');
 const monthLabel = $('#monthLabel');
-const rangeText = $('#rangeText');
-const schedCount = $('#schedCount');
-
-function buildViewBy(){
-  const menu = $('#viewByMenu'); menu.innerHTML='';
-  const items = [
-    {k:'Instagram', cls:'ig', label:'Instagram'},
-    {k:'TikTok', cls:'tt', label:'TikTok'},
-    {k:'Facebook', cls:'fb', label:'Facebook'},
-    {k:'Pinterest', cls:'pin', label:'Pinterest'},
-    {k:'X', cls:'x', label:'X / Twitter'},
-    {k:'LinkedIn', cls:'li', label:'LinkedIn'},
-    {k:'YouTube', cls:'yt', label:'YouTube'},
-    {k:'Blog', cls:'blog', label:'Blog'},
-  ];
-  items.forEach(p=>{
-    const row=document.createElement('label'); row.className='drop-row';
-    const pill=document.createElement('div'); pill.className='ico-pill '+p.cls; pill.textContent=p.k[0];
-    const cb=document.createElement('input'); cb.type='checkbox'; cb.checked = filters[p.k]!==false;
-    cb.addEventListener('change', () => { filters[p.k]=cb.checked; save('phasee-filters',filters); buildCalendar(view.y,view.m); });
-    const txt=document.createElement('span'); txt.textContent=' '+p.label;
-    row.append(pill, cb, txt);
-    menu.appendChild(row);
-  });
-}
-$('#viewByBtn').addEventListener('click', (e)=>{ e.stopPropagation(); $('#viewByMenu').classList.toggle('open'); });
-document.addEventListener('click', (e)=>{ if(!e.target.closest('#viewByMenu') && !e.target.closest('#viewByBtn')) $('#viewByMenu').classList.remove('open'); });
-
-let view = (()=>{const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}})();
 
 function buildCalendar(y,m){
   grid.innerHTML='';
-  const first=new Date(y,m,1);
-  const startDayRaw=first.getDay();
-  const weekStart=0;
-  const startDay = (startDayRaw - weekStart + 7) % 7;
-
-  const daysInMonth=new Date(y,m+1,0).getDate();
-  const prevDays=new Date(y,m,0).getDate();
-  const cells=42;
-
+  const first = new Date(y,m,1);
   monthLabel.textContent = first.toLocaleString(undefined,{month:'long',year:'numeric'});
-  rangeText.textContent = `${first.toLocaleDateString(undefined,{month:'short'})} 1–${daysInMonth}`;
+
+  const startDayRaw = first.getDay();
+  const startDay = startDayRaw;
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const prevDays = new Date(y,m,0).getDate();
+  const cells = 42;
   const todayISO = new Date().toISOString().slice(0,10);
 
-  let visibleTotal=0;
-
   for(let i=0;i<cells;i++){
-    const cell=document.createElement('div'); cell.className='day';
+    const cell = document.createElement('div'); cell.className='day';
     let dayNum, iso, muted=false;
     if(i<startDay){ dayNum=prevDays-startDay+i+1; iso=isoOf(y,m-1,dayNum); muted=true; }
     else if(i>=startDay+daysInMonth){ dayNum=i-(startDay+daysInMonth)+1; iso=isoOf(y,m+1,dayNum); muted=true; }
     else { dayNum=i-startDay+1; iso=isoOf(y,m,dayNum); }
-    if(muted) cell.classList.add('muted');
-    if(iso===todayISO) cell.classList.add('today');
-    cell.dataset.iso=iso;
+    if(iso===todayISO) cell.classList.add('selected');
+    cell.dataset.iso = iso;
 
     const head=document.createElement('div'); head.className='dhead';
-    head.innerHTML=`<div class="dnum">${dayNum}</div>`;
-    const plus=document.createElement('button'); plus.className='plus'; plus.textContent='+'; plus.onclick=(e)=>{ e.stopPropagation(); quickAdd(iso); };
+    const dnum=document.createElement('div'); dnum.className='dnum'; dnum.textContent = dayNum;
+    const plus=document.createElement('button'); plus.className='plus'; plus.textContent='+';
+    plus.title = 'Quick add';
+    plus.onclick=(e)=>{ e.stopPropagation(); quickAdd(iso); };
 
-    const list=document.createElement('div'); list.className='list';
+    head.append(dnum, plus);
+
+    const list=document.createElement('div');
     const items=(db[iso]||[]).filter(it => filters[it.platform??'']!==false);
-    visibleTotal += items.length;
 
     if(items.length===0) list.innerHTML='<div class="empty">No items</div>';
     else items.forEach(it=>{
-      const card=document.createElement('div'); card.className='cal-card '+(classOf(it.platform));
-      card.innerHTML=`<div class="pip">${(it.platform||'P')[0]}</div><div>${esc(it.title||'Untitled')}</div><div class="timechip">${esc(it.time||'')}</div>`;
-      list.appendChild(card);
+      const card=document.createElement('div'); card.className='card';
+      const cls = (PLATS.find(p=>p.key.toLowerCase()===(it.platform||'').toLowerCase())?.cls) || 'p-bl';
+      const pip=document.createElement('div'); pip.className = `pip ${cls}`; pip.textContent = (it.platform||'P')[0]||'P';
+      const title=document.createElement('div'); title.textContent = it.title||'Untitled';
+      const time=document.createElement('div'); time.className='timechip'; time.textContent = it.time || '—';
+      card.append(pip,title,time);
+      list.append(card);
     });
 
-    cell.append(head, plus, list);
-    grid.appendChild(cell);
+    cell.append(head,list);
+    grid.append(cell);
   }
-
-  schedCount.textContent = `${visibleTotal} scheduled`;
 }
-
-function classOf(platform){
-  const map = {Instagram:'ig', TikTok:'tt', Facebook:'fb', Pinterest:'pin', X:'x', LinkedIn:'li', YouTube:'yt', Blog:'blog', Website:'web'};
-  return map[platform]||'blog';
-}
-
 function quickAdd(iso){
+  const title = prompt('Title for this day?');
+  if(!title) return;
   db[iso] ??= [];
-  db[iso].push({ platform:'Instagram', title:'New Post', time:'' });
-  save('phasee-cal', db);
+  db[iso].push({platform:'Instagram', title, time:''});
+  saveLS(DB_KEY, db);
   buildCalendar(view.y, view.m);
 }
 
 $('#prev').onclick=()=>{ view.m--; if(view.m<0){view.m=11;view.y--} buildCalendar(view.y,view.m) }
 $('#next').onclick=()=>{ view.m++; if(view.m>11){view.m=0;view.y++} buildCalendar(view.y,view.m) }
 
-/* ===================== Profile ===================== */
-function fillYears(){
+/* ======= View-by (Eye) ======= */
+const viewByBtn = $('#viewByBtn');
+const viewByMenu = $('#viewByMenu');
+
+function renderViewBy(){
+  viewByMenu.innerHTML='';
+  PLATS.forEach(p=>{
+    const row = document.createElement('label'); row.className='drop-row';
+    const chip = document.createElement('span'); chip.className='pill';
+    const dot = document.createElement('span'); dot.className='dot'; dot.style.background=p.dot;
+    chip.append(dot, document.createTextNode(' '+p.key));
+    const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = filters[p.key]!==false;
+    cb.style.marginLeft='auto';
+    cb.addEventListener('change', ()=>{ filters[p.key]=cb.checked; saveLS(FILTERS_KEY, filters); buildCalendar(view.y, view.m); });
+    row.append(chip, cb);
+    viewByMenu.appendChild(row);
+  });
+}
+viewByBtn.addEventListener('click', (e)=>{ e.stopPropagation(); viewByMenu.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!e.target.closest('#viewByMenu') && !e.target.closest('#viewByBtn')) viewByMenu.classList.remove('open'); });
+
+/* ======= Profile Tab (mock-exact) ======= */
+function yearOptions(){
   const sel = $('#pYear'); sel.innerHTML='';
-  const now=(new Date()).getFullYear();
+  const now = new Date().getFullYear();
   for(let y=now; y>=1900; y--){
     const opt=document.createElement('option'); opt.value=String(y); opt.textContent=String(y);
-    sel.appendChild(opt);
+    sel.append(opt);
   }
 }
-$('#pLogo').addEventListener('change', (e)=>{
-  const f=e.target.files?.[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{ $('#pLogoPrev').src=r.result; $('#pLogoPrev').style.display='block'; };
+
+function loadProfileUI(){
+  $('#pName').value = profile.name||'';
+  $('#pIndustry').value = profile.industry||'';
+  $('#pTone').value = profile.tone||'';
+  $('#pYear').value = profile.year || String(new Date().getFullYear());
+  $('#pMotto').value = profile.motto||'';
+  $('#pBio').value = profile.bio||'';
+  $('#pNotes').value = profile.notes||'';
+
+  // links
+  const wrap = $('#linkWrap'); wrap.innerHTML='';
+  (profile.links||[]).forEach((v,i)=> addLinkInput(v));
+  if((profile.links||[]).length===0) addLinkInput('');
+
+  // logo preview
+  const box = $('#pLogoBox'); box.style.backgroundImage = profile.logo ? `url(${profile.logo})` : 'none';
+}
+function addLinkInput(value=''){
+  const wrap = $('#linkWrap');
+  const row = document.createElement('div'); row.className='link-row';
+  const inp = document.createElement('input'); inp.className='input'; inp.placeholder='https://'; inp.value=value;
+  const del = document.createElement('button'); del.className='monthbtn'; del.textContent='Remove';
+  del.onclick=()=>{ row.remove(); };
+  row.append(inp, del);
+  wrap.append(row);
+}
+$('#addLink').addEventListener('click', ()=> addLinkInput(''));
+
+$('#pLogo').addEventListener('change',(e)=>{
+  const f = e.target.files?.[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ $('#pLogoBox').style.backgroundImage = `url(${r.result})`; profile.logo = r.result; };
   r.readAsDataURL(f);
 });
-$('#profileSave').onclick=()=>{
-  const prof = {
+$('#profileSave').addEventListener('click', ()=>{
+  const links = Array.from($('#linkWrap').querySelectorAll('input')).map(i=>i.value.trim()).filter(Boolean);
+  profile = {
     name: $('#pName').value.trim(),
     industry: $('#pIndustry').value.trim(),
-    founded: $('#pYear').value,
     tone: $('#pTone').value.trim(),
-    notes: $('#pNotes').value.trim()
+    year: $('#pYear').value,
+    motto: $('#pMotto').value.trim(),
+    bio: $('#pBio').value.trim(),
+    notes: $('#pNotes').value.trim(),
+    logo: profile.logo || null,
+    links
   };
-  save('phasee-profile', prof);
-  alert('Profile saved');
-}
+  saveLS(PROFILE_KEY, profile);
+  const btn = $('#profileSave'); const prev = btn.textContent;
+  btn.textContent='Saved ✓'; setTimeout(()=> btn.textContent=prev, 1200);
+});
 
-/* ===================== Campaigns ===================== */
-function renderCampaigns(){
-  const tb = $('#campTbody'); tb.innerHTML='';
-  const rows = [...campaigns];
-  const sort = $('#campSort').value;
-  rows.sort((a,b)=>{
-    if(sort==='date') return a.start.localeCompare(b.start);
-    if(sort==='platform') return (a.plats?.[0]||'').localeCompare(b.plats?.[0]||'');
-    return (a.title||'').localeCompare(b.title||'');
-  });
-  rows.forEach((c, idx)=>{
-    const tr=document.createElement('tr'); tr.className='tr';
-    tr.innerHTML=`
-      <td class="td"><div class="muted">${esc(c.start)} → ${esc(c.end)}</div></td>
-      <td class="td"><b>${esc(c.title||'Campaign')}</b></td>
-      <td class="td">${(c.plats||[]).map(p=>`<span class="badge ${classOf(p)}"><b>${p[0]}</b> ${esc(p)}</span>`).join(' ')}</td>
-      <td class="td">—</td>
-      <td class="td">Draft</td>
-      <td class="td">
-        <button class="btn" data-edit="${idx}">Edit</button>
-        <button class="btn" data-del="${idx}">Delete</button>
-      </td>
-    `;
-    tb.appendChild(tr);
-  });
-  tb.addEventListener('click', (e)=>{
-    const btn=e.target.closest('button'); if(!btn) return;
-    if(btn.dataset.del){ campaigns.splice(Number(btn.dataset.del),1); save('phasee-camps',campaigns); renderCampaigns(); }
-    if(btn.dataset.edit){ alert('Edit coming soon'); }
-  }, {once:true});
-}
-$('#campSort').onchange=renderCampaigns;
-$('#newCampaign').onclick=()=>{
-  const today = new Date().toISOString().slice(0,10);
-  campaigns.push({ title:'Campaign', start:today, end:today, plats:['Instagram','Facebook'] });
-  save('phasee-camps', campaigns);
-  renderCampaigns();
-};
-
-/* ===================== Analytics ===================== */
-function refreshAnalytics(){
-  // recompute from db (month window)
-  const y=view.y, m=view.m, daysInMonth=new Date(y,m+1,0).getDate();
-  const startISO=isoOf(y,m,1), endISO=isoOf(y,m,daysInMonth);
-  let total=0; const platCount={};
-  for(const k in db){
-    if(k<startISO || k>endISO) continue;
-    (db[k]||[]).forEach(it=>{
-      if(filters[it.platform??'']===false) return;
-      total++;
-      const p=(it.platform||'Other'); platCount[p]=(platCount[p]||0)+1;
-    });
-  }
-  $('#kpiUpcoming').textContent = total;
-  const top = Object.entries(platCount).sort((a,b)=>b[1]-a[1])[0];
-  $('#kpiTopPlat').textContent = top ? `${top[0]} (${top[1]})` : '—';
-
-  // build quick filter chips
-  const fwrap = $('#anaFilter'); fwrap.innerHTML='';
-  ['Instagram','TikTok','Facebook','Pinterest','X','LinkedIn','YouTube','Blog'].forEach(p=>{
-    const b=document.createElement('span'); b.className='badge '+classOf(p); b.textContent=p;
-    fwrap.appendChild(b);
-  });
-}
-
-/* ===================== Settings: Theme & OAuth ===================== */
-function applyTheme(){
-  document.documentElement.setAttribute('data-theme', settings.theme || 'orchid');
-}
+/* ======= Settings Theme ======= */
 $$('input[name="theme"]').forEach(r=>{
-  r.checked = (r.value === (settings.theme||'orchid'));
+  r.checked = (r.value===settings.theme);
   r.addEventListener('change', ()=>{
     settings.theme = r.value;
-    save('phasee-settings', settings);
-    applyTheme();
+    document.documentElement.setAttribute('data-theme', settings.theme);
+    saveLS(SETTINGS_KEY, settings);
   });
 });
 
-$('#loginBtn').onclick = async ()=>{
-  try{
-    // Optional: a central login endpoint (email/password or OAuth portal)
-    location.href = `${API_BASE}/auth/login`;
-  }catch(e){ alert('Login failed'); }
-};
-$('#logoutBtn').onclick = async ()=>{
-  try{
-    location.href = `${API_BASE}/auth/logout`;
-  }catch(e){ alert('Logout failed'); }
-};
+/* ======= INIT ======= */
+document.documentElement.setAttribute('data-theme', settings.theme||'day');
+renderViewBy();
+buildCalendar(view.y, view.m);
+yearOptions();
+loadProfileUI();
+// default to Calendar page (as requested)
+/* Campaigns column resizer */
+(() => {
+  const table = document.querySelector('#pageCampaigns .camp-table');
+  if (!table) return;
 
-// Provider buttons → /oauth/:provider/start
-$('#page-settings').addEventListener('click', (e)=>{
-  const b = e.target.closest('button[data-oauth]'); if(!b) return;
-  const provider = b.getAttribute('data-oauth'); // instagram, tiktok, facebook, pinterest, twitter, linkedin
-  location.href = `${API_BASE}/oauth/${provider}/start?return=${encodeURIComponent(location.href)}`;
+  const STORAGE_KEY = 'camp.colwidths.v1';
+  const keyToVar = {
+    name:'--c-name',
+    objective:'--c-objective',
+    range:'--c-range',
+    postsPerDay:'--c-posts',
+    status:'--c-status',
+    platforms:'--c-platforms',
+    tone:'--c-tone',
+    notes:'--c-notes'
+  };
+
+  // Restore widths
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    Object.entries(saved).forEach(([k,px])=>{
+      const v = keyToVar[k]; if (v) table.style.setProperty(v, px+'px');
+    });
+  } catch {}
+
+  // Drag to resize
+  let drag = null;
+  table.querySelectorAll('.camp-head .camp-col').forEach(h => {
+    const grip = h.querySelector('.col-grip');
+    const colKey = h.getAttribute('data-key');
+    if (!grip || !keyToVar[colKey]) return;
+
+    grip.addEventListener('mousedown', e => {
+      e.preventDefault();
+      const current = parseFloat(getComputedStyle(table).getPropertyValue(keyToVar[colKey]))
+        || h.getBoundingClientRect().width;
+      drag = { el:h, key:colKey, startX:e.clientX, startW:current };
+      h.classList.add('resizing');
+      document.body.style.cursor = 'col-resize';
+    });
+  });
+
+  const onMove = e => {
+    if (!drag) return;
+    const w = Math.max(100, Math.round(drag.startW + (e.clientX - drag.startX)));
+    table.style.setProperty(keyToVar[drag.key], w+'px');
+  };
+  const onUp = () => {
+    if (!drag) return;
+    drag.el.classList.remove('resizing');
+    document.body.style.cursor = '';
+    const out = {};
+    Object.entries(keyToVar).forEach(([k,v])=>{
+      const val = parseFloat(getComputedStyle(table).getPropertyValue(v));
+      if (val) out[k] = Math.round(val);
+    });
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(out)); } catch {}
+    drag = null;
+  };
+
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('mouseleave', onUp);
+})();
+document.getElementById('btnNewCampaign')?.addEventListener('click', ()=>{
+  alert('New Campaign — modal coming soon');
 });
 
-/* ===================== Init ===================== */
-function init(){
-  applyTheme();
-  buildViewBy();
-  buildCalendar(view.y, view.m);
-  renderCampaigns();
-  fillYears();
-  handleHash();
-}
-init();
+showPage('calendar');
 </script>
 </body>
 </html>
