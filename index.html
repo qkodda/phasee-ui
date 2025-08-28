@@ -347,6 +347,10 @@ button{font:inherit}
 }
 .campaign-table .camp-head .camp-col[aria-sort="asc"]::after  { content:"▲"; font-size:10px; }
 .campaign-table .camp-head .camp-col[aria-sort="desc"]::after { content:"▼"; font-size:10px; }
+/* kill the header-row divider */
+.campaign-table .camp-row.camp-head{
+  border-bottom: 0 !important;
+}
 
 </style>
 
