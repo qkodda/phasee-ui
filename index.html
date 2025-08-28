@@ -329,6 +329,24 @@ button{font:inherit}
       minmax(110px, var(--c-tone, 1fr));
   }
 }
+/* ---- sortable headers ---- */
+.campaign-table .camp-head .camp-col {
+  cursor: default;
+  user-select: none;
+}
+.campaign-table .camp-head .camp-col.sortable {
+  cursor: pointer;
+}
+.campaign-table .camp-head .camp-col.sortable:hover {
+  text-decoration: underline;
+}
+
+/* ---- little arrow driven by aria-sort on the header ---- */
+.campaign-table .camp-head .camp-col::after {
+  content: ""; display:inline-block; width:12px; margin-left:6px;
+}
+.campaign-table .camp-head .camp-col[aria-sort="asc"]::after  { content:"▲"; font-size:10px; }
+.campaign-table .camp-head .camp-col[aria-sort="desc"]::after { content:"▼"; font-size:10px; }
 
 </style>
 
@@ -498,6 +516,14 @@ button{font:inherit}
     </div>
   </section>
 </div>
+if (!campaigns.length){
+  campaigns = [
+    {name:'Fall Launch', objective:'Awareness', start:'2025-09-01', end:'2025-09-30', posts:3, status:'Planned', platforms:['Instagram','TikTok'], tone:'Playful', notes:'UGC focus'},
+    {name:'VIP Drop',   objective:'Conversion', start:'2025-08-15', end:'2025-08-20', posts:2, status:'Active',  platforms:['Instagram','X'],     tone:'Hype',    notes:'Limited stock'},
+    {name:'Evergreen',  objective:'Retention',  start:'2025-07-01', end:'2025-12-31', posts:1, status:'Active',  platforms:['Blog','Website'],    tone:'Helpful', notes:''},
+  ];
+  saveLS(CAMPAIGNS_KEY, campaigns);
+}
 
 <script>
 /* ======= Helpers ======= */
@@ -512,6 +538,12 @@ const DB_KEY = 'phasee-db-v1';
 const SETTINGS_KEY = 'phasee-settings-v1';
 const FILTERS_KEY = 'phasee-filters-v1';
 const PROFILE_KEY = 'phasee-profile-v1';
+/* ======= Campaigns storage ======= */
+const CAMPAIGNS_KEY = 'phasee-campaigns-v1';
+const CAMP_SORT_KEY = 'phasee-camp-sort-v1';
+
+let campaigns = loadLS(CAMPAIGNS_KEY, []);                     // [{name, objective, start, end, posts, status, platforms[], tone, notes}]
+let campSort  = loadLS(CAMP_SORT_KEY, { key:'name', dir:'asc' }); // persisted sort {key, dir}
 
 /* ======= State ======= */
 let db = loadLS(DB_KEY, {});                 // { 'YYYY-MM-DD': [ {platform,title,time,...}, ... ] }
@@ -707,6 +739,93 @@ $$('input[name="theme"]').forEach(r=>{
     saveLS(SETTINGS_KEY, settings);
   });
 });
+// map a column key to a comparable value
+function campValue(c, key){
+  switch(key){
+    case 'name':      return (c.name||'').toLowerCase();
+    case 'objective': return (c.objective||'').toLowerCase();
+    case 'range':     return (c.start||'') + '|' + (c.end||'');       // sort by start then end
+    case 'posts':     return Number(c.posts||0);
+    case 'status':    return (c.status||'').toLowerCase();
+    case 'platforms': return (c.platforms||[]).join(',').toLowerCase();
+    case 'tone':      return (c.tone||'').toLowerCase();
+    case 'notes':     return (c.notes||'').toLowerCase();
+    default:          return '';
+  }
+}
+
+function sortedCampaigns(){
+  const {key, dir} = campSort;
+  const list = [...campaigns];
+  list.sort((a,b)=>{
+    const av = campValue(a,key), bv = campValue(b,key);
+    if (av < bv) return dir==='asc' ? -1 :  1;
+    if (av > bv) return dir==='asc' ?  1 : -1;
+    return 0;
+  });
+  return list;
+}
+
+function updateCampScheduled(){
+  const el = document.getElementById('campScheduled');
+  if (!el) return;
+  el.textContent = `${campaigns.length} Scheduled`;
+}
+
+// flip arrows (via aria-sort)
+function applyCampSortIndicators(){
+  document.querySelectorAll('.campaign-table .camp-head .camp-col').forEach(h=>{
+    h.removeAttribute('aria-sort');
+  });
+  const active = document.querySelector(`.campaign-table .camp-head .camp-col[data-key="${campSort.key}"]`);
+  if (active) active.setAttribute('aria-sort', campSort.dir);
+}
+
+// dump rows into #campBody
+function renderCampaignRows(){
+  const body = document.getElementById('campBody');
+  if (!body) return;
+  body.innerHTML = '';
+
+  const rows = sortedCampaigns();
+  if (!rows.length) return;
+
+  rows.forEach(c=>{
+    const row = document.createElement('div');
+    row.className = 'camp-row';
+    row.innerHTML = `
+      <div class="camp-col" data-key="name">${c.name||''}</div>
+      <div class="camp-col" data-key="objective">${c.objective||''}</div>
+      <div class="camp-col" data-key="range">${(c.start||'—')} – ${(c.end||'—')}</div>
+      <div class="camp-col" data-key="posts">${c.posts ?? '—'}</div>
+      <div class="camp-col" data-key="status">${c.status||''}</div>
+      <div class="camp-col" data-key="platforms">${(c.platforms||[]).join(', ')}</div>
+      <div class="camp-col" data-key="tone">${c.tone||''}</div>
+      <div class="camp-col" data-key="notes">${c.notes||''}</div>
+    `;
+    body.appendChild(row);
+  });
+}
+function wireCampaignSortClicks(){
+  document
+    .querySelectorAll('.campaign-table .camp-head .camp-col')
+    .forEach(h=>{
+      const key = h.getAttribute('data-key');
+      if (!key) return;
+      h.classList.add('sortable');
+      h.addEventListener('click', ()=>{
+        if (campSort.key === key){
+          campSort.dir = (campSort.dir === 'asc' ? 'desc' : 'asc');
+        } else {
+          campSort.key = key;
+          campSort.dir = 'asc';
+        }
+        saveLS(CAMP_SORT_KEY, campSort);
+        applyCampSortIndicators();
+        renderCampaignRows();
+      });
+    });
+}
 
 /* ======= INIT ======= */
 document.documentElement.setAttribute('data-theme', settings.theme||'day');
@@ -719,6 +838,13 @@ loadProfileUI();
 document.getElementById('btnNewCampaign')?.addEventListener('click', ()=>{
   alert('New Campaign — modal coming soon');
 });
+
+// === Campaigns init on load (must be outside the click handler) ===
+updateCampScheduled();
+applyCampSortIndicators();
+renderCampaignRows();
+wireCampaignSortClicks();
+
 
 showPage('calendar');
 /* === Campaigns: column resizer (fills width; saves to localStorage) === */
