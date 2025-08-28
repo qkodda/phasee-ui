@@ -206,248 +206,130 @@ button{font:inherit}
 }
 </style>  <!-- ← add this line -->
 
-<style id="phasee-campaigns-clean">
-/* ===== Campaigns: single source of truth ===== */
-/* button look used for + Campaign */
-#pageCampaigns .btn{
-  appearance:none;
-  border:1px solid var(--ring);
-  background:var(--panel);
-  border-radius:12px;
-  padding:8px 12px;
-  font-weight:800;
-  cursor:pointer;
-  transition:filter .15s, transform .04s, box-shadow .15s, border-color .15s;
+<style id="campaigns-v2">
+/* ==== Header card (matches your mock) ==== */
+.campaign-header{
+  display:flex; align-items:center; gap:12px;
+  padding:14px 18px; margin-bottom:12px;
+  background:var(--panel); border:1px solid var(--ring);
+  border-radius:var(--radius-lg); box-shadow:var(--shadow-2);
 }
-#pageCampaigns .btn:hover{ filter:brightness(1.02) }
-#pageCampaigns .btn:active{ transform:translateY(.4px) }
+.campaign-header .title{ margin:0; font-size:20px; font-weight:800; }
+.campaign-header .meta{
+  margin-left:auto; margin-right:12px;
+  font-size:13px; font-weight:700; color:var(--muted);
+}
+.campaign-header .btn.primary{
+  border:0; color:#fff; font-weight:900;
+  padding:8px 14px; border-radius:12px; cursor:pointer;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow:0 8px 16px rgba(0,0,0,.12);
+}
+.campaign-header .btn.primary:hover{ filter:brightness(1.05); }
 
-#pageCampaigns .btn.primary{
-  border-color:transparent; color:#fff;
-  background:linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent-2) 60%, #fff 40%));
-  box-shadow:0 10px 20px rgba(122,112,245,.20);
-}
-#pageCampaigns .btn.primary:hover{
-  filter:none;
-  background:linear-gradient(135deg, var(--accent-2), color-mix(in oklab, var(--accent-2) 85%, #ffd7bf 15%));
-  box-shadow:0 12px 22px rgba(255,138,61,.20);
-}
-
-#pageCampaigns .campaign-shell{
-  position:relative;
-  background:var(--panel);
-  border:1px solid var(--ring);
-  border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-2);
+/* ==== Table card ==== */
+.campaign-table{
+  background:var(--panel); border:1px solid var(--ring);
+  border-radius:var(--radius-lg); box-shadow:var(--shadow-1);
   overflow:hidden;
 }
 
-/* Header bar */
-/* Header bar */
-#pageCampaigns .camp-headbar{
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  padding:18px 14px 12px;    /* ↑ more top & bottom padding */
+/* Columns – clean fixed grid */
+.camp-row{
+  display:grid;
+  grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr 1.2fr 1fr 1.2fr;
+  align-items:center; padding:10px 16px;
+}
+.camp-row.camp-head{
+  font-size:13px; font-weight:900; text-transform:uppercase;
   border-bottom:1px solid var(--ring);
-  background:linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel-2) 65%, var(--panel) 35%));
+}
+.camp-col + .camp-col{
+  border-left:1px solid rgba(15,23,42,.06);
+  padding-left:12px;
 }
 
-/* Floating title badge (kept out of the grid’s flow) */
-#pageCampaigns .camp-title{
-  position:absolute;
-  left:16px;
-  top:-18px;                 /* ↑ lift it higher so it clears the row */
-  padding:6px 10px;          /* a hair bigger for legibility */
-  background:var(--panel);
-  border:1px solid var(--ring);
-  border-radius:10px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  font-size:12px;
-  line-height:1;
-  pointer-events:none;
-  z-index:2;
+/* Hover for future body rows */
+.camp-body .camp-row:hover{
+  background:color-mix(in oklab, var(--panel-2) 40%, transparent);
 }
 
-/* Table wrapper: leave room under the badge */
-#pageCampaigns .camp-table{
-  padding:10px 12px 12px;   /* ↑ more top padding so “Name” doesn’t sit under badge */
+/* Responsive trims */
+@media (max-width:1200px){
+  .camp-row{ grid-template-columns: 1.3fr 1.1fr 1fr 0.9fr 0.9fr 1.1fr 0.9fr 1.1fr; }
 }
-
-
-/* Table wrapper */
-#pageCampaigns .camp-table{
-  padding:6px 12px 12px;            /* slight top gap under header */
-}
-
-/* Header row (column labels) */
-#pageCampaigns .camp-row.camp-head{
+@media (max-width:980px){
+  .campaign-table .camp-row .camp-col:nth-child(8){ display:none; } /* hide Additional */
+  .camp-row{ grid-template-columns: 1.4fr 1.1fr 1fr 1fr 1fr 1.1fr 1fr; }
+}/* === Fill full width with CSS vars per column (defaults are fr) === */
+.campaign-table .camp-row{
   display:grid;
   grid-template-columns:
-    minmax(120px, var(--c-name, 1.35fr))
-    minmax(110px, var(--c-objective, 1.05fr))
-    minmax(120px, var(--c-range, 1.15fr))
-    minmax(95px,  var(--c-posts, 1fr))
-    minmax(95px,  var(--c-status, .95fr))
-    minmax(120px, var(--c-platforms, 1.1fr))
-    minmax(90px,  var(--c-tone, .9fr))
-    minmax(120px, var(--c-notes, 1.1fr));
+    minmax(140px, var(--c-name, 1.25fr))
+    minmax(120px, var(--c-objective, 1.15fr))
+    minmax(140px, var(--c-range, 1.1fr))
+    minmax(120px, var(--c-posts, 1fr))
+    minmax(110px, var(--c-status, 1fr))
+    minmax(140px, var(--c-platforms, 1.15fr))
+    minmax(110px, var(--c-tone, 0.95fr))
+    minmax(140px, var(--c-notes, 1.1fr));
   align-items:center;
-  gap:0;
-  padding:8px 14px;                 /* flush to card edges */
+  padding:10px 16px;
 }
 
-/* Header cells */
-#pageCampaigns .camp-row.camp-head .camp-col{
-  position:relative;
-  font-weight:900;
-  color:#0f172a;
-  font-size:12px;
-  padding:8px 10px;
-  line-height:1.2;
-  white-space:nowrap;
-}
-#pageCampaigns .camp-row.camp-head .camp-col + .camp-col::before{
-  content:"";
-  position:absolute; left:0; top:34%;
-  height:36%; width:1px;
-  background:rgba(15,23,42,.05);
-  border-radius:1px;
+/* Header look */
+.campaign-table .camp-row.camp-head{
+  font-size:13px; font-weight:900; text-transform:uppercase;
+  border-bottom:1px solid var(--ring);
 }
 
-/* (Future) body rows */
-#pageCampaigns .camp-body .camp-row{
-  display:grid;
-  grid-template-columns:inherit;    /* same columns as header */
-  align-items:center;
-  padding:6px 14px;
-  border-bottom:1px solid rgba(15,23,42,.05);
+/* Cell separators */
+.campaign-table .camp-col + .camp-col{
+  border-left:1px solid rgba(15,23,42,.06);
+  padding-left:12px;
 }
-#pageCampaigns .camp-body .camp-col{
-  position:relative;
-  font-size:13px;
-  padding:6px 10px;
-  line-height:1.25;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+
+/* === Resize grip === */
+.campaign-table .camp-head .camp-col{ position:relative; }
+.campaign-table .col-grip{
+  position:absolute; top:0; right:-6px; width:12px; height:100%;
+  cursor:col-resize; border-right:2px solid transparent;
 }
-#pageCampaigns .camp-body .camp-row:hover{
+.campaign-table .col-grip:hover{ border-right-color:rgba(15,23,42,.2); }
+
+/* Hover for future body rows */
+.camp-body .camp-row:hover{
   background:color-mix(in oklab, var(--panel-2) 40%, transparent);
-  border-radius:12px;
 }
 
-/* Narrow screens: hide least-critical column */
-@media (max-width:1240px){
-  #pageCampaigns .camp-row > .camp-col[data-key="notes"]{ display:none; }
-  #pageCampaigns .camp-row{
+/* Responsive trims */
+@media (max-width:1200px){
+  .campaign-table .camp-row{
     grid-template-columns:
-      minmax(120px, var(--c-name, 1.45fr))
-      minmax(110px, var(--c-objective, 1.1fr))
-      minmax(120px, var(--c-range, 1.2fr))
-      minmax(95px,  var(--c-posts, 1fr))
-      minmax(95px,  var(--c-status, .95fr))
-      minmax(120px, var(--c-platforms, 1.1fr))
-      minmax(90px,  var(--c-tone, .95fr));
+      minmax(140px, var(--c-name, 1.35fr))
+      minmax(120px, var(--c-objective, 1.1fr))
+      minmax(140px, var(--c-range, 1.1fr))
+      minmax(120px, var(--c-posts, 1fr))
+      minmax(110px, var(--c-status, 0.95fr))
+      minmax(140px, var(--c-platforms, 1.1fr))
+      minmax(110px, var(--c-tone, 0.9fr))
+      minmax(140px, var(--c-notes, 1.05fr));
   }
 }
-</style>
-<style id="campaigns-last-fix">
-  /* Make the bar a positioning context and stop any earlier rules from winning */
-  #pageCampaigns .camp-headbar{
-    position: relative !important;
-    display: block !important;
-    padding: 16px 14px 12px !important; /* room for badge + button */
-    border-bottom: 1px solid var(--ring) !important;
+@media (max-width:980px){
+  .campaign-table .camp-row .camp-col[data-key="notes"]{ display:none; }
+  .campaign-table .camp-row{
+    grid-template-columns:
+      minmax(140px, var(--c-name, 1.5fr))
+      minmax(120px, var(--c-objective, 1.1fr))
+      minmax(140px, var(--c-range, 1.2fr))
+      minmax(120px, var(--c-posts, 1fr))
+      minmax(110px, var(--c-status, 1fr))
+      minmax(140px, var(--c-platforms, 1.1fr))
+      minmax(110px, var(--c-tone, 1fr));
   }
+}
 
-  /* Float the "Campaigns" badge above the grid, top-left */
-  #pageCampaigns .camp-title{
-    position: absolute !important;
-    left: 16px !important;
-    top: -16px !important;
-    padding: 6px 10px !important;
-    background: var(--panel) !important;
-    border: 1px solid var(--ring) !important;
-    border-radius: 10px !important;
-    font-weight: 900 !important;
-    text-transform: uppercase !important;
-    letter-spacing: .06em !important;
-    font-size: 12px !important;
-    line-height: 1 !important;
-    pointer-events: none !important;
-    z-index: 2 !important;
-  }
-
-  /* Pin the + Campaign button to the far right of the card */
-  #pageCampaigns .camp-actions{
-    position: absolute !important;
-    right: 16px !important;
-    top: 10px !important;
-    margin: 0 !important;
-    display: flex !important;
-    gap: 8px !important;
-    align-items: center !important;
-    z-index: 3 !important;
-  }
-
-  /* Ensure the table starts below the badge */
-  #pageCampaigns .camp-table{
-    padding-top: 12px !important;
-  }
-
-  /* Keep header row flush with card edges */
-  #pageCampaigns .camp-row.camp-head{
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-  }
-</style>
-<style id="fix-camp-pin">
-  /* Make the header its own positioning context */
-  #pageCampaigns .camp-headbar{
-    position:relative !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:flex-end !important;   /* default: right side */
-    padding:18px 16px 8px !important;
-    border-bottom:1px solid var(--ring) !important;
-    background:linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel-2) 65%, var(--panel) 35%)) !important;
-  }
-
-  /* Float the title as a small badge (doesn't take grid space) */
-  #pageCampaigns .camp-title{
-    position:absolute !important;
-    left:16px !important;
-    top:-12px !important;
-    padding:6px 10px !important;
-    background:var(--panel) !important;
-    border:1px solid var(--ring) !important;
-    border-radius:8px !important;
-    font-weight:900 !important;
-    text-transform:uppercase !important;
-    letter-spacing:.06em !important;
-    font-size:12px !important;
-    line-height:1 !important;
-    pointer-events:none !important;
-    z-index:2 !important;
-  }
-
-  /* HARD-PIN the actions to the far right */
-  #pageCampaigns .camp-actions{
-    position:absolute !important;
-    right:16px !important;
-    top:10px !important;
-    display:flex !important;
-    gap:8px !important;
-    margin:0 !important;
-    z-index:3 !important;
-  }
-
-  /* Give the grid some breathing room below the header */
-  #pageCampaigns .camp-table{ margin-top:8px !important; }
 </style>
 
 </head>
@@ -553,86 +435,28 @@ button{font:inherit}
       </div>
 
       <!-- CAMPAIGNS (kept minimal; will refine later) -->
-   <section id="pageCampaigns" class="page" aria-label="Campaigns">
-  <div class="card panel campaign-shell">
-    <div class="camp-headbar"
-     style="position:relative; display:flex; align-items:center; justify-content:space-between; padding:20px 16px 10px; border-bottom:1px solid var(--ring); background:linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel-2) 65%, var(--panel) 35%));">
-
-  <!-- Floating badge -->
-  <div class="camp-title"
-       style="position:absolute; left:16px; top:-14px; padding:6px 10px; background:var(--panel); border:1px solid var(--ring); border-radius:8px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; font-size:12px; line-height:1; pointer-events:none; z-index:2;">
-    Campaigns
+   
+<section id="pageCampaigns" class="page" aria-label="Campaigns">
+  <!-- Header card -->
+  <div class="card campaign-header">
+    <h2 class="title">Campaigns</h2>
+    <div class="meta" id="campScheduled">0 Scheduled</div>
+    <button id="btnNewCampaign" class="btn primary">+ Campaign</button>
   </div>
 
-  <!-- Actions pinned right -->
-  <div class="camp-actions"
-       style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-    <button id="btnNewCampaign"
-            style="padding:8px 14px; border-radius:10px; font-weight:900; background:linear-gradient(135deg, var(--accent), var(--accent-2)); color:#fff; border:none; box-shadow:0 6px 14px rgba(0,0,0,.12); cursor:pointer;">
-      + Campaign
-    </button>
-  </div>
+  <!-- Table card -->
+  <div class="card campaign-table">
+   <div class="camp-row camp-head" role="row">
+  <div class="camp-col" role="columnheader" data-key="name">Name<i class="col-grip" aria-hidden="true"></i></div>
+  <div class="camp-col" role="columnheader" data-key="objective">Objective<i class="col-grip" aria-hidden="true"></i></div>
+  <div class="camp-col" role="columnheader" data-key="range">Start/End<i class="col-grip" aria-hidden="true"></i></div>
+  <div class="camp-col" role="columnheader" data-key="posts">Posts/Days<i class="col-grip" aria-hidden="true"></i></div>
+  <div class="camp-col" role="columnheader" data-key="status">Status<i class="col-grip" aria-hidden="true"></i></div>
+  <div class="camp-col" role="columnheader" data-key="platforms">Platforms<i class="col-grip" aria-hidden="true"></i></div>
+  <div class="camp-col" role="columnheader" data-key="tone">Tone<i class="col-grip" aria-hidden="true"></i></div>
+  <div class="camp-col" role="columnheader" data-key="notes">Additional<i class="col-grip" aria-hidden="true"></i></div>
 </div>
-
-
-
-
-
-    <div class="camp-table" role="table" aria-label="Campaigns table">
-      <div class="camp-row camp-head" role="row">
-        <div class="camp-col" role="columnheader" data-key="name">
-          <span class="head-label">Name</span>
-          <span class="sort-indicator" aria-hidden="true"></span>
-<i class="col-grip" aria-hidden="true"></i>
-
-        </div>
-        <div class="camp-col" role="columnheader" data-key="objective">
-          <span class="head-label">Objective</span>
-          <span class="sort-indicator"></span>
-<i class="col-grip" aria-hidden="true"></i>
-
-        </div>
-        <div class="camp-col" role="columnheader" data-key="range">
-          <span class="head-label">START/END</span>
-          <span class="sort-indicator"></span>
-<i class="col-grip" aria-hidden="true"></i>
-
-        </div>
-        <div class="camp-col" role="columnheader" data-key="postsPerDay">
-          <span class="head-label">POSTS/DAYS</span>
-          <span class="sort-indicator"></span>
-<i class="col-grip" aria-hidden="true"></i>
-
-        </div>
-        <div class="camp-col" role="columnheader" data-key="status">
-          <span class="head-label">Status</span>
-          <span class="sort-indicator"></span>
-<i class="col-grip" aria-hidden="true"></i>
-
-        </div>
-        <div class="camp-col" role="columnheader" data-key="platforms">
-          <span class="head-label">Platforms</span>
-          <span class="sort-indicator"></span>
-<i class="col-grip" aria-hidden="true"></i>
-
-        </div>
-        <div class="camp-col" role="columnheader" data-key="tone">
-          <span class="head-label">Tone</span>
-          <span class="sort-indicator"></span>
-<i class="col-grip" aria-hidden="true"></i>
-
-        </div>
-        <div class="camp-col" role="columnheader" data-key="notes">
-          <span class="head-label">Additional</span>
-          <span class="sort-indicator"></span>
-<i class="col-grip" aria-hidden="true"></i>
-
-        </div>
-      </div>
-
-      <!-- Body will be added in Step 2 -->
-      <div id="campBody" class="camp-body" role="rowgroup"></div>
-    </div>
+    <div id="campBody" class="camp-body" role="rowgroup"></div>
   </div>
 </section>
 
@@ -891,44 +715,53 @@ buildCalendar(view.y, view.m);
 yearOptions();
 loadProfileUI();
 // default to Calendar page (as requested)
-/* Campaigns column resizer */
-(() => {
-  const table = document.querySelector('#pageCampaigns .camp-table');
-  if (!table) return;
 
-  const STORAGE_KEY = 'camp.colwidths.v1';
+document.getElementById('btnNewCampaign')?.addEventListener('click', ()=>{
+  alert('New Campaign — modal coming soon');
+});
+
+showPage('calendar');
+/* === Campaigns: column resizer (fills width; saves to localStorage) === */
+(() => {
+  const table = document.querySelector('.campaign-table');
+  const head  = table?.querySelector('.camp-head');
+  if (!table || !head) return;
+
+  const STORAGE_KEY = 'campaigns.colwidths.v2';
+  // map header data-key -> CSS var name
   const keyToVar = {
     name:'--c-name',
     objective:'--c-objective',
     range:'--c-range',
-    postsPerDay:'--c-posts',
+    posts:'--c-posts',
     status:'--c-status',
     platforms:'--c-platforms',
     tone:'--c-tone',
     notes:'--c-notes'
   };
 
-  // Restore widths
+  // 1) Restore any saved widths
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    Object.entries(saved).forEach(([k,px])=>{
-      const v = keyToVar[k]; if (v) table.style.setProperty(v, px+'px');
-    });
+    for (const [k, px] of Object.entries(saved)) {
+      const v = keyToVar[k];
+      if (v && px) table.style.setProperty(v, px + 'px');
+    }
   } catch {}
 
-  // Drag to resize
+  // 2) Drag logic
   let drag = null;
-  table.querySelectorAll('.camp-head .camp-col').forEach(h => {
-    const grip = h.querySelector('.col-grip');
-    const colKey = h.getAttribute('data-key');
-    if (!grip || !keyToVar[colKey]) return;
+  head.querySelectorAll('.camp-col').forEach(col => {
+    const key  = col.getAttribute('data-key');
+    const grip = col.querySelector('.col-grip');
+    if (!key || !grip || !keyToVar[key]) return;
 
     grip.addEventListener('mousedown', e => {
       e.preventDefault();
-      const current = parseFloat(getComputedStyle(table).getPropertyValue(keyToVar[colKey]))
-        || h.getBoundingClientRect().width;
-      drag = { el:h, key:colKey, startX:e.clientX, startW:current };
-      h.classList.add('resizing');
+      const rect = col.getBoundingClientRect();
+      const current =
+        parseFloat(getComputedStyle(table).getPropertyValue(keyToVar[key])) || rect.width;
+      drag = { key, startX: e.clientX, startW: current };
       document.body.style.cursor = 'col-resize';
     });
   });
@@ -936,17 +769,17 @@ loadProfileUI();
   const onMove = e => {
     if (!drag) return;
     const w = Math.max(100, Math.round(drag.startW + (e.clientX - drag.startX)));
-    table.style.setProperty(keyToVar[drag.key], w+'px');
+    table.style.setProperty(keyToVar[drag.key], w + 'px');
   };
   const onUp = () => {
     if (!drag) return;
-    drag.el.classList.remove('resizing');
     document.body.style.cursor = '';
+    // collect current px values
     const out = {};
-    Object.entries(keyToVar).forEach(([k,v])=>{
+    for (const [k, v] of Object.entries(keyToVar)) {
       const val = parseFloat(getComputedStyle(table).getPropertyValue(v));
       if (val) out[k] = Math.round(val);
-    });
+    }
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(out)); } catch {}
     drag = null;
   };
@@ -955,11 +788,7 @@ loadProfileUI();
   window.addEventListener('mouseup', onUp);
   window.addEventListener('mouseleave', onUp);
 })();
-document.getElementById('btnNewCampaign')?.addEventListener('click', ()=>{
-  alert('New Campaign — modal coming soon');
-});
 
-showPage('calendar');
 </script>
 </body>
 </html>
