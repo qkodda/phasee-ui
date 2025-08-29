@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en" data-theme="day">
 <head>
@@ -43,6 +44,18 @@
   --ink:#E7ECF8;
   --muted:#9AA6C0;
   --chip:#1A2140; --chip-b:#2A335C;
+}
+:root{
+  /* ...existing tokens... */
+  --camp-cols:
+    minmax(150px, var(--c-name, 1.2fr))
+    minmax(140px, var(--c-objective, 1.1fr))
+    minmax(210px, var(--c-range, 1.15fr))
+    minmax(110px, var(--c-posts, 0.9fr))
+    minmax(120px, var(--c-status, 0.95fr))
+    minmax(180px, var(--c-platforms, 1.1fr))
+    minmax(130px, var(--c-tone, 0.95fr))
+    minmax(180px, var(--c-notes, 1.05fr));
 }
 
 /* ===================== LAYOUT SHELL ===================== */
@@ -133,9 +146,14 @@ button{font:inherit}
 .weeks{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; padding:0 6px 4px; color:#8791a7; font-weight:900; font-size:11px}
 .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
 .day{
-  background:var(--panel); border:1px solid var(--ring); border-radius:14px; padding:10px; min-height:110px;
-  display:grid; grid-template-rows:auto 1fr; gap:6px; position:relative; box-shadow:var(--shadow-1);
+  background:var(--panel); border:1px solid var(--ring); border-radius:14px;
+  padding:10px; min-height:110px;
+  display:grid; grid-template-rows:auto 1fr; gap:6px; position:relative;
+  box-shadow:var(--shadow-1);
   transition:transform .08s ease, box-shadow .15s ease, border-color .12s ease;
+}
+.day.muted {
+  opacity: 0.4;         /* lower visibility */
 }
 .day:hover{transform:translateY(-1px); box-shadow:0 16px 36px rgba(15, 23, 42, .12); border-color: color-mix(in oklab, var(--accent-2) 30%, var(--ring))}
 .day.selected{outline:2px solid color-mix(in oklab, var(--accent-2) 32%, transparent); outline-offset:2px}
@@ -146,8 +164,13 @@ button{font:inherit}
   color:#03522A; font-weight:900; font-size:16px; line-height:0;
   background: radial-gradient(14px 14px at 50% 50%, #9CF4C5 0%, var(--plus) 65%, var(--plus) 100%);
   box-shadow: 0 0 0 6px var(--plus-glow);
-  transition: transform .05s ease;
+  opacity: 0.55;                 /* more transparent */
+  transition: transform .05s ease, opacity .2s ease;
 }
+.plus:hover{
+  opacity: 0.9;                  /* brighter on hover */
+}
+
 .plus:active{transform:translateY(.4px)}
 .empty{opacity:.65; color:#97a0b3; font-size:11px}
 /* Only the little cards inside calendar days should be flex */
@@ -200,12 +223,70 @@ button{font:inherit}
 /* ===================== CAMPAIGNS + ANALYTICS placeholders ===================== */
 .card{background:var(--panel)}
 
+/* ===================== SETTINGS UI ===================== */
+.settings-card{
+  max-width: 900px;
+  background:var(--panel);
+  border:1px solid var(--ring);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-2);
+  padding:16px 16px 18px;
+  margin-top:12px;
+}
+.settings-h2{font-weight:900; margin:0 0 8px 0}
+.settings-grid{display:grid; gap:14px}
+@media (min-width:800px){
+  .settings-grid{grid-template-columns:1fr 1fr}
+}
+.set-row{
+  display:grid; gap:8px;
+  border:1px solid var(--ring);
+  border-radius:12px; padding:12px;
+  background:linear-gradient(180deg, var(--panel), var(--panel-2));
+}
+.set-label{font-weight:800}
+.set-help{font-size:12px; color:var(--muted)}
+.inline{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.switch{
+  --h:26px;
+  position:relative; width:46px; height:var(--h);
+  background:var(--panel); border:1px solid var(--ring); border-radius:999px;
+  cursor:pointer;
+}
+.switch i{
+  position:absolute; top:2px; left:2px; width:22px; height:22px;
+  background:var(--chip); border:1px solid var(--chip-b); border-radius:999px;
+  transition:left .15s ease;
+}
+.switch[data-on="true"]{background:color-mix(in oklab, var(--accent) 20%, var(--panel))}
+.switch[data-on="true"] i{left:22px}
+.select-sm, .input-sm{
+  padding:8px 10px; border:1px solid var(--ring); border-radius:10px; background:var(--panel);
+}
+.btn-sec{
+  border:1px solid var(--ring); background:var(--panel); border-radius:10px; padding:8px 10px; cursor:pointer; font-weight:800;
+}
+.btn-danger{
+  border:1px solid #ffd6d6; background:#fff0f0; color:#9a2020; border-radius:10px; padding:8px 10px; cursor:pointer; font-weight:900;
+}
+
+
 /* ===================== RESPONSIVE ===================== */
 @media (max-width:1000px){
   .app{grid-template-columns:78px 1fr}
   .brandname{display:none}
   .row{grid-template-columns:1fr}
 }
+/* highlight the Subscription link briefly when we jump to Settings */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,138,61,.45); }
+  100% { box-shadow: 0 0 0 14px rgba(255,138,61,0); }
+}
+.settings-list a.pulse {
+  border-radius: 8px;
+  animation: pulse .8s ease-out 2;
+}
+
 </style>  <!-- ← add this line -->
 
 <style id="campaigns-v2">
@@ -266,18 +347,11 @@ button{font:inherit}
 }/* === Fill full width with CSS vars per column (defaults are fr) === */
 .campaign-table .camp-row{
   display:grid;
-  grid-template-columns:
-    minmax(140px, var(--c-name, 1.25fr))
-    minmax(120px, var(--c-objective, 1.15fr))
-    minmax(140px, var(--c-range, 1.1fr))
-    minmax(120px, var(--c-posts, 1fr))
-    minmax(110px, var(--c-status, 1fr))
-    minmax(140px, var(--c-platforms, 1.15fr))
-    minmax(110px, var(--c-tone, 0.95fr))
-    minmax(140px, var(--c-notes, 1.1fr));
+  grid-template-columns: var(--camp-cols);
   align-items:center;
   padding:10px 16px;
 }
+
 
 /* Header look */
 .campaign-table .camp-row.camp-head{
@@ -364,31 +438,37 @@ button{font:inherit}
 
 /* list container */
 .camp-list{
-  margin-top:12px;
+  margin-top:10px;
   display:grid;
-  gap:10px;
+  gap:8px;   /* tighter vertical rhythm */
 }
+
 
 /* campaign “row” as a card */
 .camp-card{
-  background:var(--panel);
-  border:1px solid var(--ring);
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--panel-2) 78%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 10%, transparent) 100%);
+  border:1px solid color-mix(in oklab, var(--ring) 75%, transparent);
   border-radius:var(--radius-lg);
   box-shadow:var(--shadow-1);
   padding:14px 16px;
   display:grid;
-  grid-template-columns:
-    minmax(180px, var(--c-name, 1.3fr))
-    minmax(160px, var(--c-objective, 1.1fr))
-    minmax(220px, var(--c-range, 1.2fr))
-    minmax(110px, var(--c-posts, .9fr))
-    minmax(140px, var(--c-status, 1fr))
-    minmax(220px, var(--c-platforms, 1.2fr))
-    minmax(150px, var(--c-tone, 1fr))
-    minmax(220px, var(--c-notes, 1.2fr));
+  backdrop-filter: saturate(1.06);
+  grid-template-columns: var(--camp-cols);
   align-items:center;
   column-gap:14px;
 }
+[data-theme="night"] .camp-card{
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--panel-2) 68%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 16%, transparent) 100%);
+  border-color: color-mix(in oklab, var(--ring) 60%, transparent);
+}
+
+
 
 .camp-cell{
   display:flex; align-items:center; justify-content:center; text-align:center;
@@ -421,6 +501,61 @@ button{font:inherit}
   }
   .camp-card .camp-cell[data-key="tone"]{ display:none; }
 }
+<style>
+/* ========== Settings Floating Card ========== */
+.settings-float {
+  max-width: 360px;
+  margin: 40px auto;
+  background: var(--panel);
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  padding: 20px 22px 26px;
+  text-align: left;
+}
+
+.settings-float h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.settings-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.settings-list a {
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--ink);
+}
+.settings-list a:hover {
+  text-decoration: underline;
+}
+
+.settings-footer {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 16px;
+}
+
+.settings-close {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 6px 12px;
+  font-weight: 800;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 6px 12px rgba(0,0,0,.12);
+}
+.settings-close:hover {
+  filter: brightness(1.05);
+}
 
 </style>
 </head>
@@ -438,7 +573,7 @@ button{font:inherit}
       <a href="#profile" data-page="profile"><span>Profile</span></a>
       <a href="#calendar" data-page="calendar" data-active="true"><span>Calendar</span></a>
       <a href="#campaigns" data-page="campaigns"><span>Campaigns</span></a>
-      <a href="#analytics" data-page="analytics"><span>Analytics</span></a>
+     
     </nav>
 
     <div class="foot">
@@ -460,7 +595,7 @@ button{font:inherit}
         <button class="monthbtn" id="next">›</button>
       </div>
       <div class="controls">
-        <button id="viewByBtn" class="iconbtn">👁 View by</button>
+        <button id="viewByBtn" class="iconbtn">👁</button>
         <div class="dropdown" id="viewByMenu" aria-label="Filter platforms"></div>
 
         <select class="iconbtn" id="accountSel">
@@ -563,43 +698,25 @@ button{font:inherit}
       </div>
 
       <!-- SETTINGS (navigated from bottom link) -->
-      <div class="page" id="pageSettings">
-        <div class="profile-card">
-          <h2 class="h2">Settings</h2>
-          <div class="lab">Theme</div>
-          <label><input type="radio" name="theme" value="day" checked> Day</label>
-          &nbsp;&nbsp;
-          <label><input type="radio" name="theme" value="night"> Night</label>
+<div class="page" id="pageSettings">
+  <div class="settings-float">
+    <h2>Settings</h2>
+    <div class="settings-list">
+      <a id="setAccount">Account</a>
+      <a id="setIntegrations">Integrations</a>
+      <a id="setSubscription">Subscription</a>
+      <a id="setLogout">Log Out</a>
+      <a id="setHelp">Help</a>
+    </div>
+    <div class="settings-footer">© Phasee 2026</div>
+  </div>
+</div>
 
-          <div class="lab" style="margin-top:12px">Integrations</div>
-          <div class="link-row" style="flex-wrap:wrap">
-            <button class="monthbtn">Connect Instagram</button>
-            <button class="monthbtn">Connect TikTok</button>
-            <button class="monthbtn">Connect Facebook</button>
-            <button class="monthbtn">Connect Pinterest</button>
-            <button class="monthbtn">Connect X/Twitter</button>
-            <button class="monthbtn">Connect LinkedIn</button>
-          </div>
-
-          <div class="lab" style="margin-top:12px">Account</div>
-          <div class="link-row">
-            <button class="monthbtn">Manage Account</button>
-            <button class="monthbtn">Change Plan</button>
-          </div>
-        </div>
-      </div>
+     
 
     </div>
   </section>
 </div>
-if (!campaigns.length){
-  campaigns = [
-    {name:'Fall Launch', objective:'Awareness', start:'2025-09-01', end:'2025-09-30', posts:3, status:'Planned', platforms:['Instagram','TikTok'], tone:'Playful', notes:'UGC focus'},
-    {name:'VIP Drop',   objective:'Conversion', start:'2025-08-15', end:'2025-08-20', posts:2, status:'Active',  platforms:['Instagram','X'],     tone:'Hype',    notes:'Limited stock'},
-    {name:'Evergreen',  objective:'Retention',  start:'2025-07-01', end:'2025-12-31', posts:1, status:'Active',  platforms:['Blog','Website'],    tone:'Helpful', notes:''},
-  ];
-  saveLS(CAMPAIGNS_KEY, campaigns);
-}
 
 <script>
 /* ======= Helpers ======= */
@@ -621,10 +738,30 @@ const CAMP_SORT_KEY = 'phasee-camp-sort-v1';
 let campaigns = loadLS(CAMPAIGNS_KEY, []);                     // [{name, objective, start, end, posts, status, platforms[], tone, notes}]
 let campSort  = loadLS(CAMP_SORT_KEY, { key:'name', dir:'asc' }); // persisted sort {key, dir}
 
+if (!campaigns.length){
+  campaigns = [
+    {name:'Fall Launch', objective:'Awareness', start:'2025-09-01', end:'2025-09-30', posts:3, status:'Queued', platforms:['Instagram','TikTok'], tone:'Playful', notes:'UGC focus'},
+    {name:'VIP Drop',   objective:'Conversion', start:'2025-08-15', end:'2025-08-20', posts:2, status:'Active',  platforms:['Instagram','X'],     tone:'Hype',    notes:'Limited stock'},
+    {name:'Evergreen',  objective:'Retention',  start:'2025-07-01', end:'2025-12-31', posts:1, status:'Active',  platforms:['Blog','Website'],    tone:'Helpful', notes:''},
+  ];
+  saveLS(CAMPAIGNS_KEY, campaigns);
+}
+
 /* ======= State ======= */
 let db = loadLS(DB_KEY, {});                 // { 'YYYY-MM-DD': [ {platform,title,time,...}, ... ] }
 let filters = loadLS(FILTERS_KEY, {Instagram:true, Facebook:true, X:true, YouTube:true, TikTok:true, Blog:true, Website:true});
-let settings = loadLS(SETTINGS_KEY, {theme:document.documentElement.getAttribute('data-theme')||'day'});
+let settings = loadLS(SETTINGS_KEY, {
+  theme: document.documentElement.getAttribute('data-theme') || 'day',
+  density: 'comfortable',              // 'comfortable' | 'compact'
+  weekStart: 'sun',                    // 'sun' | 'mon'
+  dateFormat: 'MMM d, yyyy',           // used by formatDate()
+  tzAuto: true,                        // auto-detect timezone
+  tzManual: 'local',                   // used when tzAuto=false
+  notifEmail: false,
+  notifPush: false,
+  integrations: { IG:true, TT:true, FB:false, X:false, LI:false }
+});
+
 let profile = loadLS(PROFILE_KEY, {links:[]});
 
 /* ======= Platforms for View-by ======= */
@@ -684,6 +821,8 @@ function buildCalendar(y,m){
     else { dayNum=i-startDay+1; iso=isoOf(y,m,dayNum); }
     if(iso===todayISO) cell.classList.add('selected');
     cell.dataset.iso = iso;
+if (muted) cell.classList.add('muted');
+
 
     const head=document.createElement('div'); head.className='dhead';
     const dnum=document.createElement('div'); dnum.className='dnum'; dnum.textContent = dayNum;
@@ -806,15 +945,179 @@ $('#profileSave').addEventListener('click', ()=>{
   btn.textContent='Saved ✓'; setTimeout(()=> btn.textContent=prev, 1200);
 });
 
-/* ======= Settings Theme ======= */
-$$('input[name="theme"]').forEach(r=>{
-  r.checked = (r.value===settings.theme);
-  r.addEventListener('change', ()=>{
-    settings.theme = r.value;
-    document.documentElement.setAttribute('data-theme', settings.theme);
+/* ======= Settings ======= */
+
+// small util for switch divs
+function bindSwitch(id, getVal, setVal){
+  const el = document.getElementById(id);
+  if (!el) return;
+  const apply = (v)=>{ el.dataset.on = v ? 'true' : 'false'; el.setAttribute('aria-checked', v?'true':'false'); };
+  apply(getVal());
+  el.addEventListener('click', ()=>{
+    const v = !getVal();
+    setVal(v);
+    apply(v);
     saveLS(SETTINGS_KEY, settings);
+    applySettingsEffects();
   });
-});
+}
+
+// simple date formatter (supports a few tokens)
+function formatDateStr(iso, fmt){
+  if (!iso) return '—';
+  const d = new Date(iso);
+  const MMM = d.toLocaleString(undefined,{month:'short'});
+  const MM  = String(d.getMonth()+1).padStart(2,'0');
+  const dd  = String(d.getDate()).padStart(2,'0');
+  const d_  = d.getDate();
+  const yyyy= d.getFullYear();
+  return fmt
+    .replace('MMM', MMM)
+    .replace('MM', MM)
+    .replace('dd', dd)
+    .replace('d', d_)
+    .replace('yyyy', yyyy);
+}
+function formatRange(a,b){ return `${formatDateStr(a, settings.dateFormat)} – ${formatDateStr(b, settings.dateFormat)}`; }
+
+// apply density + theme immediately
+function applySettingsEffects(){
+  document.documentElement.setAttribute('data-theme', settings.theme||'day');
+  document.body.classList.toggle('dense', settings.density==='compact');
+
+  // week-start label (just updates labels, not grid math)
+  const weeks = document.querySelector('.weeks');
+  if (weeks){
+    weeks.innerHTML = (settings.weekStart==='mon')
+      ? '<div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>'
+      : '<div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>';
+  }
+}
+
+// compact density CSS tweaks
+const densityStyle = document.createElement('style');
+densityStyle.textContent = `
+  body.dense .camp-row, body.dense .camp-card{ padding:10px 12px; }
+  body.dense .camp-card{ column-gap:10px; }
+  body.dense .camp-card .camp-cell + .camp-cell{ padding-left:8px; }
+  body.dense .profile-card, body.dense .settings-card{ padding:14px; }
+  body.dense .monthbtn, body.dense .iconbtn{ padding:5px 8px; }
+`;
+document.head.appendChild(densityStyle);
+
+// populate Settings UI
+function loadSettingsUI(){
+  // theme radios
+  $$('input[name="theme"]').forEach(r=>{
+    r.checked = (r.value===settings.theme);
+    r.addEventListener('change', ()=>{
+      settings.theme = r.value;
+      saveLS(SETTINGS_KEY, settings);
+      applySettingsEffects();
+    });
+  });
+
+  // density
+  const densitySel = document.getElementById('densitySel');
+  if (densitySel){
+    densitySel.value = settings.density;
+    densitySel.addEventListener('change', ()=>{
+      settings.density = densitySel.value;
+      saveLS(SETTINGS_KEY, settings);
+      applySettingsEffects();
+    });
+  }
+
+  // week start
+  const weekStartSel = document.getElementById('weekStartSel');
+  if (weekStartSel){
+    weekStartSel.value = settings.weekStart;
+    weekStartSel.addEventListener('change', ()=>{
+      settings.weekStart = weekStartSel.value;
+      saveLS(SETTINGS_KEY, settings);
+      applySettingsEffects();
+    });
+  }
+
+  // date format
+  const dateFmtSel = document.getElementById('dateFmtSel');
+  if (dateFmtSel){
+    dateFmtSel.value = settings.dateFormat;
+    dateFmtSel.addEventListener('change', ()=>{
+      settings.dateFormat = dateFmtSel.value;
+      saveLS(SETTINGS_KEY, settings);
+      renderCampaignRows(); // update visible ranges
+    });
+  }
+
+  // timezone
+  bindSwitch('tzAuto', ()=>settings.tzAuto, v=>settings.tzAuto=v);
+  const tzManualSel = document.getElementById('tzManualSel');
+  if (tzManualSel){
+    tzManualSel.value = settings.tzManual;
+    tzManualSel.addEventListener('change', ()=>{
+      settings.tzManual = tzManualSel.value;
+      saveLS(SETTINGS_KEY, settings);
+    });
+  }
+
+  // notifications
+  bindSwitch('notifEmail', ()=>settings.notifEmail, v=>settings.notifEmail=v);
+  bindSwitch('notifPush',  ()=>settings.notifPush,  v=>settings.notifPush=v);
+
+  // integrations
+  bindSwitch('intIG', ()=>settings.integrations.IG, v=>settings.integrations.IG=v);
+  bindSwitch('intTT', ()=>settings.integrations.TT, v=>settings.integrations.TT=v);
+  bindSwitch('intFB', ()=>settings.integrations.FB, v=>settings.integrations.FB=v);
+  bindSwitch('intX',  ()=>settings.integrations.X,  v=>settings.integrations.X=v);
+  bindSwitch('intLI', ()=>settings.integrations.LI, v=>settings.integrations.LI=v);
+
+  // data: export/import/reset
+  document.getElementById('btnExport')?.addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify({
+      settings, profile, db, campaigns, campSort
+    }, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'phasee-export.json';
+    a.click();
+  });
+
+  document.getElementById('fileImport')?.addEventListener('change', (e)=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        const obj = JSON.parse(r.result);
+        if (obj.settings) { settings = obj.settings; saveLS(SETTINGS_KEY, settings); }
+        if (obj.profile)  { profile  = obj.profile;  saveLS(PROFILE_KEY, profile); }
+        if (obj.db)       { db       = obj.db;       saveLS(DB_KEY, db); }
+        if (obj.campaigns){ campaigns= obj.campaigns;saveLS(CAMPAIGNS_KEY, campaigns); }
+        if (obj.campSort) { campSort = obj.campSort; saveLS(CAMP_SORT_KEY, campSort); }
+        // reapply
+        applySettingsEffects();
+        yearOptions(); loadProfileUI();
+        buildCalendar(view.y, view.m);
+        updateCampScheduled(); applyCampSortIndicators(); renderCampaignRows();
+        alert('Import complete.');
+      }catch(err){ alert('Import failed: '+err?.message); }
+    };
+    r.readAsText(f);
+  });
+
+  document.getElementById('btnReset')?.addEventListener('click', ()=>{
+    if (!confirm('Reset all app data? This clears localStorage for Phasee.')) return;
+    try{
+      localStorage.removeItem(SETTINGS_KEY);
+      localStorage.removeItem(PROFILE_KEY);
+      localStorage.removeItem(DB_KEY);
+      localStorage.removeItem(CAMPAIGNS_KEY);
+      localStorage.removeItem(CAMP_SORT_KEY);
+      location.reload();
+    }catch{}
+  });
+}
+
 // map a column key to a comparable value
 function campValue(c, key){
   switch(key){
@@ -841,6 +1144,16 @@ function sortedCampaigns(){
   });
   return list;
 }
+// ---- pretty date range helpers ----
+const dateFmt = new Intl.DateTimeFormat(undefined, { month:'short', day:'numeric', year:'numeric' });
+function formatDate(iso){
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return Number.isNaN(d.valueOf()) ? '—' : dateFmt.format(d);
+}
+function formatRange(start, end){
+  return `${formatDate(start)} – ${formatDate(end)}`;
+}
 
 function updateCampScheduled(){
   const el = document.getElementById('campScheduled');
@@ -856,32 +1169,75 @@ function applyCampSortIndicators(){
   const active = document.querySelector(`.campaign-table .camp-head .camp-col[data-key="${campSort.key}"]`);
   if (active) active.setAttribute('aria-sort', campSort.dir);
 }
+/* ======= Campaign helpers (dates & display) ======= */
+function formatDate(iso){
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d)) return '—';
+  return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
+}
+function formatRange(startISO, endISO){
+  if (!startISO && !endISO) return '—';
+  if (startISO && endISO) return `${formatDate(startISO)} \u2013 ${formatDate(endISO)}`;
+  return formatDate(startISO || endISO);
+}
+function daysBetween(startISO, endISO){
+  if (!startISO || !endISO) return '—';
+  const s = new Date(startISO), e = new Date(endISO);
+  if (Number.isNaN(s) || Number.isNaN(e)) return '—';
+  // inclusive day count; change +1 to +0 if you prefer exclusive
+  const ms = e.setHours(12,0,0,0) - s.setHours(12,0,0,0);
+  return Math.max(1, Math.round(ms / 86400000) + 1);
+}
+function postsSlashDays(c){
+  const d = daysBetween(c.start, c.end);
+  if (d === '—') return (c.posts ?? '—');
+  return `${(c.posts ?? 0)}/${d}`;
+}
+function niceStatus(s){
+  s = (s || '').toLowerCase();
+  if (s === 'planned' || s === 'queued') return 'Queued';
+  if (s === 'active') return 'Active';
+  if (['finished','complete','completed','done'].includes(s)) return 'Finished';
+  return (s || '').charAt(0).toUpperCase() + (s || '').slice(1);
+}
 
 // dump rows into #campBody
 function renderCampaignRows(){
-  const body = document.getElementById('campBody');
-  if (!body) return;
-  body.innerHTML = '';
+  const list = document.getElementById('campList');   // << use the new container
+  if (!list) return;
+  list.innerHTML = '';
 
   const rows = sortedCampaigns();
   if (!rows.length) return;
 
   rows.forEach(c=>{
-    const row = document.createElement('div');
-    row.className = 'camp-row';
-    row.innerHTML = `
-      <div class="camp-col" data-key="name">${c.name||''}</div>
-      <div class="camp-col" data-key="objective">${c.objective||''}</div>
-      <div class="camp-col" data-key="range">${(c.start||'—')} – ${(c.end||'—')}</div>
-      <div class="camp-col" data-key="posts">${c.posts ?? '—'}</div>
-      <div class="camp-col" data-key="status">${c.status||''}</div>
-      <div class="camp-col" data-key="platforms">${(c.platforms||[]).join(', ')}</div>
-      <div class="camp-col" data-key="tone">${c.tone||''}</div>
-      <div class="camp-col" data-key="notes">${c.notes||''}</div>
-    `;
-    body.appendChild(row);
+    const card = document.createElement('div');
+    card.className = 'camp-card';
+   const niceStatus = (s) => {
+  s = (s||'').toLowerCase();
+  if (s === 'planned' || s === 'queued') return 'Queued';
+  if (s === 'active') return 'Active';
+  if (s === 'finished' || s === 'complete' || s === 'completed' || s === 'done') return 'Finished';
+  return (s || '').charAt(0).toUpperCase() + (s || '').slice(1);
+};
+
+card.innerHTML = `
+  <div class="camp-cell" data-key="name">${c.name || ''}</div>
+  <div class="camp-cell" data-key="objective">${c.objective || ''}</div>
+  <div class="camp-cell" data-key="range">${formatRange(c.start, c.end)}</div>
+  <div class="camp-cell" data-key="posts">${postsSlashDays(c)}</div>
+  <div class="camp-cell" data-key="status">${niceStatus(c.status)}</div>
+  <div class="camp-cell" data-key="platforms">${(c.platforms || []).join(', ')}</div>
+  <div class="camp-cell" data-key="tone">${c.tone || ''}</div>
+  <div class="camp-cell" data-key="notes">${c.notes || ''}</div>
+`;
+
+
+    list.appendChild(card);
   });
 }
+
 function wireCampaignSortClicks(){
   document
     .querySelectorAll('.campaign-table .camp-head .camp-col')
@@ -913,6 +1269,21 @@ loadProfileUI();
 
 document.getElementById('btnNewCampaign')?.addEventListener('click', ()=>{
   alert('New Campaign — modal coming soon');
+});
+// Upgrade Plan → take user to Settings and highlight Subscription
+document.getElementById('upgradeBtn')?.addEventListener('click', (e)=>{
+  e.preventDefault();
+  showPage('settings');
+
+  // flash the Subscription link so it’s obvious
+  const sub = document.getElementById('setSubscription');
+  if (sub) {
+    sub.classList.add('pulse');
+    setTimeout(()=> sub.classList.remove('pulse'), 1600);
+  }
+
+  // placeholder action (replace with your real flow or a pricing URL)
+  // window.open('https://your-pricing-url.example', '_blank');
 });
 
 // === Campaigns init on load (must be outside the click handler) ===
