@@ -105,11 +105,23 @@ button{font:inherit}
 .plan-name{font-size:12px; color:var(--muted); text-align:center}
 .upgrade{
   justify-self:center;
-  border:1px solid transparent; color:#fff; font-weight:900;
+  border:1px solid transparent;
+  color:#fff;
+  font-weight:900;
   background:linear-gradient(135deg, var(--accent-2), color-mix(in oklab, var(--accent-2) 85%, #ffd7bf 15%));
-  padding:8px 12px; border-radius:12px; box-shadow:0 10px 20px rgba(255,138,61,.18);
+  padding:8px 12px;
+  border-radius:12px;
+  box-shadow:0 10px 20px rgba(255,138,61,.18);
+  cursor:pointer;                /* NEW: pointer */
+  transition:transform .08s ease, box-shadow .15s ease, filter .12s ease;
 }
-.upgrade:hover{filter:brightness(1.03)}
+.upgrade:hover{ filter:brightness(1.06); box-shadow:0 12px 22px rgba(255,138,61,.22); }
+.upgrade:active{ transform:translateY(1px); box-shadow:0 6px 14px rgba(255,138,61,.18); }
+.upgrade:focus-visible{
+  outline:2px solid color-mix(in oklab,var(--accent-2) 65%, #fff 35%);
+  outline-offset:2px;
+}
+
 
 /* ===================== TOP BAR ===================== */
 .main{display:grid; grid-template-rows:62px 1fr}
@@ -301,6 +313,91 @@ button{font:inherit}
 #pageCampaigns { 
   display: none !important; 
 }
+/* ========== Settings 2-col layout ========== */
+.settings-layout{
+  display:grid;
+  grid-template-columns: 260px 1fr;
+  gap:18px;
+  align-items:start;
+}
+.settings-menu{
+  padding:14px 10px 8px;
+}
+.settings-menu h2{
+  margin:0 0 10px;
+  font-size:18px; font-weight:900;
+}
+.settings-list{ display:grid; gap:10px; }
+.settings-list a{ font-weight:700; cursor:pointer; }
+.settings-list a:hover{ text-decoration:underline; }
+.settings-footer{ font-size:12px; color:var(--muted); margin-top:14px; }
+
+/* Content stage (the red box area, styled as a panel) */
+.settings-stage{
+  min-height:560px;
+  background:var(--panel);
+  border:1px solid var(--ring);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-2);
+  padding:18px;
+}
+
+/* Small utilities for cards/buttons inside the stage */
+.stage-row{ display:grid; gap:14px; }
+.stage-card{
+  border:1px solid var(--ring);
+  border-radius:12px;
+  padding:14px;
+  background:linear-gradient(180deg, var(--panel), var(--panel-2));
+}
+.stage-title{ margin:0 0 8px; font-size:16px; font-weight:900; }
+.stage-help{ font-size:12px; color:var(--muted); }
+
+.stage-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 12px; border-radius:10px; cursor:pointer;
+  border:1px solid var(--ring); background:var(--panel); font-weight:800;
+}
+.stage-btn.primary{
+  border:0; color:#fff; font-weight:900;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow:0 8px 16px rgba(0,0,0,.12);
+}
+.stage-btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+/* Pricing cards */
+.plan-grid{ display:grid; gap:12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.plan{
+  border:2px solid var(--ring); border-radius:14px; padding:14px;
+  background:var(--panel-2);
+}
+.plan h3{ margin:0 0 6px; font-size:16px; font-weight:900; }
+.plan .price{ font-weight:900; font-size:22px; }
+.plan .meta{ font-size:12px; color:var(--muted); margin:6px 0 10px; }
+.plan.selected{ border-color: color-mix(in oklab, var(--accent) 60%, var(--ring)); }
+.plan .choose{ width:100%; }
+
+/* Integrations */
+.int-row{ display:flex; align-items:center; gap:10px; justify-content:space-between; padding:10px 0; border-bottom:1px dashed var(--ring); }
+.int-row:last-child{ border-bottom:0; }
+.int-name{ font-weight:800; }
+.int-actions{ display:flex; align-items:center; gap:8px; }
+.switch-min{
+  position:relative; width:42px; height:24px; border-radius:999px;
+  background:var(--panel); border:1px solid var(--ring); cursor:pointer;
+}
+.switch-min i{
+  position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:999px;
+  background:var(--chip); border:1px solid var(--chip-b); transition:left .15s ease;
+}
+.switch-min[data-on="true"]{ background:color-mix(in oklab, var(--accent) 22%, var(--panel)); }
+.switch-min[data-on="true"] i{ left:20px; }
+
+/* Pulse highlight used by Upgrade button jump */
+.settings-list a.pulse{
+  background: color-mix(in oklab, var(--accent-2) 15%, transparent);
+  border-radius:10px; padding:2px 6px; transition: background .6s ease;
+}
 
 </style>  <!-- ← add this line -->
 
@@ -441,6 +538,20 @@ button{font:inherit}
 /* kill the header-row divider */
 .campaign-table .camp-row.camp-head{
   border-bottom: 0 !important;
+}
+/* Account submenu (left-column look, but inside the stage) */
+.sub-list{
+  display:grid;
+  gap:10px;
+  margin: 6px 0 12px;
+}
+.sub-list a{
+  font-weight:700;
+  cursor:pointer;
+}
+.sub-list a:hover{ text-decoration: underline; }
+.sub-list a.active{
+  text-decoration: underline;
 }
 
 </style>
@@ -714,18 +825,23 @@ button{font:inherit}
 
       <!-- SETTINGS (navigated from bottom link) -->
 <div class="page" id="pageSettings">
-  <div class="settings-float">
-    <h2>Settings</h2>
-    <div class="settings-list">
-      <a id="setAccount">Account</a>
-      <a id="setIntegrations">Integrations</a>
-      <a id="setSubscription">Subscription</a>
-      <a id="setLogout">Log Out</a>
-      <a id="setHelp">Help</a>
+  <div class="settings-layout">
+    <!-- Left menu -->
+    <div class="settings-menu">
+      <h2>Settings</h2>
+      <div class="settings-list">
+  <a id="setAccount">Account</a>
+  <a id="setHelp">Help</a>
+</div>
+
+      <div class="settings-footer">© Phasee 2026</div>
     </div>
-    <div class="settings-footer">© Phasee 2026</div>
+
+    <!-- Right content stage (this is your red box area) -->
+    <div class="settings-stage" id="settingsStage" role="region" aria-live="polite"></div>
   </div>
 </div>
+
 
      
 
@@ -767,15 +883,18 @@ let db = loadLS(DB_KEY, {});                 // { 'YYYY-MM-DD': [ {platform,titl
 let filters = loadLS(FILTERS_KEY, {Instagram:true, Facebook:true, X:true, YouTube:true, TikTok:true, Blog:true, Website:true});
 let settings = loadLS(SETTINGS_KEY, {
   theme: document.documentElement.getAttribute('data-theme') || 'day',
-  density: 'comfortable',              // 'comfortable' | 'compact'
-  weekStart: 'sun',                    // 'sun' | 'mon'
-  dateFormat: 'MMM d, yyyy',           // used by formatDate()
-  tzAuto: true,                        // auto-detect timezone
-  tzManual: 'local',                   // used when tzAuto=false
+  density: 'comfortable',
+  weekStart: 'sun',
+  dateFormat: 'MMM d, yyyy',
+  tzAuto: true,
+  tzManual: 'local',
   notifEmail: false,
   notifPush: false,
-  integrations: { IG:true, TT:true, FB:false, X:false, LI:false }
+  integrations: { Instagram:false, Facebook:false, X:false, TikTok:false },
+  account: { loggedIn:false, email:'' },
+  plan: 'free'   // 'free' | 'core' | 'pro'
 });
+
 
 let profile = loadLS(PROFILE_KEY, {links:[]});
 
@@ -784,10 +903,8 @@ const PLATS = [
   {key:'Instagram', cls:'p-ig', dot:'#E8447C'},
   {key:'Facebook',  cls:'p-fb', dot:'#1877F2'},
   {key:'X',         cls:'p-x',  dot:'#111'},
-  {key:'YouTube',   cls:'p-yt', dot:'#FF0033'},
   {key:'TikTok',    cls:'p-tt', dot:'#00F2EA'},
-  {key:'Blog',      cls:'p-bl', dot:'#0A8C5E'},
-  {key:'Website',   cls:'p-web', dot:'#FF8A3D'},
+
 ];
 
 /* ======= Nav Switching ======= */
@@ -1303,6 +1420,239 @@ function wireCampaignSortClicks(){
       });
     });
 }
+/* ===================== Settings Stage Rendering ===================== */
+const stage = document.getElementById('settingsStage');
+
+function renderSettingsView(view = 'account'){
+  if (!stage) return;
+  // ensure current link looks active-ish
+  document.querySelectorAll('.settings-list a').forEach(a => a.classList.remove('active'));
+  ({
+    account:'#setAccount',
+    integrations:'#setIntegrations',
+    subscription:'#setSubscription',
+    logout:'#setLogout',
+    help:'#setHelp'
+  }[view] && document.querySelector({
+    account:'#setAccount',
+    integrations:'#setIntegrations',
+    subscription:'#setSubscription',
+    logout:'#setLogout',
+    help:'#setHelp'
+  }[view])?.classList.add('active'));
+
+  // ——— Account ———
+  if (view === 'account'){
+    if (!settings.account?.loggedIn){
+      stage.innerHTML = `
+        <div class="stage-row">
+          <div class="stage-card">
+            <h3 class="stage-title">Log in</h3>
+            <div class="stage-help">Use any email + password (demo only).</div>
+            <div class="stage-row" style="grid-template-columns:1fr;">
+              <input id="accEmail" class="select-sm" placeholder="Email" type="email" />
+              <input id="accPass" class="select-sm" placeholder="Password" type="password" />
+              <button id="btnLogin" class="stage-btn primary">Log in</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('btnLogin')?.addEventListener('click', ()=>{
+        const email = (document.getElementById('accEmail')?.value||'').trim();
+        const pass  = (document.getElementById('accPass')?.value||'').trim();
+        if (!email || !pass){ alert('Enter email and password.'); return; }
+        settings.account = { loggedIn:true, email };
+        saveLS(SETTINGS_KEY, settings);
+        renderSettingsView('account');
+      });
+      return;
+    }
+    // logged in
+    stage.innerHTML = `
+      <div class="stage-row">
+        <div class="stage-card">
+          <h3 class="stage-title">Account</h3>
+          <div><strong>Email:</strong> ${settings.account.email}</div>
+          <div class="stage-help">Demo UI – no real auth.</div>
+          <div style="margin-top:10px;">
+            <button id="btnChangePassword" class="stage-btn">Change password</button>
+            <button id="btnLogout" class="stage-btn" style="margin-left:8px;">Log out</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('btnChangePassword')?.addEventListener('click', ()=> alert('Pretend password flow…'));
+    document.getElementById('btnLogout')?.addEventListener('click', ()=>{
+      settings.account = {loggedIn:false, email:''};
+      saveLS(SETTINGS_KEY, settings);
+      renderSettingsView('account');
+    });
+    return;
+  }
+
+  // ——— Subscription ———
+  if (view === 'subscription'){
+    stage.innerHTML = `
+      <div class="stage-row">
+        <div class="stage-card">
+          <h3 class="stage-title">Choose your plan</h3>
+          <div class="stage-help">Press a plan to switch immediately (demo).</div>
+          <div class="plan-grid">
+            <div class="plan ${settings.plan==='free'?'selected':''}" data-plan="free">
+              <h3>Free Trial</h3>
+              <div class="price">$0</div>
+              <div class="meta">1-week trial</div>
+              <button class="stage-btn choose">Start Free Trial</button>
+            </div>
+            <div class="plan ${settings.plan==='core'?'selected':''}" data-plan="core">
+              <h3>Core</h3>
+              <div class="price">$9</div>
+              <div class="meta">7-day Core access</div>
+              <button class="stage-btn choose">Choose Core</button>
+            </div>
+            <div class="plan ${settings.plan==='pro'?'selected':''}" data-plan="pro">
+              <h3>Pro</h3>
+              <div class="price">$29</div>
+              <div class="meta">30-day Pro access</div>
+              <button class="stage-btn choose">Choose Pro</button>
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            Current plan: <strong id="planNow">${settings.plan.toUpperCase()}</strong>
+          </div>
+        </div>
+      </div>
+    `;
+    stage.querySelectorAll('.plan .choose').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const p = btn.closest('.plan')?.dataset.plan || 'free';
+        settings.plan = p;
+        saveLS(SETTINGS_KEY, settings);
+        renderSettingsView('subscription');
+        alert('Plan changed to: '+p.toUpperCase());
+      });
+    });
+    return;
+  }
+
+  // ——— Integrations ———
+  if (view === 'integrations'){
+    const I = settings.integrations || {};
+    stage.innerHTML = `
+      <div class="stage-row">
+        <div class="stage-card">
+          <h3 class="stage-title">Integrations</h3>
+          <div class="stage-help">Toggle on/off and use Connect to open the provider portal (placeholder).</div>
+
+          <div class="int-row" data-k="Instagram">
+            <div class="int-name">Instagram</div>
+            <div class="int-actions">
+              <button class="stage-btn" data-connect>Connect</button>
+              <div class="switch-min" data-toggle aria-label="Instagram on/off" data-on="${!!I.Instagram}"><i></i></div>
+            </div>
+          </div>
+
+          <div class="int-row" data-k="Facebook">
+            <div class="int-name">Facebook</div>
+            <div class="int-actions">
+              <button class="stage-btn" data-connect>Connect</button>
+              <div class="switch-min" data-toggle aria-label="Facebook on/off" data-on="${!!I.Facebook}"><i></i></div>
+            </div>
+          </div>
+
+          <div class="int-row" data-k="X">
+            <div class="int-name">X</div>
+            <div class="int-actions">
+              <button class="stage-btn" data-connect>Connect</button>
+              <div class="switch-min" data-toggle aria-label="X on/off" data-on="${!!I.X}"><i></i></div>
+            </div>
+          </div>
+
+          <div class="int-row" data-k="TikTok">
+            <div class="int-name">TikTok</div>
+            <div class="int-actions">
+              <button class="stage-btn" data-connect>Connect</button>
+              <div class="switch-min" data-toggle aria-label="TikTok on/off" data-on="${!!I.TikTok}"><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Connect buttons (placeholder auth links)
+    stage.querySelectorAll('[data-connect]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const row = btn.closest('.int-row'); const k = row?.dataset.k;
+        alert(`Open ${k} login… (placeholder)`);
+        // window.open('https://provider-login.example', '_blank'); // later
+      });
+    });
+
+    // On/off toggles
+    stage.querySelectorAll('[data-toggle]').forEach(sw=>{
+      sw.addEventListener('click', ()=>{
+        const row = sw.closest('.int-row'); const k = row?.dataset.k;
+        const newVal = sw.getAttribute('data-on') !== 'true';
+        sw.setAttribute('data-on', newVal ? 'true' : 'false');
+        settings.integrations[k] = newVal;
+        saveLS(SETTINGS_KEY, settings);
+      });
+    });
+    return;
+  }
+
+  // ——— Log Out (shortcut) ———
+  if (view === 'logout'){
+    if (!settings.account?.loggedIn){
+      stage.innerHTML = `<div class="stage-card"><div class="stage-title">You’re not logged in.</div></div>`;
+    } else {
+      settings.account = {loggedIn:false, email:''};
+      saveLS(SETTINGS_KEY, settings);
+      stage.innerHTML = `<div class="stage-card"><div class="stage-title">Logged out.</div></div>`;
+    }
+    return;
+  }
+
+  // ——— Help ———
+  if (view === 'help'){
+    stage.innerHTML = `
+      <div class="stage-card">
+        <h3 class="stage-title">Help</h3>
+        <div class="stage-help">This is a demo Settings area. Each tile is self-contained and uses localStorage.</div>
+      </div>
+    `;
+    return;
+  }
+}
+// Left menu routing
+document.getElementById('setAccount')?.addEventListener('click', ()=> renderSettingsView('account'));
+document.getElementById('setIntegrations')?.addEventListener('click', ()=> renderSettingsView('integrations'));
+document.getElementById('setSubscription')?.addEventListener('click', ()=> renderSettingsView('subscription'));
+document.getElementById('setLogout')?.addEventListener('click', ()=> renderSettingsView('logout'));
+document.getElementById('setHelp')?.addEventListener('click', ()=> renderSettingsView('help'));
+
+// Jump helper (re-use/replace your existing function if you added one earlier)
+function goToSettingsSection(which='subscription'){
+  showPage('settings');
+  renderSettingsView(which);
+  requestAnimationFrame(()=>{
+    const map = {
+      subscription: '#setSubscription',
+      account: '#setAccount',
+      integrations: '#setIntegrations',
+      logout: '#setLogout',
+      help: '#setHelp'
+    };
+    const el = document.querySelector(map[which] || map.subscription);
+    if (!el) return;
+    el.scrollIntoView({behavior:'smooth', block:'nearest'});
+    el.classList.add('pulse'); el.focus?.();
+    setTimeout(()=> el.classList.remove('pulse'), 1200);
+  });
+}
+
+// Keep your previous wiring for the Upgrade button (or add this if missing):
+document.getElementById('upgradeBtn')?.addEventListener('click', ()=> goToSettingsSection('subscription'));
 
 /* ======= INIT ======= */
 document.documentElement.setAttribute('data-theme', settings.theme||'day');
@@ -1357,6 +1707,11 @@ showPage('calendar');
     tone:'--c-tone',
     notes:'--c-notes'
   };
+// If user opens Settings, render the default view (Account)
+document.getElementById('openSettings')?.addEventListener('click', ()=>{
+  showPage('settings');
+  renderSettingsView('account');
+});
 
   // 1) Restore any saved widths
   try {
