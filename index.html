@@ -142,6 +142,12 @@ button{font:inherit}
 .page.active{display:block}
 .wrap{padding:16px}
 
+/* page fade */
+.page{ display:none; opacity:0; transition:opacity .18s ease;}
+.page.active{ display:block; }
+.page.active.entering{ opacity:1; }
+
+
 .calendar{background:var(--panel); border:1px solid var(--ring); border-radius:var(--radius-lg); box-shadow:var(--shadow-2); padding:10px}
 .weeks{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; padding:0 6px 4px; color:#8791a7; font-weight:900; font-size:11px}
 .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
@@ -285,6 +291,15 @@ button{font:inherit}
 .settings-list a.pulse {
   border-radius: 8px;
   animation: pulse .8s ease-out 2;
+}
+/* hide the sidebar link */
+.nav a[data-page="campaigns"] { 
+  display: none !important; 
+}
+
+/* hide the actual page just in case someone routes to it */
+#pageCampaigns { 
+  display: none !important; 
 }
 
 </style>  <!-- ← add this line -->
@@ -784,17 +799,47 @@ const pages = {
   settings: $('#pageSettings')
 };
 function showPage(name){
-  Object.values(pages).forEach(p=>p.classList.remove('active'));
-  pages[name]?.classList.add('active');
+  if(!pages[name]) return;
+  // save last page + update hash (routing)
+  history.replaceState(null, '', `#${name}`);
+  localStorage.setItem('phasee-last-page', name);
+
+  // transitions
+  Object.values(pages).forEach(p=>p.classList.remove('active','entering'));
+  const el = pages[name];
+  el.classList.add('active');
+  requestAnimationFrame(()=> el.classList.add('entering')); // fade-in
+
   // sidebar highlights
   $$('#nav a').forEach(a=>a.dataset.active = (a.dataset.page===name));
 }
+
+// sidebar clicks -> route
 $('#nav').addEventListener('click',(e)=>{
   const a = e.target.closest('a'); if(!a) return;
   e.preventDefault();
   showPage(a.dataset.page);
 });
-$('#openSettings').addEventListener('click', ()=> showPage('settings'));
+
+// footer settings -> route
+$('#openSettings').addEventListener('click', (e)=>{
+  e.preventDefault();
+  showPage('settings');
+});
+
+// route on hash change (e.g., manual typing, back/forward)
+window.addEventListener('hashchange', ()=>{
+  const name = (location.hash || '#calendar').slice(1);
+  showPage(pages[name] ? name : 'calendar');
+});
+
+// boot into last page or hash
+(function bootRoute(){
+  const fromHash = (location.hash || '').slice(1);
+  const last = localStorage.getItem('phasee-last-page') || 'calendar';
+  showPage(pages[fromHash] ? fromHash : last);
+})();
+
 
 /* ======= Month + Calendar ======= */
 let view = (()=>{const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}})();
