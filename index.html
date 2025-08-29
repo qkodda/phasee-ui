@@ -13,6 +13,21 @@
   position:relative;          /* ensure CSS vars resolve consistently */
 }
 
+/* Days from previous month */
+.day.prev-month {
+  background: #e6f2fc;       /* light red-ish */
+  border-color: #e6f2fc;
+  color: #e6f2fc;
+  opacity: 1;                /* keep fully visible */
+}
+
+/* Days from next month */
+.day.next-month {
+  background: #e6f2fc;       /* light blue-ish */
+  border-color: #e6f2fc;
+  color: #e6f2fc;
+  opacity: 1;
+}
 
 /* ===================== THEME + TOKENS ===================== */
 :root{
@@ -169,10 +184,9 @@ button{font:inherit}
   display:grid; grid-template-rows:auto 1fr; gap:6px; position:relative;
   box-shadow:var(--shadow-1);
   transition:transform .08s ease, box-shadow .15s ease, border-color .12s ease;
+scroll-margin-top: 72px;
 }
-.day.muted {
-  opacity: 0.4;         /* lower visibility */
-}
+
 .day:hover{transform:translateY(-1px); box-shadow:0 16px 36px rgba(15, 23, 42, .12); border-color: color-mix(in oklab, var(--accent-2) 30%, var(--ring))}
 .day.selected{outline:2px solid color-mix(in oklab, var(--accent-2) 32%, transparent); outline-offset:2px}
 .dhead{display:flex; align-items:center; justify-content:space-between}
@@ -197,6 +211,29 @@ button{font:inherit}
   border-radius:10px; border:1px solid rgba(0,0,0,.05);
   box-shadow:0 6px 14px rgba(15,23,42,.07);
 }
+/* Distinct colors for previous/next months (keep text readable) */
+.day.prev-month{
+  background: rgba(255, 116, 116, 0.10);
+  border-color: color-mix(in oklab, #ff7474 35%, var(--ring));
+}
+.day.next-month{
+  background: rgba(81, 188, 255, 0.12);
+  border-color: color-mix(in oklab, #51bcff 35%, var(--ring));
+}
+.day.prev-month .dnum,
+.day.next-month .dnum{ color:#334155; opacity:.95; }
+.day.prev-month .empty,
+.day.next-month .empty{ color:#94a3b8; }
+
+/* Past days in the *current* month */
+.day.past-day{
+  background: color-mix(in oklab, var(--panel-2) 55%, transparent);
+  border-color: color-mix(in oklab, var(--ring) 75%, transparent);
+}
+.day.past-day .dnum{ color:#64748b; }
+
+/* Hide/disable the add (+) only on past days of current month */
+.day.past-day .plus{ opacity:.25; pointer-events:none; cursor:not-allowed; }
 
 .card .pip{width:22px; height:22px; border-radius:7px; display:grid; place-items:center; color:#1d2435; font-size:12px; font-weight:900}
 .timechip{margin-left:auto; font-weight:900; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.05); font-size:10px}
@@ -553,6 +590,16 @@ button{font:inherit}
 .sub-list a.active{
   text-decoration: underline;
 }
+/* Past days in the current month */
+.day.past-day {
+  opacity: 0.35;
+  filter: grayscale(0.3);
+  pointer-events: none;   /* disable clicks if you don’t want + active */
+}
+.day.past-day .plus {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
 
 </style>
 <style>
@@ -627,6 +674,7 @@ button{font:inherit}
   }
   .camp-card .camp-cell[data-key="tone"]{ display:none; }
 }
+</style>
 <style>
 /* ========== Settings Floating Card ========== */
 .settings-float {
@@ -978,21 +1026,51 @@ function buildCalendar(y,m){
   for(let i=0;i<cells;i++){
     const cell = document.createElement('div'); cell.className='day';
     let dayNum, iso, muted=false;
-    if(i<startDay){ dayNum=prevDays-startDay+i+1; iso=isoOf(y,m-1,dayNum); muted=true; }
-    else if(i>=startDay+daysInMonth){ dayNum=i-(startDay+daysInMonth)+1; iso=isoOf(y,m+1,dayNum); muted=true; }
+   if(i<startDay){ 
+  dayNum=prevDays-startDay+i+1; 
+  iso=isoOf(y,m-1,dayNum); 
+  cell.classList.add('prev-month');
+}
+else if(i>=startDay+daysInMonth){ 
+  dayNum=i-(startDay+daysInMonth)+1; 
+  iso=isoOf(y,m+1,dayNum); 
+  cell.classList.add('next-month');
+}
+
     else { dayNum=i-startDay+1; iso=isoOf(y,m,dayNum); }
-    if(iso===todayISO) cell.classList.add('selected');
-    cell.dataset.iso = iso;
-if (muted) cell.classList.add('muted');
+    if (iso === todayISO) {
+  cell.classList.add('selected');
+} else if (new Date(iso) < new Date(todayISO) && m === view.m && y === view.y) {
+  // only mark past days in the *current month*
+  cell.classList.add('past-day');
+}
+
+cell.dataset.iso = iso;
 
 
-    const head=document.createElement('div'); head.className='dhead';
-    const dnum=document.createElement('div'); dnum.className='dnum'; dnum.textContent = dayNum;
-    const plus=document.createElement('button'); plus.className='plus'; plus.textContent='+';
-    plus.title = 'Quick add';
-    plus.onclick=(e)=>{ e.stopPropagation(); quickAdd(iso); };
 
-    head.append(dnum, plus);
+   const head = document.createElement('div'); 
+head.className = 'dhead';
+
+const dnum = document.createElement('div'); 
+dnum.className = 'dnum'; 
+dnum.textContent = dayNum;
+
+head.appendChild(dnum);
+
+// show + only for today or future
+if (iso >= todayISO) {
+  const plus = document.createElement('button');
+  plus.className = 'plus';
+  plus.textContent = '+';
+  plus.title = 'Quick add';
+  plus.onclick = (e) => { e.stopPropagation(); quickAdd(iso); };
+  head.appendChild(plus);
+} else {
+  // optional styling hook for past days
+  cell.classList.add('past');
+}
+
 
     const list=document.createElement('div');
     const items=(db[iso]||[]).filter(it => filters[it.platform??'']!==false);
@@ -1020,9 +1098,24 @@ function quickAdd(iso){
   saveLS(DB_KEY, db);
   buildCalendar(view.y, view.m);
 }
+$('#prev').onclick = () => {
+  view.m--;
+  if (view.m < 0) { view.m = 11; view.y--; }
+  buildCalendar(view.y, view.m);
+  ensureCurrentWeekOnTop(view.y, view.m);  // ← add this line
+};
+// Scroll the week that contains "today" to the top of the viewport
 
-$('#prev').onclick=()=>{ view.m--; if(view.m<0){view.m=11;view.y--} buildCalendar(view.y,view.m) }
-$('#next').onclick=()=>{ view.m++; if(view.m>11){view.m=0;view.y++} buildCalendar(view.y,view.m) }
+
+$('#next').onclick = () => {
+  view.m++;
+  if (view.m > 11) { view.m = 0; view.y++; }
+  buildCalendar(view.y, view.m);
+  ensureCurrentWeekOnTop(view.y, view.m);  // ← add this line
+};
+
+// Scroll the week that contains "today" to the top of the viewport
+
 
 /* ======= View-by (Eye) ======= */
 const viewByBtn = $('#viewByBtn');
@@ -1624,6 +1717,7 @@ function renderSettingsView(view = 'account'){
     return;
   }
 }
+
 // Left menu routing
 document.getElementById('setAccount')?.addEventListener('click', ()=> renderSettingsView('account'));
 document.getElementById('setIntegrations')?.addEventListener('click', ()=> renderSettingsView('integrations'));
@@ -1658,13 +1752,20 @@ document.getElementById('upgradeBtn')?.addEventListener('click', ()=> goToSettin
 document.documentElement.setAttribute('data-theme', settings.theme||'day');
 renderViewBy();
 buildCalendar(view.y, view.m);
+ensureCurrentWeekOnTop(view.y, view.m);   // ← add this line
 yearOptions();
 loadProfileUI();
 // default to Calendar page (as requested)
+// Scroll the week that contains "today" to the top of the viewport
+
+
 
 document.getElementById('btnNewCampaign')?.addEventListener('click', ()=>{
   alert('New Campaign — modal coming soon');
 });
+// Scroll the week that contains "today" to the top of the viewport
+
+
 // Upgrade Plan → take user to Settings and highlight Subscription
 document.getElementById('upgradeBtn')?.addEventListener('click', (e)=>{
   e.preventDefault();
