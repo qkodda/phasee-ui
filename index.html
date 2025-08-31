@@ -13,21 +13,7 @@
   position:relative;          /* ensure CSS vars resolve consistently */
 }
 
-/* Days from previous month */
-.day.prev-month {
-  background: #e6f2fc;       /* light red-ish */
-  border-color: #e6f2fc;
-  color: #e6f2fc;
-  opacity: 1;                /* keep fully visible */
-}
 
-/* Days from next month */
-.day.next-month {
-  background: #e6f2fc;       /* light blue-ish */
-  border-color: #e6f2fc;
-  color: #e6f2fc;
-  opacity: 1;
-}
 
 /* ===================== THEME + TOKENS ===================== */
 :root{
@@ -55,11 +41,21 @@
   --bg: #0E1220;
   --panel:#141A2B;
   --panel-2:#11182A;
-  -objectiive-ring:#1D2740;
   --ink:#E7ECF8;
   --muted:#9AA6C0;
   --chip:#1A2140; --chip-b:#2A335C;
 }
+:root{
+  /* overlay & ink for future-month cards (day theme) */
+  --nm-overlay: rgba(15,23,42,.28);
+  --nm-ink: rgba(15,23,42,.78);
+}
+[data-theme="night"]{
+  /* slightly stronger on dark theme */
+  --nm-overlay: rgba(0,0,0,.33);
+  --nm-ink: rgba(255,255,255,.82);
+}
+
 :root{
   /* ...existing tokens... */
   --camp-cols:
@@ -144,7 +140,10 @@ button{font:inherit}
   background:linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel-2) 60%, var(--panel) 40%));
   border-bottom:1px solid var(--ring); padding:0 16px;
   display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:4;
-}
+}/* add this */
+.top { justify-content: flex-start; }   /* keep default layout */
+.controls { margin-left: auto; }        /* pushes the controls to the right */
+
 .monthbar{display:flex; align-items:center; gap:8px}
 .monthbtn{appearance:none; border:1px solid var(--ring); background:var(--panel); border-radius:12px; padding:6px 10px; font-weight:800; cursor:pointer}
 .monthlabel{font-weight:900; font-size:18px}
@@ -176,18 +175,110 @@ button{font:inherit}
 
 
 .calendar{background:var(--panel); border:1px solid var(--ring); border-radius:var(--radius-lg); box-shadow:var(--shadow-2); padding:10px}
-.weeks{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; padding:0 6px 4px; color:#8791a7; font-weight:900; font-size:11px}
-.grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
-.day{
-  background:var(--panel); border:1px solid var(--ring); border-radius:14px;
-  padding:10px; min-height:110px;
-  display:grid; grid-template-rows:auto 1fr; gap:6px; position:relative;
-  box-shadow:var(--shadow-1);
-  transition:transform .08s ease, box-shadow .15s ease, border-color .12s ease;
-scroll-margin-top: 72px;
+/* Let the calendar body scroll so sticky header doesn't hide dates */
+.calendar { 
+  max-height: calc(100dvh - 140px);
+  overflow-y: auto;
+}
+/* Calendar header: [ prev ] [ Month label ] [ next  👁 ] */
+.cal-header{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* left | center | right */
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0 14px;
+  font-weight: 900;
+  font-size: 18px;
+  border-bottom: 1px solid var(--ring);
+  margin-bottom: 8px;
+}
+/* Calendar header: center cluster for arrows+month, eye on far right */
+.cal-header{
+  display:flex;
+  align-items:center;
+  justify-content:center;     /* centers the middle cluster */
+  gap:10px;
+  padding:12px 0 14px;
+  font-weight:900;
+  font-size:18px;
+  border-bottom:1px solid var(--ring);
+  margin-bottom:8px;
+  position:relative;
 }
 
-.day:hover{transform:translateY(-1px); box-shadow:0 16px 36px rgba(15, 23, 42, .12); border-color: color-mix(in oklab, var(--accent-2) 30%, var(--ring))}
+.cal-mid{
+  display:flex;
+  align-items:center;
+  gap:10px;                   /* arrows hug the month */
+}
+
+.cal-right{
+  margin-left:auto;           /* pushes eye to the far right */
+  display:flex;
+  align-items:center;
+  gap:8px;
+  position:relative;
+}
+
+.cal-header .monthbtn,
+.cal-header .iconbtn{
+  appearance:none;
+  border:1px solid var(--ring);
+  background:var(--panel);
+  border-radius:12px;
+  padding:6px 10px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+/* anchor the dropdown to the eye button */
+.cal-right .dropdown{ right:0; top:40px; }
+
+.cal-left  { justify-self: start; }
+.cal-center{ justify-self: center; }
+.cal-right { justify-self: end; display:flex; align-items:center; gap:8px; position:relative; }
+
+.cal-header .monthbtn{
+  appearance:none; border:1px solid var(--ring); background:var(--panel);
+  border-radius:12px; padding:6px 10px; font-weight:800; cursor:pointer;
+}
+.cal-header .iconbtn{
+  appearance:none; border:1px solid var(--ring); background:var(--panel);
+  border-radius:12px; padding:6px 10px; font-weight:800; cursor:pointer;
+}
+
+/* anchor the dropdown to the right cluster */
+.cal-right .dropdown{ right:0; top:40px; }
+
+
+.weeks{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; padding:0 6px 4px; color:#8791a7; font-weight:900; font-size:11px}
+.grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+/* Glass panel look for every day cell */
+.day{
+  border-radius:14px;
+  padding:10px; min-height:110px;
+  display:grid; grid-template-rows:auto 1fr; gap:6px; position:relative;
+  /* frosted glass */
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  /* soft shadow / fade */
+  box-shadow: 0 8px 18px rgba(15,23,42,.12);
+  transition: transform .12s ease, box-shadow .18s ease, border-color .12s ease;
+  scroll-margin-top:72px;
+}
+[data-theme="night"] .day{
+  background: rgba(20,26,43,0.55);
+  border-color: rgba(255,255,255,0.08);
+}
+
+.day:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15,23,42,.18);
+  border-color: color-mix(in oklab, var(--accent-2) 30%, var(--ring));
+}
+
 .day.selected{outline:2px solid color-mix(in oklab, var(--accent-2) 32%, transparent); outline-offset:2px}
 .dhead{display:flex; align-items:center; justify-content:space-between}
 .dnum{font-weight:900; font-size:11px}
@@ -216,15 +307,88 @@ scroll-margin-top: 72px;
   background: rgba(255, 116, 116, 0.10);
   border-color: color-mix(in oklab, #ff7474 35%, var(--ring));
 }
-.day.next-month{
-  background: rgba(81, 188, 255, 0.12);
-  border-color: color-mix(in oklab, #51bcff 35%, var(--ring));
+/* Days that spill into the next month (darker to distinguish) */
+/* ---------- Sleek darker look for next-month days ---------- */
+:root{
+  /* day theme tint */
+  --next-bg: color-mix(in oklab, var(--panel-2) 70%, #0f172a 30%);
+  --next-bd: color-mix(in oklab, var(--ring) 70%, #0f172a 24%);
+  --next-ink: color-mix(in oklab, var(--ink) 88%, #0f172a 12%);
 }
-.day.prev-month .dnum,
-.day.next-month .dnum{ color:#334155; opacity:.95; }
-.day.prev-month .empty,
-.day.next-month .empty{ color:#94a3b8; }
+[data-theme="night"]{
+  /* night theme tint (slightly brighter vs panel for contrast) */
+  --next-bg: color-mix(in oklab, var(--panel) 88%, #000 12%);
+  --next-bd: color-mix(in oklab, var(--ring) 70%, #000 18%);
+  --next-ink: color-mix(in oklab, var(--ink) 92%, #000 8%);
+}
 
+/* Base state */
+/* Darker translucent glass for next-month days */
+/* Darker translucent glass for next-month days */
+/* Smooth transparent “future month” look (keeps glass, adds a dim fade) */
+.day.next-month{
+  position: relative;             /* needed for the overlay */
+  color: var(--nm-ink);
+  border-color: rgba(255,255,255,.18);
+}
+
+/* subtle glassy overlay + bottom fade, like the screenshot */
+.day.next-month::after{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)) , /* glass sheen */
+    radial-gradient(120% 70% at 50% 10%, transparent 45%, var(--nm-overlay) 100%);
+  box-shadow:
+    inset 0 -56px 90px var(--nm-overlay),         /* bottom fade */
+    inset 0 0 0 1px rgba(255,255,255,.08);        /* subtle inner ring */
+}
+/* === OVERRIDE: make future-month days use the same frosted glass, no gray overlay === */
+/* === Modern translucent-glass for next-month (proceeding) days === */
+/* === Modern translucent-glass for next-month (proceeding) days === */
+.day.next-month{
+  /* light theme glass */
+  --nm-bg: rgba(255,255,255,.35);
+  --nm-bd: rgba(255,255,255,.22);
+
+  background: var(--nm-bg);
+  border: 1px solid var(--nm-bd);
+  backdrop-filter: blur(16px) saturate(110%);
+  -webkit-backdrop-filter: blur(16px) saturate(110%);
+  box-shadow:
+    0 8px 18px rgba(15,23,42,.10),
+    inset 0 1px 0 rgba(255,255,255,.25); /* subtle inner sheen */
+  color: color-mix(in oklab, var(--ink) 85%, transparent);
+}
+
+/* night theme variant */
+[data-theme="night"] .day.next-month{
+  --nm-bg: rgba(20,26,43,.35);
+  --nm-bd: rgba(255,255,255,.10);
+
+  background: var(--nm-bg);
+  border-color: var(--nm-bd);
+  color: color-mix(in oklab, var(--ink) 92%, transparent);
+}
+
+/* calm the chrome inside those cells */
+.day.next-month .dnum{ opacity:.85; }
+.day.next-month .empty{ opacity:.75; }
+.day.next-month .plus{
+  opacity:.55;
+  filter:saturate(.9) brightness(.95);
+}
+
+/* gentle lift on hover (keeps the glass vibe) */
+.day.next-month:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 36px rgba(15,23,42,.14);
+}
+
+/* IMPORTANT: remove any overlay you previously added */
+.day.next-month::after{ content:none !important; }
 /* Past days in the *current* month */
 .day.past-day{
   background: color-mix(in oklab, var(--panel-2) 55%, transparent);
@@ -341,15 +505,7 @@ scroll-margin-top: 72px;
   border-radius: 8px;
   animation: pulse .8s ease-out 2;
 }
-/* hide the sidebar link */
-.nav a[data-page="campaigns"] { 
-  display: none !important; 
-}
-
-/* hide the actual page just in case someone routes to it */
-#pageCampaigns { 
-  display: none !important; 
-}
+ 
 /* ========== Settings 2-col layout ========== */
 .settings-layout{
   display:grid;
@@ -435,6 +591,34 @@ scroll-margin-top: 72px;
   background: color-mix(in oklab, var(--accent-2) 15%, transparent);
   border-radius:10px; padding:2px 6px; transition: background .6s ease;
 }
+/* ---------- SETTINGS PANEL ---------- */
+.settings-wrap{display:none; max-width:980px; margin:0 auto; padding:16px 14px 40px;}
+.settings-grid{display:grid; grid-template-columns:180px 1fr; gap:14px;}
+.settings-nav{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:12px; padding:10px;}
+.settings-nav h3{margin:6px 8px 10px; font-size:14px; color:var(--ink-dim); letter-spacing:.6px}
+.settings-nav button{
+  width:100%; display:block; text-align:left; padding:10px 12px; margin:4px 0;
+  border-radius:10px; border:1px solid transparent; background:transparent; color:var(--ink);
+  font-weight:700; letter-spacing:.4px;
+}
+.settings-nav button.active{background:rgba(255,255,255,.08); border-color:var(--line);}
+.settings-card{
+  background:rgba(255,255,255,.04); border:1px solid var(--line);
+  border-radius:14px; padding:14px; min-height:220px;
+  box-shadow:0 12px 28px rgba(0,0,0,.28);
+}
+.settings-card h2{margin:6px 2px 10px; font-size:18px}
+.settings-muted{color:var(--ink-dim); font-size:13px}
+.settings-btn{ height:40px; padding:0 14px; border-radius:10px; border:1px solid var(--ctrl-line);
+  background:var(--ctrl-bg); color:var(--ctrl-ink); font-weight:800; letter-spacing:.8px; }
+.settings-ghost{ background:transparent; color:var(--ink); border-color:var(--line); }
+.field{display:grid; gap:6px; margin:10px 0 14px;}
+.field label{color:var(--ink-dim); font-weight:700; font-size:12px; letter-spacing:.6px}
+.field input{
+  background:rgba(255,255,255,.06); border:1px solid var(--line);
+  border-radius:10px; color:var(--ink); padding:10px 12px; font-weight:700;
+}
+.hide{display:none !important;}
 
 </style>  <!-- ← add this line -->
 
@@ -715,6 +899,8 @@ scroll-margin-top: 72px;
   margin-top: 16px;
 }
 
+
+
 .settings-close {
   display: inline-block;
   margin-top: 6px;
@@ -730,6 +916,67 @@ scroll-margin-top: 72px;
 .settings-close:hover {
   filter: brightness(1.05);
 }
+</style>
+<style>
+/* ===== Compose Modal ===== */
+.compose-backdrop{
+  position:fixed; inset:0; display:none; place-items:center; z-index:50;
+  background:rgba(15,23,42,.32);  /* dark overlay */
+  /* no blur */
+}
+
+.compose-backdrop.open{ display:grid; }
+
+.compose-card{
+  width: min(460px, 92vw);   /* narrower than before */
+  background: var(--panel); border:1px solid var(--ring);
+  border-radius:16px; box-shadow:0 20px 40px rgba(0,0,0,.28);
+  padding:16px; position:relative;
+}
+
+
+/* give room for the small AI chip that sits inside the input */
+.c-row.two .c-input { padding-right: 56px; }
+
+.compose-title{ font-weight:900; font-size:18px; margin:0 0 10px; }
+
+.c-row{ display:grid; grid-template-columns:1fr auto; gap:8px; margin:8px 0; }
+.c-input, .c-textarea, .c-select{
+  width:100%; padding:10px 12px; border:1px solid var(--ring);
+  border-radius:12px; background:var(--panel); color:var(--ink); outline:none;
+}
+.c-textarea{ min-height:64px; resize:vertical; }
+.ai-btn{
+  border:0; border-radius:10px; padding:10px 12px; cursor:pointer; font-weight:900; color:#fff;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow:0 8px 16px rgba(0,0,0,.12);
+}
+.c-inline{ display:flex; gap:10px; align-items:center; margin:8px 0; }
+
+.pill-chip{
+  border:1px solid var(--ring); background:var(--panel);
+  border-radius:999px; padding:6px 10px; font-weight:800; cursor:pointer;
+}
+.pill-chip[data-on="true"]{
+  color:#fff; border-color:transparent;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+
+.compose-actions{
+  display:flex; justify-content:flex-end; gap:10px; margin-top:12px;
+}
+
+.btn-ghost{ border:1px solid var(--ring); background:var(--panel); border-radius:10px; padding:10px 12px; font-weight:800; cursor:pointer; }
+.btn-primary{
+  border:0; border-radius:12px; padding:10px 14px; cursor:pointer; font-weight:900; color:#fff;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow:0 10px 20px rgba(0,0,0,.12);
+}
+.compose-close{
+  position:absolute; top:8px; right:8px; border:1px solid var(--ring);
+  background:var(--panel); border-radius:10px; padding:6px 8px; font-weight:900; cursor:pointer;
+}
+.small-help{ font-size:12px; color:var(--muted); margin-top:2px; }
+.c-row.three { grid-template-columns: 1fr auto auto; }
+
 
 </style>
 </head>
@@ -743,12 +990,11 @@ scroll-margin-top: 72px;
       <div class="brandname">Phasee</div>
     </div>
 
-    <nav class="nav" id="nav">
-      <a href="#profile" data-page="profile"><span>Profile</span></a>
-      <a href="#calendar" data-page="calendar" data-active="true"><span>Calendar</span></a>
-      <a href="#campaigns" data-page="campaigns"><span>Campaigns</span></a>
-     
-    </nav>
+<nav class="nav" id="nav">
+  <a href="#profile" data-page="profile"><span>Profile</span></a>
+  <a href="#calendar" data-page="calendar" data-active="true"><span>Calendar</span></a>
+</nav>
+
 
     <div class="foot">
       <a class="settings-link" id="openSettings">Settings</a>
@@ -763,19 +1009,12 @@ scroll-margin-top: 72px;
   <section class="main">
     <!-- TOP BAR -->
     <header class="top">
-      <div class="monthbar">
-        <button class="monthbtn" id="prev">‹</button>
-        <div class="monthlabel" id="monthLabel">—</div>
-        <button class="monthbtn" id="next">›</button>
-      </div>
-      <div class="controls">
-        <button id="viewByBtn" class="iconbtn">👁</button>
-        <div class="dropdown" id="viewByMenu" aria-label="Filter platforms"></div>
+  <div class="controls">
+  <select class="iconbtn" id="accountSel">
+    <option>Acme Co</option><option>Northwind</option><option>Contoso</option>
+  </select>
+</div>
 
-        <select class="iconbtn" id="accountSel">
-          <option>Acme Co</option><option>Northwind</option><option>Contoso</option>
-        </select>
-      </div>
     </header>
 
     <!-- CONTENT -->
@@ -783,10 +1022,26 @@ scroll-margin-top: 72px;
       <!-- CALENDAR (default) -->
       <div class="page active" id="pageCalendar">
         <div class="calendar">
-          <div class="weeks"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
-          <div class="grid" id="grid"></div>
-        </div>
-      </div>
+ <div class="cal-header">
+  <div class="cal-mid">
+    <button class="monthbtn" id="prev">‹</button>
+    <div class="monthlabel" id="monthLabel">—</div>
+    <button class="monthbtn" id="next">›</button>
+
+  </div>
+
+  <div class="cal-right">
+    <button id="viewByBtn" class="iconbtn">👁</button>
+    <div class="dropdown" id="viewByMenu" aria-label="Filter platforms"></div>
+  </div>
+</div>
+
+
+  <div class="weeks" id="weeks"></div>
+  <div class="grid" id="grid"></div>
+</div> <!-- .calendar -->
+</div> <!-- #pageCalendar -->
+
 
       <!-- PROFILE (mock) -->
       <div class="page" id="pageProfile">
@@ -879,6 +1134,9 @@ scroll-margin-top: 72px;
       <h2>Settings</h2>
       <div class="settings-list">
   <a id="setAccount">Account</a>
+  <a id="setIntegrations">Integrations</a>
+  <a id="setSubscription">Subscription</a>
+  <a id="setLogout">Log out</a>
   <a id="setHelp">Help</a>
 </div>
 
@@ -887,15 +1145,9 @@ scroll-margin-top: 72px;
 
     <!-- Right content stage (this is your red box area) -->
     <div class="settings-stage" id="settingsStage" role="region" aria-live="polite"></div>
-  </div>
-</div>
+  </div> <!-- .settings-layout -->
+</div>   <!-- #pageSettings -->
 
-
-     
-
-    </div>
-  </section>
-</div>
 
 <script>
 /* ======= Helpers ======= */
@@ -925,6 +1177,89 @@ if (!campaigns.length){
   ];
   saveLS(CAMPAIGNS_KEY, campaigns);
 }
+// ===== Compose modal state =====
+let composeISO = null;
+let composeMedia = null;  // <-- NEW: holds the selected file (as dataURL + name)
+
+// When you define openCompose(iso)…
+function openCompose(iso){
+  composeISO = iso;
+
+  // reset fields
+  document.getElementById('cmpContent').value = '';
+  document.getElementById('cmpCopy').value = '';
+
+
+  // reset media UI
+  composeMedia = null;
+  const meta = document.getElementById('uploadMeta');
+  if (meta) meta.textContent = '';
+
+  // fill time options (08:00–20:30 every 30min)
+  const timeSel = document.getElementById('cmpTime');
+if (timeSel){
+  timeSel.innerHTML = '';
+  const label12 = (H, m) => {
+    const suffix = H >= 12 ? 'PM' : 'AM';
+    const h12 = H % 12 === 0 ? 12 : H % 12;
+    return `${h12}:${String(m).padStart(2,'0')} ${suffix}`;
+  };
+  for (let H=8; H<=20; H++){
+    [0,30].forEach(m=>{
+      const label = label12(H, m);
+      const o = document.createElement('option');
+      o.value = label;      // store human-readable
+      o.textContent = label;
+      timeSel.appendChild(o);
+    });
+  }
+}
+
+ // platform chips (single-select / radio behavior)
+const platWrap = document.getElementById('cmpPlatWrap');
+if (platWrap){
+  platWrap.innerHTML = '';
+  PLATS.forEach((p, i)=>{
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'pill-chip';
+    chip.dataset.on = (i === 0 ? 'true' : 'false');  // first selected
+    chip.textContent = p.key;
+    chip.addEventListener('click', ()=>{
+      platWrap.querySelectorAll('.pill-chip').forEach(c=> c.dataset.on = 'false');
+      chip.dataset.on = 'true';
+    });
+    platWrap.appendChild(chip);
+  });
+}
+
+  // friendly date hint
+  const help = document.getElementById('composeDateHelp');
+  if (help && iso){
+    const d = new Date(iso);
+    help.textContent = `Scheduling for ${d.toLocaleDateString()} (${iso})`;
+  }
+
+  // finally, open the modal
+  document.getElementById('composeWrap')?.classList.add('open');
+}
+// Upload button triggers the hidden <input type="file">
+document.getElementById('uploadBtn')?.addEventListener('click', () => {
+  document.getElementById('cmpUpload').click();
+});
+
+// Read the selected file into memory (data URL) and show a tiny label
+document.getElementById('cmpUpload')?.addEventListener('change', (e) => {
+  const f = e.target.files?.[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    composeMedia = { name: f.name, type: f.type, dataURL: r.result };
+    const meta = document.getElementById('uploadMeta');
+    if (meta) meta.textContent = `Attached: ${f.name}`;
+  };
+  r.readAsDataURL(f);
+});
 
 /* ======= State ======= */
 let db = loadLS(DB_KEY, {});                 // { 'YYYY-MM-DD': [ {platform,title,time,...}, ... ] }
@@ -943,6 +1278,18 @@ let settings = loadLS(SETTINGS_KEY, {
   plan: 'free'   // 'free' | 'core' | 'pro'
 });
 
+function isLoggedIn(){ return !!(settings.account && settings.account.loggedIn); }
+function refreshVisibility(){
+  // sidebar: hide Campaigns unless logged in
+  const campLink = document.querySelector('#nav a[data-page="campaigns"]');
+  if (campLink) campLink.style.display = isLoggedIn() ? '' : 'none';
+
+  // settings left menu: hide gated items when logged out
+  ['setIntegrations','setSubscription','setLogout'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) el.style.display = isLoggedIn() ? '' : 'none';
+  });
+}
 
 let profile = loadLS(PROFILE_KEY, {links:[]});
 
@@ -959,13 +1306,14 @@ const PLATS = [
 const pages = {
   calendar: $('#pageCalendar'),
   profile: $('#pageProfile'),
-  campaigns: $('#pageCampaigns'),
-  analytics: $('#pageAnalytics'),
   settings: $('#pageSettings')
 };
+
 function showPage(name){
+
   if(!pages[name]) return;
-  // save last page + update hash (routing)
+
+  // route + persist
   history.replaceState(null, '', `#${name}`);
   localStorage.setItem('phasee-last-page', name);
 
@@ -973,10 +1321,13 @@ function showPage(name){
   Object.values(pages).forEach(p=>p.classList.remove('active','entering'));
   const el = pages[name];
   el.classList.add('active');
-  requestAnimationFrame(()=> el.classList.add('entering')); // fade-in
+  requestAnimationFrame(()=> el.classList.add('entering'));
 
-  // sidebar highlights
+  // sidebar highlight
   $$('#nav a').forEach(a=>a.dataset.active = (a.dataset.page===name));
+
+  // keep menu visibility in sync
+  refreshVisibility();
 }
 
 // sidebar clicks -> route
@@ -1007,111 +1358,113 @@ window.addEventListener('hashchange', ()=>{
 
 
 /* ======= Month + Calendar ======= */
+let anchor = new Date();            // <- NEW
+anchor.setHours(0,0,0,0);           // normalize to midnight
+
 let view = (()=>{const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}})();
 const grid = $('#grid');
 const monthLabel = $('#monthLabel');
-
-function buildCalendar(y,m){
-  grid.innerHTML='';
-  const first = new Date(y,m,1);
-  monthLabel.textContent = first.toLocaleString(undefined,{month:'long',year:'numeric'});
-
-  const startDayRaw = first.getDay();
-  const startDay = startDayRaw;
-  const daysInMonth = new Date(y,m+1,0).getDate();
-  const prevDays = new Date(y,m,0).getDate();
-  const cells = 42;
-  const todayISO = new Date().toISOString().slice(0,10);
-
-  for(let i=0;i<cells;i++){
-    const cell = document.createElement('div'); cell.className='day';
-    let dayNum, iso, muted=false;
-   if(i<startDay){ 
-  dayNum=prevDays-startDay+i+1; 
-  iso=isoOf(y,m-1,dayNum); 
-  cell.classList.add('prev-month');
+// Returns the start-of-week (Sun/Mon) for a given date
+function startOfWeek(date, weekStart = (settings?.weekStart || 'sun')){
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+  const start = weekStart === 'mon' ? 1 : 0; // 1 = Monday, 0 = Sunday
+  const diff = (d.getDay() - start + 7) % 7;
+  d.setDate(d.getDate() - diff);
+  return d;
 }
-else if(i>=startDay+daysInMonth){ 
-  dayNum=i-(startDay+daysInMonth)+1; 
-  iso=isoOf(y,m+1,dayNum); 
-  cell.classList.add('next-month');
+// Dynamic week header that starts on the same weekday as the first visible cell
+const weeksEl = $('#weeks');
+function setWeekHeaderFor(date){
+  const labels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const i = new Date(date).getDay();      // 0=Sun..6=Sat for the first column
+  const ordered = labels.slice(i).concat(labels.slice(0, i));
+  if (weeksEl) weeksEl.innerHTML = ordered.map(d => `<div>${d}</div>`).join('');
 }
 
-    else { dayNum=i-startDay+1; iso=isoOf(y,m,dayNum); }
-    if (iso === todayISO) {
-  cell.classList.add('selected');
-} else if (new Date(iso) < new Date(todayISO) && m === view.m && y === view.y) {
-  // only mark past days in the *current month*
-  cell.classList.add('past-day');
-}
+// Show exactly 31 consecutive days starting TODAY, top-left = today
+function buildCalendar(){
+  grid.innerHTML = '';
 
-cell.dataset.iso = iso;
+  // always anchor at the current anchor date
+  const start = new Date(anchor);               // <- CHANGED
+  setWeekHeaderFor(start);
 
+  const baseMonth = start.getMonth(), baseYear = start.getFullYear();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayISO = today.toISOString().slice(0,10);
 
+  // Label ...
+  const end = new Date(start); end.setDate(start.getDate() + 30);
+  const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+  monthLabel.textContent = sameMonth
+    ? start.toLocaleString(undefined, { month:'long', year:'numeric' })
+    : `${start.toLocaleString(undefined,{ month:'long', year:'numeric' })} – ${end.toLocaleString(undefined,{ month:'long', year:'numeric' })}`;
 
-   const head = document.createElement('div'); 
-head.className = 'dhead';
+  // Build 31 cells (grid will naturally wrap rows; last row will be partial)
+  for (let i = 0; i < 31; i++){
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const iso = d.toISOString().slice(0,10);
 
-const dnum = document.createElement('div'); 
-dnum.className = 'dnum'; 
-dnum.textContent = dayNum;
+    const cell = document.createElement('div');
+    cell.className = 'day';
+if (d < today) cell.classList.add('past-day');
+    cell.dataset.iso = iso;
 
-head.appendChild(dnum);
+    // Darker style when the day spills into the next month
+    if (d.getMonth() !== baseMonth || d.getFullYear() !== baseYear){
+      cell.classList.add('next-month');
+    }
 
-// show + only for today or future
-if (iso >= todayISO) {
-  const plus = document.createElement('button');
-  plus.className = 'plus';
-  plus.textContent = '+';
-  plus.title = 'Quick add';
-  plus.onclick = (e) => { e.stopPropagation(); quickAdd(iso); };
-  head.appendChild(plus);
-} else {
-  // optional styling hook for past days
-  cell.classList.add('past');
-}
+    // Mark today
+    if (iso === todayISO) cell.classList.add('selected');
 
+    // Header
+    const head = document.createElement('div'); head.className = 'dhead';
+    const dnum = document.createElement('div'); dnum.className = 'dnum'; dnum.textContent = d.getDate();
+    head.appendChild(dnum);
 
-    const list=document.createElement('div');
-    const items=(db[iso]||[]).filter(it => filters[it.platform??'']!==false);
+    // + button for today/future (everything here is today+)
+    const plus = document.createElement('button');
+    plus.className = 'plus'; plus.textContent = '+'; plus.title = 'Quick add';
+    plus.onclick = (e)=>{ e.stopPropagation(); quickAdd(iso); };
+    head.appendChild(plus);
 
-    if(items.length===0) list.innerHTML='<div class="empty">No items</div>';
-    else items.forEach(it=>{
-      const card=document.createElement('div'); card.className='card';
-      const cls = (PLATS.find(p=>p.key.toLowerCase()===(it.platform||'').toLowerCase())?.cls) || 'p-bl';
-      const pip=document.createElement('div'); pip.className = `pip ${cls}`; pip.textContent = (it.platform||'P')[0]||'P';
-      const title=document.createElement('div'); title.textContent = it.title||'Untitled';
-      const time=document.createElement('div'); time.className='timechip'; time.textContent = it.time || '—';
-      card.append(pip,title,time);
-      list.append(card);
-    });
+    // Items
+    const list  = document.createElement('div');
+    const items = (db[iso] || []).filter(it => filters[it.platform ?? ''] !== false);
+    if (!items.length){
+      list.innerHTML = '<div class="empty">No items</div>';
+    } else {
+      items.forEach(it=>{
+        const card  = document.createElement('div'); card.className = 'card';
+        const cls   = (PLATS.find(p => p.key.toLowerCase() === (it.platform||'').toLowerCase())?.cls) || 'p-bl';
+        const pip   = document.createElement('div'); pip.className = `pip ${cls}`; pip.textContent = (it.platform||'P')[0]||'P';
+        const title = document.createElement('div'); title.textContent = it.title || 'Untitled';
+        const time  = document.createElement('div'); time.className = 'timechip'; time.textContent = it.time || '—';
+        card.append(pip, title, time);
+        list.append(card);
+      });
+    }
 
-    cell.append(head,list);
+    cell.append(head, list);
     grid.append(cell);
   }
 }
+
 function quickAdd(iso){
-  const title = prompt('Title for this day?');
-  if(!title) return;
-  db[iso] ??= [];
-  db[iso].push({platform:'Instagram', title, time:''});
-  saveLS(DB_KEY, db);
-  buildCalendar(view.y, view.m);
+  openCompose(iso);
 }
 $('#prev').onclick = () => {
-  view.m--;
-  if (view.m < 0) { view.m = 11; view.y--; }
-  buildCalendar(view.y, view.m);
-  ensureCurrentWeekOnTop(view.y, view.m);  // ← add this line
+  anchor.setDate(anchor.getDate() - 31);  // slide window back
+  buildCalendar();
 };
 // Scroll the week that contains "today" to the top of the viewport
 
 
 $('#next').onclick = () => {
-  view.m++;
-  if (view.m > 11) { view.m = 0; view.y++; }
-  buildCalendar(view.y, view.m);
-  ensureCurrentWeekOnTop(view.y, view.m);  // ← add this line
+  anchor.setDate(anchor.getDate() + 31);  // slide window forward
+  buildCalendar();
 };
 
 // Scroll the week that contains "today" to the top of the viewport
@@ -1401,14 +1754,6 @@ function sortedCampaigns(){
 }
 // ---- pretty date range helpers ----
 const dateFmt = new Intl.DateTimeFormat(undefined, { month:'short', day:'numeric', year:'numeric' });
-function formatDate(iso){
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return Number.isNaN(d.valueOf()) ? '—' : dateFmt.format(d);
-}
-function formatRange(start, end){
-  return `${formatDate(start)} – ${formatDate(end)}`;
-}
 
 function updateCampScheduled(){
   const el = document.getElementById('campScheduled');
@@ -1661,16 +2006,17 @@ function renderSettingsView(view = 'account'){
             </div>
           </div>
 
-          <div class="int-row" data-k="TikTok">
+                   <div class="int-row" data-k="TikTok">
             <div class="int-name">TikTok</div>
             <div class="int-actions">
               <button class="stage-btn" data-connect>Connect</button>
               <div class="switch-min" data-toggle aria-label="TikTok on/off" data-on="${!!I.TikTok}"><i></i></div>
             </div>
           </div>
-        </div>
-      </div>
+        </div> <!-- .stage-card -->
+      </div>   <!-- .stage-row -->
     `;
+
 
     // Connect buttons (placeholder auth links)
     stage.querySelectorAll('[data-connect]').forEach(btn=>{
@@ -1752,7 +2098,7 @@ document.getElementById('upgradeBtn')?.addEventListener('click', ()=> goToSettin
 document.documentElement.setAttribute('data-theme', settings.theme||'day');
 renderViewBy();
 buildCalendar(view.y, view.m);
-ensureCurrentWeekOnTop(view.y, view.m);   // ← add this line
+
 yearOptions();
 loadProfileUI();
 // default to Calendar page (as requested)
@@ -1857,12 +2203,114 @@ document.getElementById('openSettings')?.addEventListener('click', ()=>{
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(out)); } catch {}
     drag = null;
   };
+// ===== Compose modal: close / cancel / esc / backdrop =====
+// --- Compose: close on backdrop, Cancel, or Esc ---
+function closeCompose(){ document.getElementById('composeWrap')?.classList.remove('open'); }
+
+document.getElementById('composeCancel')?.addEventListener('click', e => {
+  e.preventDefault(); closeCompose();
+});
+
+document.getElementById('composeWrap')?.addEventListener('click', e => {
+  // only close if the click is on the dark backdrop, not inside the card
+  if (e.target === e.currentTarget) closeCompose();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeCompose();
+});
+
+document.getElementById('composeSave')?.addEventListener('click', e => {
+  e.preventDefault();
+
+  // must have a date; openCompose(iso) sets this
+  if (!composeISO) {
+    alert('No date selected. Click + on a day to pick a date.');
+    return;
+  }
+
+  // gather form fields
+  const content = document.getElementById('cmpContent')?.value.trim() || '';
+  const copy    = document.getElementById('cmpCopy')?.value.trim() || '';
+  const time    = document.getElementById('cmpTime')?.value || '9:00 AM';
+
+  // exactly ONE platform (radio-style). If you haven’t wired single-select yet, this will still work by taking the first “on”.
+  const active = document
+    .getElementById('cmpPlatWrap')
+    ?.querySelector('.pill-chip[data-on="true"]');
+
+  if (!active) { alert('Choose a platform.'); return; }
+  const platform = active.textContent.trim();
+
+  // write to localStorage DB
+  db[composeISO] = db[composeISO] || [];
+  db[composeISO].push({
+    platform,
+    title: copy || content || 'Untitled',
+    time,
+    content,
+    copy,
+    media: composeMedia || null
+  });
+
+  saveLS(DB_KEY, db);
+
+  // refresh the 31-day calendar and close the modal
+  buildCalendar();   // args ignored; function anchors to today
+  closeCompose();
+});
+
 
   window.addEventListener('mousemove', onMove);
   window.addEventListener('mouseup', onUp);
   window.addEventListener('mouseleave', onUp);
 })();
 
+
 </script>
+<!-- Compose Modal -->
+<div id="composeWrap" class="compose-backdrop" aria-modal="true" role="dialog">
+  <div class="compose-card" role="document">
+    <h3 class="compose-title">Compose Post</h3>
+
+    <div class="c-row two">
+      <div class="c-input-wrap">
+        <input id="cmpContent" class="c-input" placeholder="Content (e.g., DTC skincare)" />
+        <button id="aiContent" class="ai-in-input" type="button">AI</button>
+      </div>
+      <button id="uploadBtn" class="ai-btn" type="button">Upload</button>
+    </div>
+
+    <input id="cmpUpload" type="file" accept="image/*,video/*" hidden>
+    <div id="uploadMeta" class="small-help"></div>
+
+    <div class="c-row">
+      <input id="cmpCopy" class="c-input" placeholder="Copy (caption / title)" />
+      <button id="aiCopy" class="ai-btn" type="button">AI</button>
+    </div>
+
+    <div class="c-inline">
+      <label for="cmpTime" style="font-weight:800;">Time</label>
+      <select id="cmpTime" class="c-select"></select>
+    </div>
+
+    <div class="c-inline" style="flex-wrap:wrap;">
+      <div style="font-weight:800;">Platforms</div>
+      <div id="cmpPlatWrap" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+    </div>
+
+    <div class="compose-actions">
+      <button id="composeCancel" class="btn-ghost">Cancel</button>
+      <button id="composeSave" class="btn-primary">Schedule</button>
+    </div>
+
+    <div class="small-help" id="composeDateHelp"></div>
+  </div>
+</div>
+
+
+</div>     <!-- .wrap (close once, at the very end) -->
+</section> <!-- .main -->
+</div>     <!-- .app -->
 </body>
 </html>
